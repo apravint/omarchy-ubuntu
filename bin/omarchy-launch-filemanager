@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Universal file manager launcher for Ubuntu
+for fm in dolphin nautilus nemo thunar pcmanfm; do
+    if command -v "$fm" >/dev/null 2>&1; then
+        exec "$fm" "$@"
+    fi
+done
+exec xdg-open "$HOME"

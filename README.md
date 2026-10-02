@@ -7,6 +7,8 @@
 > **Experience the authentic [Omarchy](https://github.com/omacom/omarchy) tiling desktop on Ubuntu.**  
 > Powered by **Hyprland**, **Waybar**, **Wofi**, and Omarchy's complete 22-theme palette suite.
 
+![Omarchy on Ubuntu Preview](assets/preview.png)
+
 ---
 
 ## ✨ Features
@@ -20,7 +22,8 @@
 - **Clipboard History**: Built-in `cliphist` integration accessible via `Super + V`.
 - **Slide-in Scratchpad**: Hidden workspace accessible via ``Super + ` `` or `Super + S`.
 - **Wofi Power Menu**: Clean logout/sleep/reboot/shutdown dashboard on `Super + Escape`.
-- **Dual-Session Safe**: Installs as an independent Wayland session (`omarchy.desktop`) alongside your existing desktop (e.g. GNOME, KDE Plasma, or Windows 11 themes) without modifying your existing environment.
+- **Universal App Support**: Works seamlessly on any Ubuntu flavor (GNOME, KDE Plasma, XFCE) with smart browser and file manager fallbacks.
+- **Dual-Session Safe**: Installs as an independent Wayland session (`omarchy.desktop`) alongside your existing desktop without modifying or overwriting your current environment.
 
 ---
 
@@ -45,8 +48,8 @@ After installation completes, log out and select **Omarchy** from your login scr
 | :--- | :--- |
 | `Super + Space` | **Wofi** Application Launcher |
 | `Super + Return` | **Alacritty** Terminal |
-| `Super + Shift + B` or `Super + B` | Google Chrome / Default Browser |
-| `Super + Shift + F` or `Super + E` | Dolphin / File Manager |
+| `Super + Shift + B` or `Super + B` | Preferred Web Browser |
+| `Super + Shift + F` or `Super + E` | Preferred File Manager |
 | `Super + Shift + Y` | YouTube Web App |
 | `Super + Shift + A` | ChatGPT / AI Web App |
 
@@ -85,6 +88,8 @@ After installation completes, log out and select **Omarchy** from your login scr
 
 ```
 omarchy-ubuntu/
+├── assets/
+│   └── preview.png             # Showcase screenshot
 ├── config/
 │   ├── hypr/
 │   │   └── hyprland.conf       # Complete Omarchy Hyprland configuration
@@ -98,15 +103,37 @@ omarchy-ubuntu/
 │   ├── omarchy-theme-switch    # Interactive 22-theme switcher with live sync
 │   ├── omarchy-power-menu      # System power & lock dashboard
 │   ├── omarchy-clipboard-menu  # Cliphist clipboard search
-│   └── omarchy-update-waybar-theme # Extracts palette from theme to Waybar CSS
+│   ├── omarchy-update-waybar-theme # Extracts palette from theme to Waybar CSS
+│   ├── omarchy-launch-browser  # Universal browser launcher
+│   ├── omarchy-launch-filemanager # Universal file manager launcher
+│   └── omarchy-launch-polkit   # Universal polkit authentication agent launcher
 ├── system/
 │   ├── omarchy.desktop         # Wayland session descriptor
 │   ├── omarchy.conf            # /etc/omarchy.conf definition
 │   └── omarchy.sh              # /etc/profile.d/ export
 ├── install.sh                  # All-in-one automated installer
+├── uninstall.sh                # Clean uninstaller and backup restorer
 ├── LICENSE                     # MIT Open Source License
 └── README.md
 ```
+
+---
+
+## 🗑️ Uninstallation
+
+If you ever wish to remove Omarchy, run:
+
+```bash
+cd omarchy-ubuntu
+./uninstall.sh
+```
+This restores all backed-up configurations (`.bak`) and cleanly removes the session entry without touching your primary desktop.
+
+---
+
+## ⚠️ Disclaimer
+
+This is an independent community port created to bring the authentic Omarchy desktop experience to Ubuntu Linux. It is not affiliated with, sponsored, or endorsed by 37signals or OMACOM.
 
 ---
 

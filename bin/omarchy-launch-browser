@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Universal browser launcher for Ubuntu
+if command -v google-chrome >/dev/null 2>&1; then
+    exec google-chrome "$@"
+elif command -v google-chrome-stable >/dev/null 2>&1; then
+    exec google-chrome-stable "$@"
+elif flatpak info com.google.Chrome >/dev/null 2>&1; then
+    exec flatpak run com.google.Chrome "$@"
+elif command -v firefox >/dev/null 2>&1; then
+    exec firefox "$@"
+elif command -v chromium-browser >/dev/null 2>&1; then
+    exec chromium-browser "$@"
+elif command -v brave-browser >/dev/null 2>&1; then
+    exec brave-browser "$@"
+else
+    exec xdg-open "https://google.com"
+fi

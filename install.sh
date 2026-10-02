@@ -95,6 +95,12 @@ export OMARCHY_PATH=/usr/share/omarchy
 omarchy theme set "Tokyo Night" || true
 "$HOME/.local/bin/omarchy-update-waybar-theme" || true
 
+# Unmute audio sinks so sound works out of the box
+for sink in $(pactl list sinks short 2>/dev/null | awk '{print $2}'); do
+    pactl set-sink-mute "$sink" 0 2>/dev/null || true
+    pactl set-sink-volume "$sink" 100% 2>/dev/null || true
+done
+
 echo -e "\n${YELLOW}[6/6] Verifying Hyprland configuration...${NC}"
 if hyprland --verify-config --config "$HOME/.config/hypr/hyprland.conf" >/dev/null 2>&1; then
     echo -e "${GREEN}Hyprland configuration verified: OK!${NC}"
