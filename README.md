@@ -1,5 +1,9 @@
 # Omarchy for Ubuntu 🌌
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Platform: Ubuntu](https://img.shields.io/badge/Platform-Ubuntu%20Linux-orange.svg)](https://ubuntu.com)
+[![Compositor: Hyprland](https://img.shields.io/badge/Compositor-Hyprland-blue.svg)](https://hyprland.org)
+
 > **Experience the authentic [Omarchy](https://github.com/omacom/omarchy) tiling desktop on Ubuntu.**  
 > Powered by **Hyprland**, **Waybar**, **Wofi**, and Omarchy's complete 22-theme palette suite.
 
@@ -100,8 +104,15 @@ omarchy-ubuntu/
 │   ├── omarchy.conf            # /etc/omarchy.conf definition
 │   └── omarchy.sh              # /etc/profile.d/ export
 ├── install.sh                  # All-in-one automated installer
+├── LICENSE                     # MIT Open Source License
 └── README.md
 ```
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE) &mdash; feel free to use, modify, distribute, and build upon it freely.
 
 ---
 
