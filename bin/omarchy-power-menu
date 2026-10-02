@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Omarchy Power Menu via Wofi
+set -e
+
+OPTIONS="🔒 Lock
+💤 Suspend
+🚪 Logout
+🔄 Reboot
+🛑 Shutdown"
+
+CHOICE=$(echo -e "$OPTIONS" | wofi --dmenu --prompt "System:" --width 250 --height 270)
+
+case "$CHOICE" in
+    *"Lock"*)
+        BG=$(readlink -f "$HOME/.local/state/omarchy/current/background" 2>/dev/null || true)
+        if [[ -n "$BG" && -f "$BG" ]]; then
+            swaylock -f -i "$BG" -s fill
+        else
+            swaylock -f -c 1a1b26
+        fi
+        ;;
+    *"Suspend"*)
+        systemctl suspend
+        ;;
+    *"Logout"*)
+        hyprctl dispatch exit
+        ;;
+    *"Reboot"*)
+        systemctl reboot
+        ;;
+    *"Shutdown"*)
+        systemctl poweroff
+        ;;
+esac

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Omarchy Clipboard History Menu
+set -e
+
+SELECTED=$(cliphist list | wofi --dmenu --prompt "Clipboard History:" --width 650 --height 450)
+
+if [[ -n "$SELECTED" ]]; then
+    echo "$SELECTED" | cliphist decode | wl-copy
+    notify-send -u low "Clipboard" "Copied item to clipboard" 2>/dev/null || true
+fi

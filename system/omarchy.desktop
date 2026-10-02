@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Omarchy
+Comment=Omarchy Hyprland Tiling Desktop
+Exec=Hyprland
+Type=Application
+DesktopNames=Hyprland

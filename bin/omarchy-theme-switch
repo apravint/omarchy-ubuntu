@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Omarchy Interactive Theme Switcher
+set -e
+
+export OMARCHY_PATH="${OMARCHY_PATH:-/usr/share/omarchy}"
+
+THEMES=$(omarchy theme list)
+
+SELECTED=$(echo "$THEMES" | wofi --dmenu --prompt "Select Omarchy Theme:" --width 350 --height 400)
+
+if [[ -n "$SELECTED" ]]; then
+    omarchy theme set "$SELECTED"
+
+    # Update wallpaper
+    BG=$(readlink -f "$HOME/.local/state/omarchy/current/background" 2>/dev/null || true)
+    if [[ -n "$BG" && -f "$BG" ]]; then
+        pkill swaybg 2>/dev/null || true
+        swaybg -i "$BG" -m fill &
+    fi
+
+    # Sync Waybar colors and reload Waybar
+    if [[ -x "$HOME/.local/bin/omarchy-update-waybar-theme" ]]; then
+        "$HOME/.local/bin/omarchy-update-waybar-theme" || true
+        pkill -SIGUSR2 waybar 2>/dev/null || true
+    fi
+
+    notify-send "Omarchy Theme" "Applied theme: $SELECTED" 2>/dev/null || true
+fi

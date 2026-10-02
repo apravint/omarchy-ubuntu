@@ -1,0 +1,62 @@
+@import "colors.css";
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: @bg;
+    border-radius: 8px;
+    color: @fg;
+    border: 1px solid @border;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    background: transparent;
+    color: @muted;
+    border-radius: 6px;
+    margin: 3px 2px;
+}
+
+#workspaces button.active {
+    background: rgba(122, 162, 247, 0.25);
+    color: @accent;
+}
+
+#workspaces button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: @fg;
+}
+
+#window {
+    padding: 0 10px;
+    font-weight: 500;
+    color: @fg;
+}
+
+#clock {
+    padding: 0 12px;
+    font-weight: bold;
+    color: @accent;
+}
+
+#pulseaudio,
+#network,
+#battery,
+#tray {
+    padding: 0 10px;
+    margin: 3px 2px;
+    border-radius: 6px;
+    color: @fg;
+}
+
+#pulseaudio:hover,
+#network:hover,
+#battery:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
