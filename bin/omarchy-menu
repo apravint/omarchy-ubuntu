@@ -39,7 +39,7 @@ case "$route" in
     ;;
   *)
     # Root menu
-    CHOICE=$(printf "🚀 Applications Launcher\n🎨 Theme Switcher (22 Themes)\n🖼️ Next Background Wallpaper\n⌨️ Keybindings Cheat Sheet\n⏱️ Set Reminder\n📸 Screenshot & Screen Recording\n📋 Clipboard History\n🖱️ Cursor Theme Switcher\n󰃝 Toggle Nightlight (Eye Care)\n⏻ Power Menu (Lock, Sleep, Shutdown)" | wofi --dmenu --prompt "Omarchy Menu:" --lines 10 -i)
+    CHOICE=$(printf "🚀 Applications Launcher\n⚙️ System Settings\n🔊 Sound & Audio Control (Pavucontrol)\n🎨 Theme Switcher (22 Themes)\n🔤 Font Switcher\n🖱️ Cursor Theme Switcher\n🖼️ Next Background Wallpaper\n⌨️ Keybindings Cheat Sheet\n⏱️ Set Reminder\n📸 Screenshot & Screen Recording\n📋 Clipboard History\n📶 Network & Wi-Fi Settings\n󰂯 Bluetooth Devices\n󰃝 Toggle Nightlight (Eye Care)\n⏻ Power Menu (Lock, Sleep, Shutdown)" | wofi --dmenu --prompt "Omarchy Menu:" --lines 15 -i)
     
     [[ -z "$CHOICE" ]] && exit 0
     
@@ -47,8 +47,17 @@ case "$route" in
       *"Applications"*)
         wofi --show drun
         ;;
+      *"System Settings"*)
+        gnome-control-center 2>/dev/null || systemsettings
+        ;;
+      *"Sound & Audio"*)
+        pavucontrol
+        ;;
       *"Theme Switcher"*)
         ~/.local/bin/omarchy-theme-switch
+        ;;
+      *"Font Switcher"*)
+        ~/.local/bin/omarchy-font-switch
         ;;
       *"Next Background"*)
         omarchy theme bg next
@@ -67,6 +76,12 @@ case "$route" in
         ;;
       *"Cursor"*)
         ~/.local/bin/omarchy-cursor-switch
+        ;;
+      *"Network"*)
+        nm-connection-editor
+        ;;
+      *"Bluetooth"*)
+        blueman-manager
         ;;
       *"Nightlight"*)
         ~/.local/bin/omarchy-toggle-nightlight
