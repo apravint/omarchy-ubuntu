@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Cleanly restart Waybar inside Hyprland session
+set -euo pipefail
+
+pkill -9 waybar 2>/dev/null || true
+sleep 0.3
+
+if command -v hyprctl >/dev/null 2>&1 && [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" || -n "${WAYLAND_DISPLAY:-}" ]]; then
+    hyprctl dispatch exec waybar >/dev/null 2>&1
+else
+    nohup waybar >/dev/null 2>&1 &
+fi
+
+echo "Waybar restarted successfully."

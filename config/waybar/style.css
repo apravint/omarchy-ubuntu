@@ -58,15 +58,6 @@ window#waybar {
     color: @fg;
 }
 
-#mpris {
-    padding: 0 12px;
-    margin: 3px 4px;
-    border-radius: 6px;
-    background: @selection;
-    color: @accent;
-    font-weight: 500;
-}
-
 #clock {
     padding: 0 14px;
     font-weight: bold;
@@ -75,10 +66,13 @@ window#waybar {
 }
 
 #custom-theme,
+#cpu,
+#memory,
 #pulseaudio,
 #network,
 #battery,
-#tray {
+#tray,
+#custom-power {
     padding: 0 10px;
     margin: 3px 2px;
     border-radius: 6px;
@@ -93,11 +87,25 @@ window#waybar {
     padding: 0 10px;
 }
 
+#custom-power {
+    color: #f7768e;
+    font-size: 13px;
+    padding: 0 10px;
+    margin-right: 4px;
+}
+
 #custom-theme:hover,
+#cpu:hover,
+#memory:hover,
 #pulseaudio:hover,
 #network:hover,
 #battery:hover {
     background: @accent_glow;
+    color: #ffffff;
+}
+
+#custom-power:hover {
+    background: #f7768e;
     color: #ffffff;
 }
 

@@ -12,15 +12,16 @@
         "hyprland/window"
     ],
     "modules-center": [
-        "mpris",
         "clock"
     ],
     "modules-right": [
         "custom/theme",
+        "cpu",
+        "memory",
         "pulseaudio",
         "network",
-        "battery",
-        "tray"
+        "tray",
+        "custom/power"
     ],
 
     "custom/menu": {
@@ -37,19 +38,9 @@
     },
 
     "hyprland/window": {
-        "max-length": 40,
+        "max-length": 45,
         "separate-outputs": true,
         "tooltip": false
-    },
-
-    "mpris": {
-        "format": "󰎆 {title} - {artist}",
-        "format-paused": "󰏤 <i>{title}</i>",
-        "max-length": 32,
-        "on-click": "playerctl play-pause",
-        "on-scroll-up": "playerctl next",
-        "on-scroll-down": "playerctl previous",
-        "tooltip": true
     },
 
     "clock": {
@@ -60,9 +51,21 @@
 
     "custom/theme": {
         "format": "󰔎",
-        "tooltip": "Left-click: Theme Switcher | Right-click: Next Background",
+        "tooltip": "Left-click: Theme Switcher | Right-click: Next Wallpaper",
         "on-click": "~/.local/bin/omarchy-theme-switch",
         "on-click-right": "omarchy theme bg next"
+    },
+
+    "cpu": {
+        "format": "󰍛 {usage}%",
+        "interval": 3,
+        "on-click": "alacritty -e btop"
+    },
+
+    "memory": {
+        "format": "󰘚 {percentage}%",
+        "interval": 5,
+        "on-click": "alacritty -e btop"
     },
 
     "pulseaudio": {
@@ -86,16 +89,13 @@
         "on-click-right": "alacritty -e nmtui"
     },
 
-    "battery": {
-        "format": "{icon} {capacity}%",
-        "format-charging": "󰂄 {capacity}%",
-        "format-plugged": "󰚥 {capacity}%",
-        "format-icons": ["󰂃", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-        "on-click": "~/.local/bin/omarchy-power-menu",
-        "tooltip": true
-    },
-
     "tray": {
         "spacing": 10
+    },
+
+    "custom/power": {
+        "format": "⏻",
+        "tooltip": "Power Menu (Lock, Sleep, Logout, Shutdown)",
+        "on-click": "~/.local/bin/omarchy-power-menu"
     }
 }
