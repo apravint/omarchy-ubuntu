@@ -169,6 +169,26 @@ height=140
             subprocess.run(["pkill", "swaybg"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             subprocess.Popen(["swaybg", "-i", target_bg, "-m", "fill"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+    # 6. Ensure Alacritty theme TOML has proper newlines
+    alacritty_toml = os.path.join(home, ".local/state/omarchy/current/theme/alacritty.toml")
+    if os.path.isfile(alacritty_toml):
+        try:
+            with open(alacritty_toml, "r", encoding="utf-8") as f:
+                content = f.read().strip()
+            if content and "\n" not in content:
+                formatted = re.sub(r"(\[[^\]]+\])", r"\n\1\n", content)
+                formatted = re.sub(r'("[^"]*"\s*)([a-zA-Z0-9_]+\s*=)', r"\1\n\2", formatted)
+                lines = [l.strip() for l in formatted.splitlines() if l.strip()]
+                out = []
+                for l in lines:
+                    if l.startswith("[") and out and out[-1] != "":
+                        out.append("")
+                    out.append(l)
+                with open(alacritty_toml, "w", encoding="utf-8") as f:
+                    f.write("\n".join(out).strip() + "\n")
+        except Exception:
+            pass
+
     print("Omarchy desktop theme synchronized across Waybar, Wofi, Hyprland, Mako, and Swaybg.")
 
 if __name__ == "__main__":
