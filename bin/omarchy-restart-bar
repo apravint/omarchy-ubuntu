@@ -1,20 +1,23 @@
 #!/usr/bin/env bash
 # Cleanly start / restart Waybar with output readiness check
-set -euo pipefail
+set -u
 
-# Wait up to 5 seconds for Wayland display & monitors to become available
-for i in {1..10}; do
-    if hyprctl monitors >/dev/null 2>&1; then
+# Kill any existing waybar instances
+pkill -9 -x waybar 2>/dev/null || true
+sleep 0.3
+
+# Wait up to 15 seconds for Hyprland socket & active monitors
+for i in {1..30}; do
+    if hyprctl monitors 2>/dev/null | grep -q "Monitor "; then
         break
     fi
     sleep 0.5
 done
 
-# Kill any stale or unresponsive waybar instance
-pkill -x waybar 2>/dev/null || true
-sleep 0.2
+# Give Hyprland layer-shell protocol time to settle after modesetting
+sleep 1.5
 
-# Launch waybar in background with log capture
+# Launch waybar in background with log redirection
 nohup waybar >/tmp/waybar.log 2>&1 &
 
-echo "Waybar started successfully."
+echo "Waybar launched successfully."

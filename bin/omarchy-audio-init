@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Omarchy Audio Startup & Persistence Service
-# Ensures Dual Simultaneous Output (Samsung & Sony TV) is active, set as default, and unmuted.
+# Ensures Samsung Monitor HDMI Audio is active, set as default, and unmuted.
 
-# Wait up to 10 seconds for PipeWire and WirePlumber to settle
+# Wait up to 10 seconds for PipeWire to settle
 for i in {1..20}; do
     if pactl info >/dev/null 2>&1; then
         break
@@ -10,42 +10,22 @@ for i in {1..20}; do
     sleep 0.5
 done
 
-# Wait for the HDMI card to appear
+# Wait for the Samsung sink to appear
 for i in {1..20}; do
-    if pactl list cards short 2>/dev/null | grep -q "pci-0000_01_00.1"; then
+    if pactl list sinks short 2>/dev/null | grep -q "01_00\.1\.playback\.7\.0"; then
         break
     fi
     sleep 0.5
 done
 
-# Turn off unused onboard audio cards so they don't hijack default sink
-pactl set-card-profile alsa_card.pci-0000_00_1b.0 off 2>/dev/null || true
-pactl set-card-profile alsa_card.pci-0000_00_03.0 off 2>/dev/null || true
+TARGET_SINK="alsa_output.pci-0000_01_00.1.playback.7.0"
 
-# Activate the Pro Audio profile on NVIDIA card to expose both HDMI 0 (Sony) and HDMI 1 (Samsung)
-pactl set-card-profile alsa_card.pci-0000_01_00.1 pro-audio 2>/dev/null || true
-
-# Give PipeWire 1 second to bind the combine-stream sink
-sleep 1
-
-# Check if combined_displays sink is ready
-if pactl list sinks short 2>/dev/null | grep -q "combined_displays"; then
-    TARGET_SINK="combined_displays"
-else
-    # Fallback to Samsung
-    TARGET_SINK=$(pactl list sinks short 2>/dev/null | awk '$2 ~ /01_00\.1.*pro-output-7/ {print $2; exit}')
+# If Samsung sink exists, set as default and unmute
+if pactl list sinks short 2>/dev/null | grep -q "$TARGET_SINK"; then
+    pactl set-default-sink "$TARGET_SINK" 2>/dev/null || true
+    pactl set-sink-mute "$TARGET_SINK" 0 2>/dev/null || true
+    pactl set-sink-volume "$TARGET_SINK" 100% 2>/dev/null || true
 fi
-
-# Set default sink and unmute at 100% volume
-pactl set-default-sink "$TARGET_SINK" 2>/dev/null || true
-pactl set-sink-mute "$TARGET_SINK" 0 2>/dev/null || true
-pactl set-sink-volume "$TARGET_SINK" 100% 2>/dev/null || true
-
-# Ensure slave outputs are also unmuted at 100%
-pactl set-sink-mute alsa_output.pci-0000_01_00.1.pro-output-3 0 2>/dev/null || true
-pactl set-sink-volume alsa_output.pci-0000_01_00.1.pro-output-3 100% 2>/dev/null || true
-pactl set-sink-mute alsa_output.pci-0000_01_00.1.pro-output-7 0 2>/dev/null || true
-pactl set-sink-volume alsa_output.pci-0000_01_00.1.pro-output-7 100% 2>/dev/null || true
 
 # Reconnect any currently running streams (e.g. Chrome/Spotify) to the default sink
 for input in $(pactl list sink-inputs short 2>/dev/null | awk '{print $1}'); do

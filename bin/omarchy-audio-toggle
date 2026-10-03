@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Omarchy Audio Output Toggle (Samsung Monitor <-> Sony TV)
+
+SAMSUNG_SINK="alsa_output.pci-0000_01_00.1.playback.7.0"
+SONY_SINK="alsa_output.pci-0000_01_00.1.playback.3.0"
+
+CURRENT_SINK=$(pactl get-default-sink 2>/dev/null)
+
+if [ "$CURRENT_SINK" = "$SAMSUNG_SINK" ]; then
+    TARGET_SINK="$SONY_SINK"
+    DISPLAY_NAME="Sony TV (HDMI)"
+else
+    TARGET_SINK="$SAMSUNG_SINK"
+    DISPLAY_NAME="Samsung Monitor (HDMI)"
+fi
+
+pactl set-default-sink "$TARGET_SINK" 2>/dev/null || true
+pactl set-sink-mute "$TARGET_SINK" 0 2>/dev/null || true
+pactl set-sink-volume "$TARGET_SINK" 100% 2>/dev/null || true
+
+for input in $(pactl list sink-inputs short 2>/dev/null | awk '{print $1}'); do
+    pactl move-sink-input "$input" "$TARGET_SINK" 2>/dev/null || true
+done
+
+notify-send "Audio Output" "Switched to $DISPLAY_NAME" -i audio-speakers -t 3000 2>/dev/null || true
