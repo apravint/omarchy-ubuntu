@@ -1,0 +1,100 @@
+name: Build & Release Omarchy OS Live ISO
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version tag (e.g. v24.04.1)'
+        required: true
+        default: 'v24.04.1'
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-iso:
+    name: Build Bootable Live ISO
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Free Disk Space on Runner
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force
+          df -h
+
+      - name: Install ISO Build Dependencies
+        run: |
+          sudo apt update -y
+          sudo apt install -y \
+            binutils \
+            debootstrap \
+            squashfs-tools \
+            xorriso \
+            grub-pc-bin \
+            grub-efi-amd64-bin \
+            mtools \
+            dosfstools \
+            isolinux \
+            syslinux-utils \
+            zstd
+
+      - name: Run ISO Builder
+        run: |
+          sudo bash build/build-iso.sh
+
+      - name: List Generated Artifacts
+        run: |
+          ls -lh out/
+
+      - name: Upload ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Omarchy-OS-Live-ISO
+          path: |
+            out/*.iso
+            out/sha256sum.txt
+          retention-days: 14
+
+      - name: Create GitHub Release & Attach ISO
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          name: Omarchy OS ${{ github.event.inputs.version || github.ref_name }}
+          body: |
+            # 🚀 Omarchy OS Live ISO Release
+
+            Welcome to the official release of **Omarchy OS** — an authentic Hyprland + Waybar desktop experience on Ubuntu 24.04 LTS.
+
+            ### 📦 Download Links
+            - **Live ISO Image**: Available in the release assets below.
+            - **Checksum**: Verify the SHA256 checksum against `sha256sum.txt`.
+
+            ### 💻 How to Flash & Boot
+            1. Download the `.iso` file.
+            2. Flash to a USB drive using [BalenaEtcher](https://etcher.balena.io/), [Ventoy](https://www.ventoy.net/), or [Rufus](https://rufus.ie/).
+            3. Boot your PC, choose your USB drive in the boot menu.
+            4. Default Live Session Credentials:
+               - **User**: `omarchy`
+               - **Password**: `omarchy` (Passwordless sudo enabled)
+
+            ### ✨ Key Features
+            - Pre-configured Hyprland Wayland compositor with fluid animations
+            - Dual-monitor auto-detection with GUI manager (`omarchy-displays-gui`)
+            - Persistent Waybar & wallpaper services with 0 collisions
+            - 22 custom built-in themes with instant switching
+            - Out-of-the-box PipeWire audio routing & toggle shortcuts
+          files: |
+            out/*.iso
+            out/sha256sum.txt
+          draft: false
+          prerelease: false
