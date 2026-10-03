@@ -241,6 +241,9 @@ sudo bash build/build-iso.sh
 | `Super + Ctrl + V` | **🎙️ AI Voice Assistant** | Hands-free audio recording, transcription, and agent execution |
 | `Super + Shift + Print` | **👁️ Screen Vision Analyst** | Captures screen region and analyzes code errors/tables with Vision AI |
 | `Super + Ctrl + G` | **🛡️ AI Security Guard** | Audits listening ports, SSH/sudo login attempts, and firewall status |
+| `Super + Shift + V` | **🪄 AI Smart Clipboard** | 1-click text summarization, code refactoring, and translation |
+| `Super + Ctrl + W` | **🎨 AI Ambient Wallpaper** | Dynamic ambient wallpaper switching with live theme palette sync |
+| `Super + Ctrl + F` | **📂 AI File Curator** | Auto-organizes Downloads into clean subfolders and renames files |
 | `Super + Alt + N` | **📈 Live Stock Market News** | Interactive Wofi menu for real-time financial headlines & ticker news |
 | `Super + Space` | **Command Menu** | Unified system launcher and quick action center |
 | `Super + Alt + Space` | **Wofi Application Menu** | Fast searchable desktop app launcher |

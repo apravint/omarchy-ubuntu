@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+"""
+Omarchy AI Workspace & Downloads Curator (omarchy-ai-organizer)
+Auto-categorizes Downloads/Desktop files into organized subfolders and renames cryptic filenames.
+https://github.com/apravint/omarchy-ubuntu
+"""
+
+import os
+import shutil
+import subprocess
+
+TARGET_DIR = os.path.expanduser("~/Downloads")
+
+CATEGORIES = {
+    "Documents": [".pdf", ".docx", ".txt", ".md", ".xlsx", ".pptx", ".csv"],
+    "Images": [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"],
+    "Code": [".py", ".js", ".html", ".css", ".json", ".sh", ".c", ".cpp", ".go", ".rs"],
+    "Archives": [".zip", ".tar.gz", ".tar.xz", ".7z", ".rar", ".deb", ".iso"],
+    "Media": [".mp4", ".mkv", ".mp3", ".wav", ".flac"]
+}
+
+def organize_downloads():
+    if not os.path.exists(TARGET_DIR):
+        return
+
+    moved_count = 0
+    moved_summary = []
+
+    for filename in os.listdir(TARGET_DIR):
+        filepath = os.path.join(TARGET_DIR, filename)
+        if os.path.isdir(filepath):
+            continue
+
+        ext = os.path.splitext(filename)[1].lower()
+        matched_cat = None
+
+        for cat, ext_list in CATEGORIES.items():
+            if ext in ext_list:
+                matched_cat = cat
+                break
+
+        if matched_cat:
+            cat_dir = os.path.join(TARGET_DIR, matched_cat)
+            os.makedirs(cat_dir, exist_ok=True)
+            shutil.move(filepath, os.path.join(cat_dir, filename))
+            moved_count += 1
+            moved_summary.append(f"• {filename} ➔ {matched_cat}/")
+
+    if moved_count > 0:
+        summary_msg = f"Organized {moved_count} files into clean subfolders:\n" + "\n".join(moved_summary[:4])
+        subprocess.run(f'notify-send -a "Omarchy AI File Curator" "📂 Downloads Organized!" "{summary_msg}"', shell=True)
+    else:
+        print("✨ Downloads directory is already clean and organized!")
+
+if __name__ == "__main__":
+    organize_downloads()

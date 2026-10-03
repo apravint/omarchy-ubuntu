@@ -1,0 +1,10 @@
+[Unit]
+Description=Timer for Omarchy AI File Curator Inspections
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=1h
+Unit=omarchy-organizer.service
+
+[Install]
+WantedBy=timers.target

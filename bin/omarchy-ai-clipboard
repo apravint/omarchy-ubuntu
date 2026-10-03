@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+"""
+Omarchy AI Smart Clipboard & Code Assistant (omarchy-ai-clipboard)
+Provides 1-click AI transformations on copied text: Summarize, Refactor Code, Translate, Extract Actions.
+https://github.com/apravint/omarchy-ubuntu
+"""
+
+import sys
+import os
+import subprocess
+import json
+import urllib.request
+
+def get_clipboard_text():
+    try:
+        return subprocess.check_output(["wl-paste"], text=True).strip()
+    except Exception:
+        return ""
+
+def ask_ollama(prompt, content):
+    url = "http://localhost:11434/api/generate"
+    payload = {
+        "model": "qwen2.5:1.5b",
+        "prompt": f"{prompt}:\n\n```\n{content}\n```\n\nOutput clean, concise result:",
+        "stream": False
+    }
+    try:
+        req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return data.get("response", "No response received.")
+    except Exception as e:
+        return f"Error: {e}"
+
+def show_wofi_actions(clip_text):
+    if not clip_text:
+        subprocess.run(['notify-send', '-a', 'Omarchy AI Clipboard', 'Clipboard Empty', 'Please copy text first!'])
+        sys.exit(0)
+
+    short_clip = (clip_text[:50] + "...") if len(clip_text) > 50 else clip_text
+    actions = [
+        f"🪄 Summarize Selection ({short_clip})",
+        f"💻 Refactor & Fix Code Snippet",
+        f"🌐 Translate to English / Tamil",
+        f"📌 Extract Key Action Items"
+    ]
+    wofi_input = "\n".join(actions)
+
+    cmd = ["wofi", "--dmenu", "--prompt", "🪄 AI Clipboard Action...", "--width", "700", "--height", "220"]
+    try:
+        proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+        selected_action, _ = proc.communicate(input=wofi_input)
+        selected_action = selected_action.strip()
+
+        if not selected_action:
+            sys.exit(0)
+
+        subprocess.run(['notify-send', '-a', 'Omarchy AI Clipboard', '🤖 Processing AI Action...', selected_action], check=False)
+
+        prompt_type = "Summarize text"
+        if "Refactor" in selected_action:
+            prompt_type = "Refactor this code, fix bugs, optimize, and explain changes"
+        elif "Translate" in selected_action:
+            prompt_type = "Translate this text accurately into Tamil and English"
+        elif "Action Items" in selected_action:
+            prompt_type = "Extract bullet point key action items and takeaways"
+
+        result = ask_ollama(prompt_type, clip_text)
+
+        # Copy back to clipboard
+        subprocess.run(["wl-copy"], input=result.encode("utf-8"))
+
+        summary = result[:200] + ("..." if len(result) > 200 else "")
+        subprocess.run(['notify-send', '-a', 'Omarchy AI Clipboard', '✅ AI Result Copied to Clipboard!', summary])
+    except Exception as e:
+        print(f"Error: {e}")
+
+if __name__ == "__main__":
+    clip = get_clipboard_text()
+    show_wofi_actions(clip)

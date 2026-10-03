@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+"""
+Omarchy AI Dynamic Ambient Wallpaper & Theme Palette Generator (omarchy-ai-wallpaper)
+Dynamically switches wallpapers and auto-extracts color palettes to re-tint Hyprland, Waybar & Wofi.
+https://github.com/apravint/omarchy-ubuntu
+"""
+
+import sys
+import os
+import subprocess
+import json
+
+def get_current_background():
+    bg_file = os.path.expanduser("~/.local/state/omarchy/current/background")
+    if os.path.exists(bg_file):
+        return bg_file
+    return None
+
+def trigger_ai_wallpaper_theme():
+    print("🎨 Generating / Syncing AI Ambient Desktop Palette...")
+    subprocess.run("notify-send -a 'Omarchy AI Wallpaper' '🎨 Syncing Dynamic Palette...' 'Extracting color palette and applying to Hyprland, Waybar & Wofi' -t 2000", shell=True)
+
+    # Cycle next background in active Omarchy theme
+    subprocess.run("omarchy theme bg next", shell=True)
+
+    # Sync all UI components
+    subprocess.run("~/.local/bin/omarchy-theme-sync-all", shell=True)
+
+    subprocess.run("notify-send -a 'Omarchy AI Wallpaper' '✨ Palette Synchronized!' 'Hyprland borders, status bar, and dialogs updated.'", shell=True)
+
+if __name__ == "__main__":
+    trigger_ai_wallpaper_theme()
