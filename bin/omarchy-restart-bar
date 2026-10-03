@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
-# Cleanly restart Waybar inside Hyprland session
+# Cleanly start / restart Waybar with output readiness check
 set -euo pipefail
 
-pkill -9 waybar 2>/dev/null || true
-sleep 0.3
+# Wait up to 5 seconds for Wayland display & monitors to become available
+for i in {1..10}; do
+    if hyprctl monitors >/dev/null 2>&1; then
+        break
+    fi
+    sleep 0.5
+done
 
-if command -v hyprctl >/dev/null 2>&1 && [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" || -n "${WAYLAND_DISPLAY:-}" ]]; then
-    hyprctl dispatch exec waybar >/dev/null 2>&1
-else
-    nohup waybar >/dev/null 2>&1 &
-fi
+# Kill any stale or unresponsive waybar instance
+pkill -x waybar 2>/dev/null || true
+sleep 0.2
 
-echo "Waybar restarted successfully."
+# Launch waybar in background with log capture
+nohup waybar >/tmp/waybar.log 2>&1 &
+
+echo "Waybar started successfully."
