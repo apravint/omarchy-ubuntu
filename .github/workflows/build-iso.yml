@@ -1,4 +1,4 @@
-name: Build & Release OmLinux Live ISO
+name: Build & Release Omarchy for Ubuntu Live ISO
 
 on:
   release:
@@ -9,9 +9,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version tag (e.g. v26.04.0 or v24.04.1)'
+        description: 'Release version tag (e.g. v24.04.1 or v26.04.0)'
         required: true
-        default: 'v26.04.0'
+        default: 'v24.04.1'
 
 permissions:
   contents: write
@@ -60,7 +60,7 @@ jobs:
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: OmLinux-Live-ISO
+          name: omarchy-ubuntu-Live-ISO
           path: |
             out/*.iso
             out/sha256sum.txt
@@ -71,23 +71,23 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.release.tag_name || github.event.inputs.version || github.ref_name }}
-          name: ${{ github.event.release.name || format('OmLinux {0}', github.event.inputs.version || github.ref_name) }}
+          name: ${{ github.event.release.name || format('Omarchy for Ubuntu {0}', github.event.inputs.version || github.ref_name) }}
           body: |
-            # 🚀 OmLinux Live ISO Release
+            # 🚀 Omarchy for Ubuntu Live ISO Release
 
-            Welcome to the official release of **OmLinux** — the turnkey Hyprland + Waybar desktop operating system on Ubuntu 24.04 LTS.
+            Welcome to the official release of **Omarchy for Ubuntu** — the turnkey Hyprland + Waybar desktop operating system on Ubuntu LTS.
 
             ### 📦 Download Links
-            - **Live ISO Image**: Available in the release assets below (`OmLinux-24.04-amd64.iso`).
+            - **Live ISO Image**: Available in the release assets below (`omarchy-ubuntu-*.iso`).
             - **Checksum**: Verify the SHA256 checksum against `sha256sum.txt`.
 
             ### 💻 How to Flash & Boot
-            1. Download `OmLinux-24.04-amd64.iso`.
+            1. Download the `.iso` file.
             2. Flash to a USB drive using [BalenaEtcher](https://etcher.balena.io/), [Ventoy](https://www.ventoy.net/), or [Rufus](https://rufus.ie/).
             3. Boot your PC, choose your USB drive in the boot menu (`F12`, `F11`, or `Esc`).
             4. Default Live Session Credentials:
-               - **User**: `omlinux`
-               - **Password**: `omlinux` *(Passwordless sudo enabled)*
+               - **User**: `omarchy`
+               - **Password**: `omarchy` *(Passwordless sudo enabled)*
 
             ### ✨ Key Features
             - Pre-configured Hyprland Wayland compositor with fluid animations

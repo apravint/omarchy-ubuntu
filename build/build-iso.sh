@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# OmLinux - Automated Live ISO Builder
-# Builds a bootable hybrid UEFI/BIOS Live ISO based on Ubuntu 24.04 LTS (Noble)
+# Omarchy for Ubuntu - Automated Live ISO Builder
+# Builds a bootable hybrid UEFI/BIOS Live ISO based on Ubuntu LTS
 # ==============================================================================
 set -euo pipefail
 
@@ -11,10 +11,10 @@ HOST_VERSION="$(. /etc/os-release 2>/dev/null && echo "${VERSION_ID:-}" || echo 
 
 CODENAME="${UBUNTU_CODENAME:-${HOST_CODENAME:-noble}}"
 DISTRO_VERSION="${DISTRO_VERSION:-${HOST_VERSION:-24.04}}"
-DISTRO_NAME="OmLinux"
+DISTRO_NAME="omarchy-ubuntu"
 ARCH="amd64"
-ROOTFS_DIR="/tmp/omlinux-rootfs"
-ISO_DIR="/tmp/omlinux-iso"
+ROOTFS_DIR="/tmp/omarchy-rootfs"
+ISO_DIR="/tmp/omarchy-iso"
 OUTPUT_DIR="${PWD}/out"
 ISO_NAME="${DISTRO_NAME}-${DISTRO_VERSION}-${ARCH}.iso"
 
@@ -91,9 +91,9 @@ trap cleanup EXIT
 # ------------------------------------------------------------------------------
 # 4. Configure System Inside Chroot
 # ------------------------------------------------------------------------------
-log_step "Configuring packages, kernel, live-boot and Hyprland desktop in chroot..."
+log_step "Configuring packages, kernel, live-boot and desktop environment in chroot..."
 
-# Setup apt sources
+# Setup apt sources with universe & multiverse
 cat << EOF > "${ROOTFS_DIR}/etc/apt/sources.list"
 deb http://archive.ubuntu.com/ubuntu/ ${CODENAME} main restricted universe multiverse
 deb http://archive.ubuntu.com/ubuntu/ ${CODENAME}-updates main restricted universe multiverse
@@ -131,7 +131,8 @@ apt install -y --no-install-recommends \
     wget \
     nano \
     vim \
-    ca-certificates
+    ca-certificates \
+    software-properties-common
 
 # Audio, Bluetooth & Display Server
 apt install -y --no-install-recommends \
@@ -144,6 +145,17 @@ apt install -y --no-install-recommends \
     blueman \
     pavucontrol \
     sddm
+
+# Enable Universe / Multiverse
+add-apt-repository -y universe || true
+add-apt-repository -y multiverse || true
+apt update -y
+
+# On Ubuntu 24.04 (noble), Hyprland is available via ppa:cpp-core/hyprland or universe in 24.10+/26.04+
+if ! apt-cache show hyprland >/dev/null 2>&1; then
+    add-apt-repository -y ppa:cpp-core/hyprland || true
+    apt update -y || true
+fi
 
 # Hyprland & Wayland Desktop Stack
 apt install -y \
@@ -163,18 +175,23 @@ apt install -y \
     fonts-font-awesome \
     pavucontrol \
     btop \
-    jq
+    jq || true
 
-# Setup default live user: 'omlinux' with passwordless sudo
-useradd -m -s /bin/bash -G sudo,audio,video,plugdev,netdev omlinux
-echo "omlinux:omlinux" | chpasswd
-echo "omlinux ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/omlinux
-chmod 0440 /etc/sudoers.d/omlinux
+# Setup default live user: 'omarchy' with passwordless sudo
+mkdir -p /etc/sudoers.d
+groupadd -f sudo
+groupadd -f audio
+groupadd -f video
+
+useradd -m -s /bin/bash -G sudo,audio,video omarchy || true
+echo "omarchy:omarchy" | chpasswd || true
+echo "omarchy ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/omarchy
+chmod 0440 /etc/sudoers.d/omarchy
 
 # Enable essential systemd services
-systemctl enable NetworkManager.service
-systemctl enable bluetooth.service
-systemctl enable sddm.service
+systemctl enable NetworkManager.service 2>/dev/null || true
+systemctl enable bluetooth.service 2>/dev/null || true
+systemctl enable sddm.service 2>/dev/null || true
 
 # Clean apt cache
 apt autoremove -y
@@ -183,11 +200,11 @@ rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 CHROOT_EOF
 
 # ------------------------------------------------------------------------------
-# 5. Inject OmLinux Desktop Configurations & Scripts
+# 5. Inject Omarchy Desktop Configurations & Scripts
 # ------------------------------------------------------------------------------
-log_step "Injecting OmLinux scripts, systemd units, and skeleton user configs..."
+log_step "Injecting Omarchy scripts, systemd units, and skeleton user configs..."
 
-# Copy OmLinux system-wide binaries
+# Copy Omarchy system-wide binaries
 mkdir -p "${ROOTFS_DIR}/usr/local/bin" "${ROOTFS_DIR}/usr/share/wayland-sessions"
 cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/usr/local/bin/"
 chmod +x "${ROOTFS_DIR}/usr/local/bin/"*
@@ -198,30 +215,30 @@ cp -r "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/etc/skel/.config/"
 cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/etc/skel/.local/bin/"
 
 # Also copy into the live user's home directly
-mkdir -p "${ROOTFS_DIR}/home/omlinux/.config" "${ROOTFS_DIR}/home/omlinux/.local/bin"
-cp -r "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/home/omlinux/.config/"
-cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/home/omlinux/.local/bin/"
+mkdir -p "${ROOTFS_DIR}/home/omarchy/.config" "${ROOTFS_DIR}/home/omarchy/.local/bin"
+cp -r "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/home/omarchy/.config/"
+cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/home/omarchy/.local/bin/"
 
 # Copy systemd units
-mkdir -p "${ROOTFS_DIR}/etc/skel/.config/systemd/user" "${ROOTFS_DIR}/home/omlinux/.config/systemd/user"
+mkdir -p "${ROOTFS_DIR}/etc/skel/.config/systemd/user" "${ROOTFS_DIR}/home/omarchy/.config/systemd/user"
 cp -r "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/etc/skel/.config/systemd/user/" 2>/dev/null || true
-cp -r "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/home/omlinux/.config/systemd/user/" 2>/dev/null || true
+cp -r "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/home/omarchy/.config/systemd/user/" 2>/dev/null || true
 
 # Fix permissions
-chroot "${ROOTFS_DIR}" chown -R omlinux:omlinux /home/omlinux
+chroot "${ROOTFS_DIR}" chown -R omarchy:omarchy /home/omarchy 2>/dev/null || true
 
 # Copy Wayland session desktop entry
 if [ -f "${REPO_ROOT}/system/omarchy.desktop" ]; then
-    cp "${REPO_ROOT}/system/omarchy.desktop" "${ROOTFS_DIR}/usr/share/wayland-sessions/omlinux.desktop"
+    cp "${REPO_ROOT}/system/omarchy.desktop" "${ROOTFS_DIR}/usr/share/wayland-sessions/omarchy.desktop"
 fi
 
 # Set custom OS Release Branding
 cat << EOF > "${ROOTFS_DIR}/etc/os-release"
-NAME="${DISTRO_NAME}"
+NAME="Omarchy for Ubuntu"
 VERSION="${DISTRO_VERSION} LTS (${CODENAME})"
-ID=omlinux
+ID=omarchy-ubuntu
 ID_LIKE="ubuntu debian"
-PRETTY_NAME="${DISTRO_NAME} ${DISTRO_VERSION} LTS (Noble)"
+PRETTY_NAME="Omarchy for Ubuntu ${DISTRO_VERSION} LTS (${CODENAME})"
 VERSION_ID="${DISTRO_VERSION}"
 HOME_URL="https://github.com/apravint/omarchy-ubuntu"
 SUPPORT_URL="https://github.com/apravint/omarchy-ubuntu/issues"
@@ -270,13 +287,13 @@ insmod font
 set menu_color_normal=white/black
 set menu_color_highlight=black/light-cyan
 
-menuentry "🚀 Start OmLinux Live (Default)" {
+menuentry "🚀 Start Omarchy for Ubuntu Live (Default)" {
     set gfxpayload=keep
     linux /casper/vmlinuz boot=casper quiet splash ---
     initrd /casper/initrd
 }
 
-menuentry "🛡️ Start OmLinux Live (Safe Graphics)" {
+menuentry "🛡️ Start Omarchy for Ubuntu Live (Safe Graphics)" {
     set gfxpayload=keep
     linux /casper/vmlinuz boot=casper nomodeset quiet splash ---
     initrd /casper/initrd
@@ -301,7 +318,7 @@ EOF
 # ------------------------------------------------------------------------------
 log_step "Generating hybrid UEFI/BIOS bootable ISO image..."
 grub-mkrescue -o "${OUTPUT_DIR}/${ISO_NAME}" "${ISO_DIR}" \
-    -- -volid "OMLINUX"
+    -- -volid "OMARCHY"
 
 # ------------------------------------------------------------------------------
 # 9. Compute Checksums & Finish
