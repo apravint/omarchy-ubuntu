@@ -6,7 +6,7 @@ import shutil
 
 # If omarchy-shell is running, delegate to upstream omarchy-shell
 try:
-    res = subprocess.run(["omarchy-shell", "-q", "ping"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    res = subprocess.run(["pgrep", "-x", "omarchy-shell"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if res.returncode == 0:
         subprocess.run(["/usr/share/omarchy/bin/omarchy-menu-select"] + sys.argv[1:])
         sys.exit(0)

@@ -1,0 +1,79 @@
+#!/bin/bash
+# Omarchy Root Menu Bridge for Ubuntu
+
+if pgrep -x omarchy-shell >/dev/null 2>&1; then
+  exec /usr/share/omarchy/bin/omarchy-menu "$@"
+fi
+
+verb="${1-toggle}"
+route="${2-root}"
+
+case "$route" in
+  theme*|style.theme)
+    exec ~/.local/bin/omarchy-theme-switch
+    ;;
+  background*|style.background)
+    exec omarchy theme bg next
+    ;;
+  system|power)
+    exec ~/.local/bin/omarchy-power-menu
+    ;;
+  clipboard)
+    exec ~/.local/bin/omarchy-clipboard-menu
+    ;;
+  capture*)
+    exec ~/.local/bin/omarchy-capture-menu
+    ;;
+  keybindings)
+    exec /usr/share/omarchy/bin/omarchy-menu-keybindings
+    ;;
+  reminder*)
+    exec ~/.local/bin/omarchy-reminder-menu
+    ;;
+  cursor)
+    exec ~/.local/bin/omarchy-cursor-switch
+    ;;
+  close)
+    pkill -x wofi 2>/dev/null || true
+    exit 0
+    ;;
+  *)
+    # Root menu
+    CHOICE=$(printf "🚀 Applications Launcher\n🎨 Theme Switcher (22 Themes)\n🖼️ Next Background Wallpaper\n⌨️ Keybindings Cheat Sheet\n⏱️ Set Reminder\n📸 Screenshot & Screen Recording\n📋 Clipboard History\n🖱️ Cursor Theme Switcher\n󰃝 Toggle Nightlight (Eye Care)\n⏻ Power Menu (Lock, Sleep, Shutdown)" | wofi --dmenu --prompt "Omarchy Menu:" --lines 10 -i)
+    
+    [[ -z "$CHOICE" ]] && exit 0
+    
+    case "$CHOICE" in
+      *"Applications"*)
+        wofi --show drun
+        ;;
+      *"Theme Switcher"*)
+        ~/.local/bin/omarchy-theme-switch
+        ;;
+      *"Next Background"*)
+        omarchy theme bg next
+        ;;
+      *"Keybindings"*)
+        /usr/share/omarchy/bin/omarchy-menu-keybindings
+        ;;
+      *"Reminder"*)
+        ~/.local/bin/omarchy-reminder-menu
+        ;;
+      *"Screenshot"*)
+        ~/.local/bin/omarchy-capture-menu
+        ;;
+      *"Clipboard"*)
+        ~/.local/bin/omarchy-clipboard-menu
+        ;;
+      *"Cursor"*)
+        ~/.local/bin/omarchy-cursor-switch
+        ;;
+      *"Nightlight"*)
+        ~/.local/bin/omarchy-toggle-nightlight
+        ;;
+      *"Power"*)
+        ~/.local/bin/omarchy-power-menu
+        ;;
+    esac
+    ;;
+esac

@@ -53,7 +53,8 @@ After installation completes, log out and select **Omarchy** from your login scr
 ### 🚀 Applications & Tools
 | Shortcut | Action |
 | :--- | :--- |
-| `Super + Space` | **Wofi** Application Launcher |
+| `Super + Space` | **Omarchy Command Center Menu** |
+| `Super + Alt + Space` | **Wofi** Application Launcher |
 | `Super + Return` | **Alacritty** Terminal |
 | `Super + Alt + Return` | **Tmux** Persistent Terminal Session |
 | `Super + Shift + N` | **Neovim** Code Editor |
@@ -63,6 +64,9 @@ After installation completes, log out and select **Omarchy** from your login scr
 | `Super + Shift + D` | **Git TUI** (`lazygit`) |
 | `Super + Ctrl + Q` | **Calculator** (`omacalc`) |
 | `Super + Ctrl + S` | **LocalSend Share Menu** (Clipboard, File, Folder) |
+| `Super + Ctrl + N` | **Toggle Nightlight** (4200K warm blue-light filter) |
+| `Super + Ctrl + I` | **Toggle Idle / Stay Awake** (Inhibits screensaver & sleep) |
+| `Super + /` / `Super + Alt + /` | Step Monitor & UI Scaling Up / Down |
 | `Super + Shift + B` or `Super + B` | Preferred Web Browser |
 | `Super + Shift + Alt + B` | Private / Incognito Browser |
 | `Super + Shift + F` or `Super + E` | Preferred File Manager |

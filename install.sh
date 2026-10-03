@@ -54,6 +54,7 @@ sudo apt install -y \
     bat \
     jq \
     curl \
+    wlsunset \
     python3 \
     git \
     socat
@@ -103,6 +104,11 @@ cp -r "$REPO_DIR/config/"* "$HOME/.config/"
 # Copy scripts & make executable
 cp "$REPO_DIR/bin/"* "$HOME/.local/bin/"
 chmod +x "$HOME/.local/bin/"*
+
+# Copy Omarchy desktop webapps and icons
+mkdir -p "$HOME/.local/share/applications" "$HOME/.local/share/icons/hicolor/128x128/apps"
+cp "$REPO_DIR/applications/"*.desktop "$HOME/.local/share/applications/" 2>/dev/null || true
+cp "$REPO_DIR/applications/icons/"*.png "$HOME/.local/share/icons/hicolor/128x128/apps/" 2>/dev/null || true
 
 # Symlink Debian-specific binary names if needed
 ln -sf /usr/bin/batcat "$HOME/.local/bin/bat" 2>/dev/null || true

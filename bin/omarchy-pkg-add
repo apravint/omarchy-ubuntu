@@ -1,0 +1,13 @@
+#!/bin/bash
+# Ubuntu adapter for omarchy-pkg-add
+
+if omarchy-pkg-missing "$@"; then
+  echo "Installing missing packages with apt: $*"
+  if (( EUID == 0 )); then
+    apt-get update && apt-get install -y "$@" || exit 1
+  else
+    sudo apt-get update && sudo apt-get install -y "$@" || exit 1
+  fi
+fi
+
+exit 0

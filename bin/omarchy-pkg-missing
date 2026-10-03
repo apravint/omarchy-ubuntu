@@ -1,0 +1,13 @@
+#!/bin/bash
+# Ubuntu adapter for omarchy-pkg-missing
+
+for pkg in "$@"; do
+  # Check dpkg package status or binary on PATH
+  if ! dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "ok installed"; then
+    if ! command -v "$pkg" >/dev/null 2>&1; then
+      exit 0
+    fi
+  fi
+done
+
+exit 1

@@ -19,6 +19,7 @@
         "cpu",
         "memory",
         "pulseaudio",
+        "battery",
         "network",
         "tray",
         "custom/power"
@@ -26,8 +27,8 @@
 
     "custom/menu": {
         "format": "󰀻",
-        "tooltip": false,
-        "on-click": "wofi --show drun",
+        "tooltip": "Left-click: Omarchy Menu | Right-click: Terminal",
+        "on-click": "~/.local/bin/omarchy-menu",
         "on-click-right": "alacritty"
     },
 
@@ -78,6 +79,19 @@
         "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
         "on-scroll-up": "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+",
         "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+    },
+
+    "battery": {
+        "states": {
+            "good": 95,
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-plugged": "󰂄 {capacity}%",
+        "format-alt": "{icon} {time}",
+        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
     },
 
     "network": {

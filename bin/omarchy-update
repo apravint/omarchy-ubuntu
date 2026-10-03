@@ -1,0 +1,27 @@
+#!/bin/bash
+# Omarchy Update for Ubuntu
+
+set -e
+
+echo -e "\033[1;34m==> Updating Omarchy Core (/usr/share/omarchy)...\033[0m"
+if [ -d "/usr/share/omarchy/.git" ]; then
+  sudo git -C /usr/share/omarchy pull --ff-only 2>/dev/null || true
+fi
+
+echo -e "\033[1;34m==> Updating Omarchy Ubuntu Port...\033[0m"
+if [ -d "$HOME/omarchy-ubuntu/.git" ]; then
+  git -C "$HOME/omarchy-ubuntu" pull --ff-only 2>/dev/null || true
+fi
+
+echo -e "\033[1;34m==> Updating system packages with APT...\033[0m"
+if command -v sudo >/dev/null 2>&1; then
+  sudo apt-get update && sudo apt-get upgrade -y
+else
+  apt-get update && apt-get upgrade -y
+fi
+
+echo -e "\033[1;34m==> Synchronizing desktop themes...\033[0m"
+"$HOME/.local/bin/omarchy-theme-sync-all" || true
+
+omarchy-notification-send -g 󰚰 "Omarchy Update Complete" "System packages and Omarchy configurations are up to date." 2>/dev/null || true
+echo -e "\033[1;32m🎉 Omarchy and system packages updated successfully!\033[0m"
