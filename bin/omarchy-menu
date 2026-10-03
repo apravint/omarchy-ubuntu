@@ -39,7 +39,7 @@ case "$route" in
     ;;
   *)
     # Root menu
-    CHOICE=$(printf "🚀 Applications Launcher\n⚙️ System Settings\n🔊 Sound & Audio Control (Pavucontrol)\n🎨 Theme Switcher (22 Themes)\n🔤 Font Switcher\n🖱️ Cursor Theme Switcher\n🖼️ Next Background Wallpaper\n⌨️ Keybindings Cheat Sheet\n⏱️ Set Reminder\n📸 Screenshot & Screen Recording\n📋 Clipboard History\n📶 Network & Wi-Fi Settings\n󰂯 Bluetooth Devices\n󰃝 Toggle Nightlight (Eye Care)\n⏻ Power Menu (Lock, Sleep, Shutdown)" | wofi --dmenu --prompt "Omarchy Menu:" --lines 15 -i)
+    CHOICE=$(printf "🚀 Applications Launcher\n🖥️ Display & Monitor Settings\n🔊 Sound & Audio Control (Pavucontrol)\n⚙️ System Settings\n🎨 Theme Switcher (22 Themes)\n🔤 Font Switcher\n🖱️ Cursor Theme Switcher\n🖼️ Next Background Wallpaper\n⌨️ Keybindings Cheat Sheet\n⏱️ Set Reminder\n📸 Screenshot & Screen Recording\n📋 Clipboard History\n📶 Network & Wi-Fi Settings\n󰂯 Bluetooth Devices\n󰃝 Toggle Nightlight (Eye Care)\n⏻ Power Menu (Lock, Sleep, Shutdown)" | wofi --dmenu --prompt "Omarchy Menu:" --lines 16 -i)
     
     [[ -z "$CHOICE" ]] && exit 0
     
@@ -47,11 +47,14 @@ case "$route" in
       *"Applications"*)
         wofi --show drun
         ;;
-      *"System Settings"*)
-        gnome-control-center 2>/dev/null || systemsettings
+      *"Display"*)
+        ~/.local/bin/omarchy-displays-gui
         ;;
       *"Sound & Audio"*)
         pavucontrol
+        ;;
+      *"System Settings"*)
+        gnome-control-center 2>/dev/null || systemsettings
         ;;
       *"Theme Switcher"*)
         ~/.local/bin/omarchy-theme-switch
