@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Omarchy Audio Startup & Persistence Service
-# Ensures HDMI audio sink is reliably detected, set as default, and unmuted after boot.
+# Ensures Samsung HDMI audio sink is reliably detected, set as default, and unmuted after boot.
 
 # Wait up to 10 seconds for PipeWire and WirePlumber to settle
 for i in {1..20}; do
@@ -18,7 +18,8 @@ for i in {1..20}; do
     sleep 0.5
 done
 
-# Turn off unused Intel HDMI pro-audio so it doesn't hijack default sink
+# Turn off unused onboard audio cards so they don't hijack default sink
+pactl set-card-profile alsa_card.pci-0000_00_1b.0 off 2>/dev/null || true
 pactl set-card-profile alsa_card.pci-0000_00_03.0 off 2>/dev/null || true
 
 # Activate the HDMI stereo profile on the NVIDIA card
@@ -45,3 +46,8 @@ if [[ -n "$WP_ID" ]]; then
     wpctl set-mute "$WP_ID" 0 2>/dev/null || true
     wpctl set-volume "$WP_ID" 1.0 2>/dev/null || true
 fi
+
+# Reconnect any currently running streams (e.g. Chrome/Spotify) to HDMI
+for input in $(pactl list sink-inputs short 2>/dev/null | awk '{print $1}'); do
+    pactl move-sink-input "$input" "$HDMI_SINK" 2>/dev/null || true
+done
