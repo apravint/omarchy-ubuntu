@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Omarchy OS - Automated Live ISO Builder
+# OmLinux - Automated Live ISO Builder
 # Builds a bootable hybrid UEFI/BIOS Live ISO based on Ubuntu 24.04 LTS (Noble)
 # ==============================================================================
 set -euo pipefail
 
-DISTRO_NAME="Omarchy-OS"
+DISTRO_NAME="OmLinux"
 DISTRO_VERSION="24.04"
 CODENAME="noble"
 ARCH="amd64"
-ROOTFS_DIR="/tmp/omarchy-rootfs"
-ISO_DIR="/tmp/omarchy-iso"
+ROOTFS_DIR="/tmp/omlinux-rootfs"
+ISO_DIR="/tmp/omlinux-iso"
 OUTPUT_DIR="${PWD}/out"
 ISO_NAME="${DISTRO_NAME}-${DISTRO_VERSION}-${ARCH}.iso"
 
@@ -161,11 +161,11 @@ apt install -y \
     btop \
     jq
 
-# Setup default live user: 'omarchy' with passwordless sudo
-useradd -m -s /bin/bash -G sudo,audio,video,plugdev,netdev omarchy
-echo "omarchy:omarchy" | chpasswd
-echo "omarchy ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/omarchy
-chmod 0440 /etc/sudoers.d/omarchy
+# Setup default live user: 'omlinux' with passwordless sudo
+useradd -m -s /bin/bash -G sudo,audio,video,plugdev,netdev omlinux
+echo "omlinux:omlinux" | chpasswd
+echo "omlinux ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/omlinux
+chmod 0440 /etc/sudoers.d/omlinux
 
 # Enable essential systemd services
 systemctl enable NetworkManager.service
@@ -179,11 +179,11 @@ rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 CHROOT_EOF
 
 # ------------------------------------------------------------------------------
-# 5. Inject Omarchy Desktop Configurations & Scripts
+# 5. Inject OmLinux Desktop Configurations & Scripts
 # ------------------------------------------------------------------------------
-log_step "Injecting Omarchy scripts, systemd units, and skeleton user configs..."
+log_step "Injecting OmLinux scripts, systemd units, and skeleton user configs..."
 
-# Copy Omarchy system-wide binaries
+# Copy OmLinux system-wide binaries
 mkdir -p "${ROOTFS_DIR}/usr/local/bin" "${ROOTFS_DIR}/usr/share/wayland-sessions"
 cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/usr/local/bin/"
 chmod +x "${ROOTFS_DIR}/usr/local/bin/"*
@@ -194,28 +194,28 @@ cp -r "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/etc/skel/.config/"
 cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/etc/skel/.local/bin/"
 
 # Also copy into the live user's home directly
-mkdir -p "${ROOTFS_DIR}/home/omarchy/.config" "${ROOTFS_DIR}/home/omarchy/.local/bin"
-cp -r "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/home/omarchy/.config/"
-cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/home/omarchy/.local/bin/"
+mkdir -p "${ROOTFS_DIR}/home/omlinux/.config" "${ROOTFS_DIR}/home/omlinux/.local/bin"
+cp -r "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/home/omlinux/.config/"
+cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/home/omlinux/.local/bin/"
 
 # Copy systemd units
-mkdir -p "${ROOTFS_DIR}/etc/skel/.config/systemd/user" "${ROOTFS_DIR}/home/omarchy/.config/systemd/user"
+mkdir -p "${ROOTFS_DIR}/etc/skel/.config/systemd/user" "${ROOTFS_DIR}/home/omlinux/.config/systemd/user"
 cp -r "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/etc/skel/.config/systemd/user/" 2>/dev/null || true
-cp -r "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/home/omarchy/.config/systemd/user/" 2>/dev/null || true
+cp -r "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/home/omlinux/.config/systemd/user/" 2>/dev/null || true
 
 # Fix permissions
-chroot "${ROOTFS_DIR}" chown -R omarchy:omarchy /home/omarchy
+chroot "${ROOTFS_DIR}" chown -R omlinux:omlinux /home/omlinux
 
 # Copy Wayland session desktop entry
 if [ -f "${REPO_ROOT}/system/omarchy.desktop" ]; then
-    cp "${REPO_ROOT}/system/omarchy.desktop" "${ROOTFS_DIR}/usr/share/wayland-sessions/"
+    cp "${REPO_ROOT}/system/omarchy.desktop" "${ROOTFS_DIR}/usr/share/wayland-sessions/omlinux.desktop"
 fi
 
 # Set custom OS Release Branding
 cat << EOF > "${ROOTFS_DIR}/etc/os-release"
 NAME="${DISTRO_NAME}"
 VERSION="${DISTRO_VERSION} LTS (${CODENAME})"
-ID=omarchy
+ID=omlinux
 ID_LIKE="ubuntu debian"
 PRETTY_NAME="${DISTRO_NAME} ${DISTRO_VERSION} LTS (Noble)"
 VERSION_ID="${DISTRO_VERSION}"
@@ -266,13 +266,13 @@ insmod font
 set menu_color_normal=white/black
 set menu_color_highlight=black/light-cyan
 
-menuentry "🚀 Start Omarchy OS Live (Default)" {
+menuentry "🚀 Start OmLinux Live (Default)" {
     set gfxpayload=keep
     linux /casper/vmlinuz boot=casper quiet splash ---
     initrd /casper/initrd
 }
 
-menuentry "🛡️ Start Omarchy OS Live (Safe Graphics)" {
+menuentry "🛡️ Start OmLinux Live (Safe Graphics)" {
     set gfxpayload=keep
     linux /casper/vmlinuz boot=casper nomodeset quiet splash ---
     initrd /casper/initrd
@@ -297,7 +297,7 @@ EOF
 # ------------------------------------------------------------------------------
 log_step "Generating hybrid UEFI/BIOS bootable ISO image..."
 grub-mkrescue -o "${OUTPUT_DIR}/${ISO_NAME}" "${ISO_DIR}" \
-    -- -volid "OMARCHY_OS"
+    -- -volid "OMLINUX"
 
 # ------------------------------------------------------------------------------
 # 9. Compute Checksums & Finish

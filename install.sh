@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Omarchy for Ubuntu - Automated Installer
-# Experience authentic Omarchy (Hyprland + Themes + Waybar) on Ubuntu
+# OmLinux for Ubuntu - Automated Installer
+# Experience authentic OmLinux (Hyprland + Themes + Waybar) on Ubuntu
 # https://github.com/apravint/omarchy-ubuntu
 # ==============================================================================
 set -e
@@ -15,7 +15,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}======================================================${NC}"
-echo -e "${GREEN}     Omarchy for Ubuntu - Setup & Installation${NC}"
+echo -e "${GREEN}        OmLinux - Setup & Installation${NC}"
 echo -e "${BLUE}======================================================${NC}"
 
 # Check for sudo/root
@@ -85,6 +85,7 @@ if ! grep -q "OMARCHY_PATH" /etc/environment 2>/dev/null; then
 fi
 
 # Install Wayland session
+sudo cp "$REPO_DIR/system/omarchy.desktop" /usr/share/wayland-sessions/omlinux.desktop
 sudo cp "$REPO_DIR/system/omarchy.desktop" /usr/share/wayland-sessions/omarchy.desktop
 
 echo -e "\n${YELLOW}[4/6] Installing user dotfiles & scripts...${NC}"
@@ -169,10 +170,10 @@ fi
 echo -e "\n${BLUE}======================================================${NC}"
 echo -e "${GREEN}🎉 Installation Complete!${NC}"
 echo -e "${BLUE}======================================================${NC}"
-echo -e "To start using Omarchy:"
+echo -e "To start using OmLinux:"
 echo -e "1. Log out of your current session."
-echo -e "2. In the display manager (login screen), select ${GREEN}Omarchy${NC} from the session menu."
-echo -e "3. Log in and enjoy authentic Omarchy tiling!"
+echo -e "2. In the display manager (login screen), select ${GREEN}OmLinux${NC} from the session menu."
+echo -e "3. Log in and enjoy authentic OmLinux tiling!"
 echo -e "\n${YELLOW}Useful Shortcuts:${NC}"
 echo -e "  • ${GREEN}Super + Space${NC}                 : Wofi Application Launcher"
 echo -e "  • ${GREEN}Super + Return${NC}                : Terminal (Alacritty)"

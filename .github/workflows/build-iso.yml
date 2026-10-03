@@ -1,4 +1,4 @@
-name: Build & Release Omarchy OS Live ISO
+name: Build & Release OmLinux Live ISO
 
 on:
   workflow_dispatch:
@@ -58,7 +58,7 @@ jobs:
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Omarchy-OS-Live-ISO
+          name: OmLinux-Live-ISO
           path: |
             out/*.iso
             out/sha256sum.txt
@@ -69,11 +69,11 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.version || github.ref_name }}
-          name: Omarchy OS ${{ github.event.inputs.version || github.ref_name }}
+          name: OmLinux ${{ github.event.inputs.version || github.ref_name }}
           body: |
-            # 🚀 Omarchy OS Live ISO Release
+            # 🚀 OmLinux Live ISO Release
 
-            Welcome to the official release of **Omarchy OS** — an authentic Hyprland + Waybar desktop experience on Ubuntu 24.04 LTS.
+            Welcome to the official release of **OmLinux** — an authentic Hyprland + Waybar desktop operating system on Ubuntu 24.04 LTS.
 
             ### 📦 Download Links
             - **Live ISO Image**: Available in the release assets below.

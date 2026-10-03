@@ -1,4 +1,4 @@
-# Omarchy OS 🌌
+# OmLinux 🌌
 
 [![Build & Release Live ISO](https://github.com/apravint/omarchy-ubuntu/actions/workflows/build-iso.yml/badge.svg)](https://github.com/apravint/omarchy-ubuntu/actions/workflows/build-iso.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/apravint/omarchy-ubuntu?color=blue&logo=github)](https://github.com/apravint/omarchy-ubuntu/releases)
@@ -6,14 +6,14 @@
 [![Platform: Ubuntu 24.04 LTS](https://img.shields.io/badge/Base-Ubuntu%2024.04%20LTS-orange.svg)](https://ubuntu.com)
 [![Compositor: Hyprland](https://img.shields.io/badge/Compositor-Hyprland-blue.svg)](https://hyprland.org)
 
-> **The turnkey Linux operating system and desktop environment powered by Hyprland, Waybar, PipeWire, and Omarchy's complete 22-theme palette suite.**  
+> **The turnkey Linux operating system and desktop environment powered by Hyprland, Waybar, PipeWire, and OmLinux's complete 22-theme palette suite.**  
 > Built on top of rock-solid **Ubuntu 24.04 LTS (Noble)** with out-of-the-box dual-monitor management, persistent systemd daemons, and zero-conflict keybindings.
 
-![Omarchy on Ubuntu Preview](assets/preview.png)
+![OmLinux Preview](assets/preview.png)
 
 ---
 
-## ⚡ Get Omarchy OS
+## ⚡ Get OmLinux
 
 Choose the method that suits your workflow:
 
@@ -21,20 +21,20 @@ Choose the method that suits your workflow:
 Download the standalone, hybrid UEFI/BIOS bootable `.iso` image and flash it to any USB drive.
 
 1. **Download the Latest ISO**:  
-   Head to [**Releases**](https://github.com/apravint/omarchy-ubuntu/releases) and download `Omarchy-OS-24.04-amd64.iso` and `sha256sum.txt`.
+   Head to [**Releases**](https://github.com/apravint/omarchy-ubuntu/releases) and download `OmLinux-24.04-amd64.iso` and `sha256sum.txt`.
 2. **Flash to USB**:  
    Use [BalenaEtcher](https://etcher.balena.io/), [Ventoy](https://www.ventoy.net/), or [Rufus](https://rufus.ie/) to write the image to a flash drive (8GB+ recommended).
 3. **Boot & Test**:  
    Select your USB drive from your PC's boot menu (`F12`, `F11`, or `Esc`).
-   - **Default Live User**: `omarchy`
-   - **Default Password**: `omarchy` *(Passwordless sudo enabled)*
+   - **Default Live User**: `omlinux`
+   - **Default Password**: `omlinux` *(Passwordless sudo enabled)*
 4. **Install**:  
-   Run the desktop installer to install Omarchy OS directly to your SSD or hard drive.
+   Run the desktop installer to install OmLinux directly to your SSD or hard drive.
 
 ---
 
 ### Option 2: One-Line Installer (For Existing Ubuntu Systems)
-Already have Ubuntu 24.04 LTS installed? Transform your existing installation into Omarchy OS in minutes without losing your files or dual-boot setups:
+Already have Ubuntu 24.04 LTS installed? Transform your existing installation into OmLinux in minutes without losing your files or dual-boot setups:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/apravint/omarchy-ubuntu/main/install.sh | bash
@@ -47,7 +47,7 @@ cd omarchy-ubuntu
 ./install.sh
 ```
 
-After installation completes, log out and select **Omarchy** from your display manager session menu.
+After installation completes, log out and select **OmLinux** from your display manager session menu.
 
 ---
 
@@ -65,7 +65,7 @@ sudo bash build/build-iso.sh
 ```
 
 The script will automatically bootstrap Ubuntu 24.04 LTS via `debootstrap`, inject all Hyprland configurations, compile the squashfs root, and produce a bootable image inside the `out/` folder:
-- `out/Omarchy-OS-24.04-amd64.iso`
+- `out/OmLinux-24.04-amd64.iso`
 - `out/sha256sum.txt`
 
 Alternatively, you can trigger cloud builds directly on GitHub under the **Actions** tab with one click!

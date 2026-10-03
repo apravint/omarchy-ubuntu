@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest an idea or new feature for Omarchy OS
+about: Suggest an idea or new feature for OmLinux
 title: '[FEATURE] '
 labels: enhancement
 assignees: apravint
