@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+"""
+Omarchy AI Model Manager GUI (omarchy-models)
+Allows users to download, inspect, and manage local GGUF/Ollama AI models.
+https://github.com/apravint/omarchy-ubuntu
+"""
+
+import sys
+import subprocess
+import json
+
+RECOMMENDED_MODELS = [
+    "qwen2.5:7b (Fast General Purpose & Tool Calling)",
+    "qwen2.5:1.5b (Ultra Lightweight for Laptops)",
+    "deepseek-r1:8b (Chain-of-Thought Reasoning)",
+    "qwen2-vl (Multimodal Vision & Image Analysis)",
+    "nomic-embed-text (Vector Memory Embeddings)",
+    "llama3.1:8b (Meta General Purpose)"
+]
+
+def show_model_menu():
+    wofi_input = "\n".join(RECOMMENDED_MODELS)
+    cmd = ["wofi", "--dmenu", "--prompt", "🤖 Select AI Model to Download/Pull...", "--width", "700", "--height", "300"]
+    try:
+        proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+        selected_option, _ = proc.communicate(input=wofi_input)
+        selected_option = selected_option.strip()
+
+        if not selected_option:
+            sys.exit(0)
+
+        model_tag = selected_option.split()[0]
+        subprocess.run(['notify-send', '-a', 'Omarchy Model Manager', f'⬇️ Pulling {model_tag}...', 'Downloading model weights in background...'])
+
+        # Launch terminal to show download progress
+        subprocess.run(f"alacritty -e ollama pull {model_tag}", shell=True)
+        subprocess.run(['notify-send', '-a', 'Omarchy Model Manager', f'✅ Model {model_tag} Installed!', 'Ready to use with Super + A'])
+    except Exception as e:
+        print(f"Error: {e}")
+
+if __name__ == "__main__":
+    show_model_menu()

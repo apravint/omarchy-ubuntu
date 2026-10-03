@@ -244,6 +244,7 @@ sudo bash build/build-iso.sh
 | `Super + Shift + V` | **🪄 AI Smart Clipboard** | 1-click text summarization, code refactoring, and translation |
 | `Super + Ctrl + W` | **🎨 AI Ambient Wallpaper** | Dynamic ambient wallpaper switching with live theme palette sync |
 | `Super + Ctrl + F` | **📂 AI File Curator** | Auto-organizes Downloads into clean subfolders and renames files |
+| `Super + Alt + M` | **🤖 AI Model Manager GUI** | Interactive Wofi menu to download and manage local GGUF/Ollama models |
 | `Super + Alt + N` | **📈 Live Stock Market News** | Interactive Wofi menu for real-time financial headlines & ticker news |
 | `Super + Space` | **Command Menu** | Unified system launcher and quick action center |
 | `Super + Alt + Space` | **Wofi Application Menu** | Fast searchable desktop app launcher |

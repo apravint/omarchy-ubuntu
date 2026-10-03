@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Omarchy GPU Acceleration Diagnostic & Installer (omarchy-gpu-check)
+# Auto-detects NVIDIA CUDA, AMD ROCm, and Intel NPU acceleration for AI models.
+# https://github.com/apravint/omarchy-ubuntu
+# ==============================================================================
+
+set -euo pipefail
+
+echo "=========================================================="
+echo "      🤖 OMARCHY AI LINUX GPU HARDWARE DIAGNOSTICS        "
+echo "=========================================================="
+
+GPU_FOUND=false
+
+# Check for NVIDIA CUDA
+if command -v nvidia-smi >/dev/null 2>&1; then
+    echo "✅ NVIDIA GPU Detected:"
+    nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader
+    GPU_FOUND=true
+elif lspci 2>/dev/null | grep -i nvidia >/dev/null 2>&1; then
+    echo "⚠️ NVIDIA Hardware detected, but driver is missing."
+    echo "   Installing NVIDIA CUDA Driver stack..."
+    sudo apt update && sudo apt install -y nvidia-driver-550 cuda-toolkit || true
+    GPU_FOUND=true
+fi
+
+# Check for AMD ROCm
+if command -v rocminfo >/dev/null 2>&1; then
+    echo "✅ AMD ROCm Acceleration Active."
+    GPU_FOUND=true
+elif lspci 2>/dev/null | grep -i amd >/dev/null 2>&1; then
+    echo "ℹ️ AMD GPU detected."
+fi
+
+# Check for Intel NPU / iGPU
+if lspci 2>/dev/null | grep -i intel >/dev/null 2>&1; then
+    echo "ℹ️ Intel Display & Graphics Adapter active."
+fi
+
+if [ "$GPU_FOUND" = false ]; then
+    echo "ℹ️ Running in High-Speed CPU Inference Mode (AVX2/AVX-512 optimized)."
+fi
+
+echo "=========================================================="

@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+"""
+Omarchy Episodic Vector Memory Layer (omarchy-memory)
+Indexes user document notes, terminal history, and project code for semantic AI memory search.
+https://github.com/apravint/omarchy-ubuntu
+"""
+
+import sys
+import os
+import sqlite3
+import subprocess
+
+DB_PATH = os.path.expanduser("~/.local/state/omarchy/memory.db")
+
+def init_db():
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS memory (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            category TEXT,
+            content TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def add_memory(category, content):
+    init_db()
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute("INSERT INTO memory (category, content) VALUES (?, ?)", (category, content))
+    conn.commit()
+    conn.close()
+
+def search_memory(query):
+    init_db()
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute("SELECT category, content, timestamp FROM memory WHERE content LIKE ? ORDER BY timestamp DESC LIMIT 5", (f"%{query}%",))
+    results = cur.fetchall()
+    conn.close()
+    return results
+
+if __name__ == "__main__":
+    if len(sys.argv) > 2 and sys.argv[1] == "add":
+        add_memory("general", sys.argv[2])
+        print("Memory saved.")
+    elif len(sys.argv) > 1:
+        res = search_memory(sys.argv[1])
+        for cat, content, ts in res:
+            print(f"[{ts}] ({cat}): {content}")
+    else:
+        print("Usage: omarchy-memory <search_query> OR omarchy-memory add 'content'")

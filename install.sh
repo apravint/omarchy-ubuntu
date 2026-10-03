@@ -212,6 +212,7 @@ echo -e "  • ${GREEN}Super + Ctrl + G${NC}                : 🛡️ AI Securit
 echo -e "  • ${GREEN}Super + Shift + V${NC}               : 🪄 AI Smart Clipboard & Code Assistant"
 echo -e "  • ${GREEN}Super + Ctrl + W${NC}                : 🎨 AI Dynamic Ambient Wallpaper & Theme Palette"
 echo -e "  • ${GREEN}Super + Ctrl + F${NC}                : 📂 AI Downloads & Workspace File Curator"
+echo -e "  • ${GREEN}Super + Alt + M${NC}                 : 🤖 AI Model Manager GUI (Download & Manage GGUF/Ollama Models)"
 echo -e "  • ${GREEN}Super + Alt + N${NC}                 : 📈 Live Stock Market News & Wofi GUI"
 echo -e "  • ${GREEN}Super + Space${NC}                 : Wofi Application Launcher"
 echo -e "  • ${GREEN}Super + Return${NC}                : Terminal (Alacritty)"
