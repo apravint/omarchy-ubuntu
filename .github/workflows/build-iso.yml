@@ -12,6 +12,14 @@ on:
         description: 'Release version tag (e.g. v26.04.0 or v24.04.1)'
         required: true
         default: 'v26.04.0'
+      ubuntu_codename:
+        description: 'Target Ubuntu codename (resolute or noble)'
+        required: true
+        default: 'resolute'
+      distro_version:
+        description: 'Target distro version (26.04 or 24.04)'
+        required: true
+        default: '26.04'
 
 permissions:
   contents: write
@@ -50,8 +58,11 @@ jobs:
             zstd
 
       - name: Run ISO Builder
+        env:
+          UBUNTU_CODENAME: ${{ github.event.inputs.ubuntu_codename || 'resolute' }}
+          DISTRO_VERSION: ${{ github.event.inputs.distro_version || '26.04' }}
         run: |
-          sudo bash build/build-iso.sh
+          sudo -E bash build/build-iso.sh
 
       - name: List Generated Artifacts
         run: |

@@ -5,12 +5,9 @@
 # ==============================================================================
 set -euo pipefail
 
-# Auto-detect latest Ubuntu version from host or environment
-HOST_CODENAME="$(. /etc/os-release 2>/dev/null && echo "${UBUNTU_CODENAME:-}" || echo "")"
-HOST_VERSION="$(. /etc/os-release 2>/dev/null && echo "${VERSION_ID:-}" || echo "")"
-
-CODENAME="${UBUNTU_CODENAME:-${HOST_CODENAME:-noble}}"
-DISTRO_VERSION="${DISTRO_VERSION:-${HOST_VERSION:-24.04}}"
+# Target Ubuntu version: defaults to 26.04 (Resolute) or respects environment override
+CODENAME="${UBUNTU_CODENAME:-resolute}"
+DISTRO_VERSION="${DISTRO_VERSION:-26.04}"
 DISTRO_NAME="omarchy-ubuntu"
 ARCH="amd64"
 ROOTFS_DIR="/tmp/omarchy-rootfs"
@@ -70,6 +67,13 @@ mkdir -p "${ROOTFS_DIR}" "${ISO_DIR}/casper" "${ISO_DIR}/boot/grub" "${OUTPUT_DI
 # 3. Bootstrap Base Ubuntu System
 # ------------------------------------------------------------------------------
 log_step "Bootstrapping minimal Ubuntu ${CODENAME} (${ARCH})..."
+
+# Ensure debootstrap has a suite script for target codename (e.g. resolute -> gutsy)
+if [ -d "/usr/share/debootstrap/scripts" ] && [ ! -e "/usr/share/debootstrap/scripts/${CODENAME}" ]; then
+    log_info "Creating debootstrap suite link for ${CODENAME} -> gutsy..."
+    ln -s gutsy "/usr/share/debootstrap/scripts/${CODENAME}" || true
+fi
+
 debootstrap --arch="${ARCH}" --variant=minbase "${CODENAME}" "${ROOTFS_DIR}" http://archive.ubuntu.com/ubuntu/
 
 # Configure DNS so chroot networking works reliably
