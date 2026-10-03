@@ -152,7 +152,7 @@ apt-get install -y --no-install-recommends \
     os-prober \
     network-manager \
     net-tools \
-    wireless-tools \
+    iw \
     wpasupplicant \
     sudo \
     curl \
