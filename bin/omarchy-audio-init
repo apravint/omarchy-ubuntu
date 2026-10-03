@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Omarchy Audio Startup & Persistence Service
+# Ensures HDMI audio sink is reliably detected, set as default, and unmuted after boot.
+
+# Wait up to 10 seconds for PipeWire and WirePlumber to settle
+for i in {1..20}; do
+    if pactl info >/dev/null 2>&1; then
+        break
+    fi
+    sleep 0.5
+done
+
+# Wait for the HDMI card to appear
+for i in {1..20}; do
+    if pactl list cards short 2>/dev/null | grep -q "pci-0000_01_00.1"; then
+        break
+    fi
+    sleep 0.5
+done
+
+# Turn off unused Intel HDMI pro-audio so it doesn't hijack default sink
+pactl set-card-profile alsa_card.pci-0000_00_03.0 off 2>/dev/null || true
+
+# Activate the HDMI stereo profile on the NVIDIA card
+pactl set-card-profile alsa_card.pci-0000_01_00.1 output:hdmi-stereo 2>/dev/null || true
+
+# Give WirePlumber 1 second to create the sink
+sleep 1
+
+# Find the HDMI sink name
+HDMI_SINK=$(pactl list sinks short 2>/dev/null | awk '$2 ~ /01_00\.1/ {print $2; exit}')
+if [[ -z "$HDMI_SINK" ]]; then
+    HDMI_SINK="alsa_output.pci-0000_01_00.1.hdmi-stereo"
+fi
+
+# Set default sink and unmute at 100% volume
+pactl set-default-sink "$HDMI_SINK" 2>/dev/null || true
+pactl set-sink-mute "$HDMI_SINK" 0 2>/dev/null || true
+pactl set-sink-volume "$HDMI_SINK" 100% 2>/dev/null || true
+
+# Also inform WirePlumber directly
+WP_ID=$(wpctl status 2>/dev/null | awk '/GF119 HDMI Audio Controller/ {for (i=1; i<=NF; i++) if ($i ~ /^[0-9]+$/) {print $i; exit}}')
+if [[ -n "$WP_ID" ]]; then
+    wpctl set-default "$WP_ID" 2>/dev/null || true
+    wpctl set-mute "$WP_ID" 0 2>/dev/null || true
+    wpctl set-volume "$WP_ID" 1.0 2>/dev/null || true
+fi
