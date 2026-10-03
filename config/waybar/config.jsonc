@@ -48,13 +48,13 @@
     "clock": {
         "format": "󰃭 {:%a %b %d  %H:%M}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "on-click-middle": "omarchy menu timezone"
+        "on-click-middle": "~/.local/bin/omarchy-menu-timezone"
     },
 
     "custom/weather": {
         "format": "{}",
         "interval": 900,
-        "exec": "echo \"$(omarchy weather icon 2>/dev/null) $(omarchy weather status 2>/dev/null | cut -d'·' -f2 | xargs)\"",
+        "exec": "echo \"$(omarchy weather icon 2>/dev/null) $(omarchy weather status 2>/dev/null | sed -E 's/ *· *Temp / /; s/ *·.*//')\"",
         "tooltip": true,
         "exec-tooltip": "omarchy weather status 2>/dev/null",
         "on-click": "omarchy-notification-weather"

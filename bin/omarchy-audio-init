@@ -28,6 +28,9 @@ if pactl list sinks short 2>/dev/null | grep -q "$TARGET_SINK"; then
 fi
 
 # Reconnect any currently running streams (e.g. Chrome/Spotify) to the default sink
-for input in $(pactl list sink-inputs short 2>/dev/null | awk '{print $1}'); do
-    pactl move-sink-input "$input" "$TARGET_SINK" 2>/dev/null || true
-done
+ACTIVE_SINK=$(pactl get-default-sink 2>/dev/null)
+if [[ -n "$ACTIVE_SINK" ]]; then
+    for input in $(pactl list sink-inputs short 2>/dev/null | awk '{print $1}'); do
+        pactl move-sink-input "$input" "$ACTIVE_SINK" 2>/dev/null || true
+    done
+fi

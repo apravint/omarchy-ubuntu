@@ -56,6 +56,12 @@ sudo apt install -y \
     curl \
     wlsunset \
     python3 \
+    python3-gi \
+    gir1.2-gtk-3.0 \
+    pavucontrol \
+    blueman \
+    network-manager-gnome \
+    polkit-kde-agent-1 \
     git \
     socat
 
@@ -188,12 +194,13 @@ echo -e "  • ${GREEN}Super + K${NC}                     : Keybindings Cheat Sh
 echo -e "  • ${GREEN}Super + V${NC}                     : Clipboard History Manager"
 echo -e "  • ${GREEN}Super + Ctrl + Shift + Space${NC}  : Omarchy 22-Theme Switcher"
 echo -e "  • ${GREEN}Super + Ctrl + Space${NC}          : Next Background in Active Theme"
-echo -e "  • ${GREEN}Super + ` (Grave)${NC} / ${GREEN}Super + S${NC} : Toggle Scratchpad"
+echo -e "  • ${GREEN}Super + \` (Grave)${NC} / ${GREEN}Super + S${NC} : Toggle Scratchpad"
 echo -e "  • ${GREEN}Super + Ctrl + T${NC}              : Activity Monitor (btop)"
 echo -e "  • ${GREEN}Super + Escape${NC}                : Power Menu (Lock, Sleep, Logout, Shutdown)"
 echo -e "  • ${GREEN}Super + Shift + S${NC}             : Screenshot Snipping Tool"
 echo -e "  • ${GREEN}Super + Ctrl + Print${NC}          : OCR Text Extraction to Clipboard"
 echo -e "  • ${GREEN}Super + Ctrl + R${NC}              : Set Reminder (Timer + Message)"
 echo -e "  • ${GREEN}Super + Ctrl + Alt + T / W / B${NC}: Date/Time, Weather & Battery Notices"
-echo -e "  • ${GREEN}Super + Ctrl + D${NC}              : Instant Dictionary Definition Lookup"
+echo -e "  • ${GREEN}Super + Ctrl + D${NC}              : Display & Monitor Settings GUI"
+echo -e "  • ${GREEN}Super + Alt + D${NC}               : Instant Dictionary Definition Lookup"
 

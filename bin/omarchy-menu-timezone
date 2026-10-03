@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Omarchy Timezone Selector for Ubuntu / Waybar
+set -euo pipefail
+
+CURRENT_TZ=$(timedatectl show --property=Timezone --value 2>/dev/null || echo "Unknown")
+
+SELECTED=$(timedatectl list-timezones | wofi --dmenu --prompt "Timezone (Current: $CURRENT_TZ):" --width 450 --height 500 -i) || exit 0
+
+[[ -z "${SELECTED:-}" ]] && exit 0
+
+if sudo -n true 2>/dev/null; then
+    sudo timedatectl set-timezone "$SELECTED"
+else
+    pkexec timedatectl set-timezone "$SELECTED" || timedatectl set-timezone "$SELECTED"
+fi
+
+# Reload Waybar clock module cleanly
+pkill -SIGUSR2 waybar 2>/dev/null || true
+
+if command -v notify-send >/dev/null 2>&1; then
+    notify-send -a "Omarchy" "Timezone Changed" "Active timezone set to: $SELECTED" -i preferences-system-time 2>/dev/null || true
+fi

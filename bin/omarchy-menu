@@ -33,6 +33,9 @@ case "$route" in
   cursor)
     exec ~/.local/bin/omarchy-cursor-switch
     ;;
+  timezone*|setup.timezone)
+    exec ~/.local/bin/omarchy-menu-timezone
+    ;;
   close)
     pkill -x wofi 2>/dev/null || true
     exit 0

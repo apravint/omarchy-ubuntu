@@ -2,7 +2,7 @@
 Name=Theme Switcher
 GenericName=Theme Selector
 Comment=Browse and apply Omarchy desktop themes with visual previews
-Exec=/home/apravint/.local/bin/omarchy-theme-switch
+Exec=omarchy-theme-switch
 Icon=preferences-desktop-theme
 Terminal=false
 Type=Application

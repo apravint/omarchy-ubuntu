@@ -2,7 +2,7 @@
 Name=Display Settings
 GenericName=Display Configuration
 Comment=Configure monitors, resolutions, refresh rates, and scaling in Omarchy / Hyprland
-Exec=/home/apravint/.local/bin/omarchy-displays-gui
+Exec=omarchy-displays-gui
 Icon=video-display
 Terminal=false
 Type=Application

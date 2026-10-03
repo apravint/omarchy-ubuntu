@@ -188,9 +188,25 @@ apt-get install -y \
     wl-clipboard \
     cliphist \
     playerctl \
+    wf-recorder \
+    hyprpicker \
+    tesseract-ocr \
+    wlsunset \
+    network-manager-gnome \
+    polkit-kde-agent-1 \
+    python3-gi \
+    gir1.2-gtk-3.0 \
+    ripgrep \
+    fd-find \
+    tmux \
+    fzf \
+    zoxide \
+    eza \
+    bat \
+    gawk \
+    socat \
     fonts-jetbrains-mono \
     fonts-font-awesome \
-    pavucontrol \
     btop \
     jq || true
 
