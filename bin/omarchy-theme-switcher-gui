@@ -1,0 +1,392 @@
+#!/usr/bin/env python3
+"""
+Omarchy Visual Theme Switcher with Previews
+Native Wayland/Hyprland card grid theme selector for Omarchy.
+"""
+
+import os
+import subprocess
+import sys
+import gi
+
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
+
+THEMES_DIRS = [
+    os.path.expanduser('~/.config/omarchy/themes'),
+    '/usr/share/omarchy/themes'
+]
+
+STATE_FILE = os.path.expanduser('~/.local/state/omarchy/current/theme.name')
+CACHE_DIR = os.path.expanduser('~/.cache/omarchy/theme-previews')
+
+
+def get_current_theme():
+    if os.path.exists(STATE_FILE):
+        try:
+            with open(STATE_FILE, 'r', encoding='utf-8') as f:
+                return f.read().strip()
+        except Exception:
+            pass
+    return "catppuccin"
+
+
+def find_theme_preview(theme_path):
+    # Check for direct preview files
+    for name in ['preview.png', 'preview.jpg', 'preview.jpeg', 'preview.webp']:
+        p = os.path.join(theme_path, name)
+        if os.path.isfile(p):
+            return p
+    # Check in backgrounds/
+    bg_dir = os.path.join(theme_path, 'backgrounds')
+    if os.path.isdir(bg_dir):
+        for f in sorted(os.listdir(bg_dir)):
+            if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp')):
+                return os.path.join(bg_dir, f)
+    return None
+
+
+def get_all_themes():
+    themes = {}
+    for base_dir in THEMES_DIRS:
+        if not os.path.isdir(base_dir):
+            continue
+        for entry in sorted(os.listdir(base_dir)):
+            full_path = os.path.join(base_dir, entry)
+            if os.path.isdir(full_path) and entry not in themes:
+                preview = find_theme_preview(full_path)
+                themes[entry] = {
+                    'name': entry,
+                    'path': full_path,
+                    'preview': preview
+                }
+    return list(themes.values())
+
+
+class ThemeCard(Gtk.FlowBoxChild):
+    def __init__(self, theme_data, is_active=False):
+        super().__init__()
+        self.theme_name = theme_data['name']
+        self.preview_path = theme_data['preview']
+        self.is_active = is_active
+
+        # Card container
+        self.card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.card.get_style_context().add_class("theme-card")
+        if self.is_active:
+            self.card.get_style_context().add_class("active-card")
+        self.add(self.card)
+
+        # Image thumbnail
+        self.img_widget = Gtk.Image()
+        self.load_thumbnail()
+        self.card.pack_start(self.img_widget, False, False, 0)
+
+        # Bottom label row
+        label_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        
+        display_name = self.theme_name.replace('-', ' ').title()
+        self.title_label = Gtk.Label(label=display_name)
+        self.title_label.get_style_context().add_class("theme-title")
+        self.title_label.set_alignment(0, 0.5)
+        label_box.pack_start(self.title_label, True, True, 4)
+
+        self.badge = Gtk.Label()
+        self.badge.get_style_context().add_class("active-badge")
+        if self.is_active:
+            self.badge.set_text("ACTIVE")
+            self.badge.show()
+        else:
+            self.badge.set_text("")
+            self.badge.hide()
+        label_box.pack_end(self.badge, False, False, 4)
+
+        self.card.pack_start(label_box, False, False, 2)
+
+    def load_thumbnail(self):
+        w, h = 280, 158
+        if self.preview_path and os.path.isfile(self.preview_path):
+            try:
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                    self.preview_path, w, h, False
+                )
+                self.img_widget.set_from_pixbuf(pixbuf)
+                return
+            except Exception as e:
+                print(f"Error loading preview for {self.theme_name}: {e}", file=sys.stderr)
+
+        # Placeholder if no preview found
+        pixbuf = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, False, 8, w, h)
+        pixbuf.fill(0x313244ff)
+        self.img_widget.set_from_pixbuf(pixbuf)
+
+    def set_active_state(self, active):
+        self.is_active = active
+        if active:
+            self.card.get_style_context().add_class("active-card")
+            self.badge.set_text("ACTIVE")
+            self.badge.show()
+        else:
+            self.card.get_style_context().remove_class("active-card")
+            self.badge.set_text("")
+            self.badge.hide()
+
+
+class ThemeSwitcherApp(Gtk.Window):
+    def __init__(self):
+        super().__init__(title="Omarchy Theme Switcher")
+        self.set_wmclass("omarchy-theme-switcher-gui", "omarchy-theme-switcher-gui")
+        self.set_default_size(980, 680)
+        self.set_position(Gtk.WindowPosition.CENTER)
+        self.set_border_width(16)
+
+        # Dark theme styling matching Catppuccin / Omarchy
+        css_provider = Gtk.CssProvider()
+        css_data = """
+        window {
+            background-color: #1e1e2e;
+            color: #cdd6f4;
+        }
+        .header-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #89b4fa;
+        }
+        .header-subtitle {
+            font-size: 13px;
+            color: #a6adc8;
+        }
+        search-entry, entry {
+            background-color: #313244;
+            color: #cdd6f4;
+            border: 1px solid #45475a;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+        entry:focus {
+            border-color: #89b4fa;
+        }
+        flowbox {
+            background-color: transparent;
+        }
+        flowboxchild {
+            padding: 6px;
+            background-color: transparent;
+        }
+        .theme-card {
+            background-color: #181825;
+            border: 2px solid #313244;
+            border-radius: 12px;
+            padding: 8px;
+            transition: all 150ms ease;
+        }
+        .theme-card:hover {
+            border-color: #89b4fa;
+            background-color: #1e1e2e;
+        }
+        .active-card {
+            border-color: #a6e3a1;
+            background-color: #1e2030;
+        }
+        .theme-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #cdd6f4;
+        }
+        .active-badge {
+            background-color: #a6e3a1;
+            color: #11111b;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+        button.suggested-action {
+            background-color: #89b4fa;
+            color: #11111b;
+            font-weight: 800;
+            border-radius: 8px;
+            padding: 10px 24px;
+            font-size: 14px;
+        }
+        button.suggested-action:hover {
+            background-color: #b4befe;
+        }
+        button.cancel-btn {
+            background-color: #313244;
+            color: #cdd6f4;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        button.cancel-btn:hover {
+            background-color: #45475a;
+        }
+        """
+        css_provider.load_from_data(css_data.encode('utf-8'))
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(),
+            css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+
+        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
+        self.add(main_box)
+
+        # Top Header Bar
+        top_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        
+        title_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        title_label = Gtk.Label(label="🎨 Omarchy Theme Switcher")
+        title_label.get_style_context().add_class("header-title")
+        title_label.set_alignment(0, 0.5)
+        title_box.pack_start(title_label, False, False, 0)
+
+        self.current_theme = get_current_theme()
+        self.sub_label = Gtk.Label(label=f"Active theme: {self.current_theme.replace('-', ' ').title()}")
+        self.sub_label.get_style_context().add_class("header-subtitle")
+        self.sub_label.set_alignment(0, 0.5)
+        title_box.pack_start(self.sub_label, False, False, 0)
+        top_box.pack_start(title_box, False, False, 0)
+
+        # Search Bar
+        self.search_entry = Gtk.SearchEntry()
+        self.search_entry.set_placeholder_text("🔍 Search 22 themes...")
+        self.search_entry.set_width_chars(25)
+        self.search_entry.connect("search-changed", self.on_search_changed)
+        top_box.pack_end(self.search_entry, False, False, 0)
+        main_box.pack_start(top_box, False, False, 0)
+
+        # Scrollable Area for Grid
+        scrolled = Gtk.ScrolledWindow()
+        scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        
+        self.flowbox = Gtk.FlowBox()
+        self.flowbox.set_valign(Gtk.Align.START)
+        self.flowbox.set_max_children_per_line(3)
+        self.flowbox.set_min_children_per_line(2)
+        self.flowbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
+        self.flowbox.set_homogeneous(True)
+        self.flowbox.set_filter_func(self.filter_themes)
+        self.flowbox.connect("child-activated", self.on_child_activated)
+        self.flowbox.connect("selected-children-changed", self.on_selection_changed)
+
+        scrolled.add(self.flowbox)
+        main_box.pack_start(scrolled, True, True, 0)
+
+        # Bottom Bar
+        bottom_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        self.info_label = Gtk.Label(label="Select a theme and click Apply (or double-click)")
+        self.info_label.set_alignment(0, 0.5)
+        bottom_box.pack_start(self.info_label, True, True, 0)
+
+        close_btn = Gtk.Button(label="Close (Esc)")
+        close_btn.get_style_context().add_class("cancel-btn")
+        close_btn.connect("clicked", lambda b: self.close())
+        bottom_box.pack_end(close_btn, False, False, 0)
+
+        self.apply_btn = Gtk.Button(label="⚡ Apply Theme")
+        self.apply_btn.get_style_context().add_class("suggested-action")
+        self.apply_btn.connect("clicked", self.on_apply_clicked)
+        bottom_box.pack_end(self.apply_btn, False, False, 0)
+
+        main_box.pack_start(bottom_box, False, False, 0)
+
+        # Keybindings: Enter to apply, Escape to close
+        self.connect("key-press-event", self.on_key_press)
+
+        # Load Themes
+        self.cards = {}
+        self.selected_theme_name = self.current_theme
+        self.load_themes()
+
+    def load_themes(self):
+        themes = get_all_themes()
+        selected_child = None
+
+        for t in themes:
+            is_active = (t['name'] == self.current_theme)
+            card = ThemeCard(t, is_active=is_active)
+            self.cards[t['name']] = card
+            self.flowbox.add(card)
+            if is_active:
+                selected_child = card
+
+        self.flowbox.show_all()
+        if selected_child:
+            self.flowbox.select_child(selected_child)
+
+    def filter_themes(self, child):
+        query = self.search_entry.get_text().strip().lower()
+        if not query:
+            return True
+        return query in child.theme_name.lower()
+
+    def on_search_changed(self, entry):
+        self.flowbox.invalidate_filter()
+
+    def on_selection_changed(self, flowbox):
+        selected = flowbox.get_selected_children()
+        if selected:
+            card = selected[0]
+            self.selected_theme_name = card.theme_name
+            disp_name = card.theme_name.replace('-', ' ').title()
+            self.info_label.set_text(f"Selected: {disp_name}  (Press Enter or click Apply)")
+
+    def on_child_activated(self, flowbox, child):
+        self.selected_theme_name = child.theme_name
+        self.apply_theme(self.selected_theme_name)
+
+    def on_apply_clicked(self, button):
+        if self.selected_theme_name:
+            self.apply_theme(self.selected_theme_name)
+
+    def apply_theme(self, theme_name):
+        self.info_label.set_text(f"⏳ Applying {theme_name.replace('-', ' ').title()}...")
+        # Force UI update
+        while Gtk.events_pending():
+            Gtk.main_iteration()
+
+        # Execute omarchy theme set
+        subprocess.run(['omarchy', 'theme', 'set', theme_name], check=False)
+
+        # Run desktop sync
+        sync_script = os.path.expanduser('~/.local/bin/omarchy-theme-sync-all')
+        if os.path.isfile(sync_script) and os.access(sync_script, os.X_OK):
+            subprocess.run([sync_script], check=False)
+
+        # Update card active badges
+        for name, card in self.cards.items():
+            card.set_active_state(name == theme_name)
+
+        self.current_theme = theme_name
+        self.sub_label.set_text(f"Active theme: {theme_name.replace('-', ' ').title()}")
+        self.info_label.set_text(f"✅ Applied {theme_name.replace('-', ' ').title()} successfully!")
+
+        subprocess.run([
+            'omarchy-osd',
+            '-i', 'preferences-desktop-theme',
+            '-m', f"Theme: {theme_name.replace('-', ' ').title()}"
+        ], check=False)
+
+    def on_key_press(self, widget, event):
+        if event.keyval == Gdk.KEY_Escape:
+            self.close()
+            return True
+        elif event.keyval in (Gdk.KEY_Return, Gdk.KEY_KP_Enter):
+            if self.selected_theme_name:
+                self.apply_theme(self.selected_theme_name)
+                return True
+        return False
+
+
+def main():
+    app = ThemeSwitcherApp()
+    app.connect("destroy", Gtk.main_quit)
+    app.show_all()
+    Gtk.main()
+
+
+if __name__ == '__main__':
+    main()
