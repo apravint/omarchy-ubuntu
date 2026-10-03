@@ -72,6 +72,11 @@ mkdir -p "${ROOTFS_DIR}" "${ISO_DIR}/casper" "${ISO_DIR}/boot/grub" "${OUTPUT_DI
 log_step "Bootstrapping minimal Ubuntu ${CODENAME} (${ARCH})..."
 debootstrap --arch="${ARCH}" --variant=minbase "${CODENAME}" "${ROOTFS_DIR}" http://archive.ubuntu.com/ubuntu/
 
+# Configure DNS so chroot networking works reliably
+mkdir -p "${ROOTFS_DIR}/etc"
+echo "nameserver 1.1.1.1" > "${ROOTFS_DIR}/etc/resolv.conf"
+echo "nameserver 8.8.8.8" >> "${ROOTFS_DIR}/etc/resolv.conf"
+
 # Mount virtual filesystems for chroot
 mount --bind /dev "${ROOTFS_DIR}/dev"
 mount --bind /dev/pts "${ROOTFS_DIR}/dev/pts"
@@ -109,15 +114,35 @@ cat << EOF > "${ROOTFS_DIR}/etc/hosts"
 EOF
 
 # Install packages inside chroot
-chroot "${ROOTFS_DIR}" /bin/bash << 'CHROOT_EOF'
+chroot "${ROOTFS_DIR}" /bin/bash -s "${CODENAME}" "${DISTRO_VERSION}" << 'CHROOT_EOF'
+set -euo pipefail
+CODENAME="$1"
+DISTRO_VERSION="$2"
 export DEBIAN_FRONTEND=noninteractive
-apt update -y
+
+apt-get update -y
+
+# Essential repository and certificate tools
+apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    gnupg \
+    software-properties-common
+
+# If Hyprland is not available in universe (Ubuntu 24.04 noble), add cppiber PPA
+if ! apt-cache show hyprland >/dev/null 2>&1; then
+    echo "Hyprland not found in base repositories. Adding cppiber PPA for ${CODENAME}..."
+    mkdir -p /etc/apt/keyrings
+    curl -fsSL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xA54D23B62FF3FCC76EFF71E8FDBAAA1CF0CCF48E" | gpg --dearmor -o /etc/apt/keyrings/cppiber-hyprland.gpg 2>/dev/null || true
+    echo "deb [signed-by=/etc/apt/keyrings/cppiber-hyprland.gpg] https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu ${CODENAME} main" > /etc/apt/sources.list.d/cppiber-hyprland.list
+    apt-get update -y || true
+fi
 
 # Kernel & Live Boot Essentials
-apt install -y --no-install-recommends \
+apt-get install -y --no-install-recommends \
     linux-generic \
+    initramfs-tools \
     casper \
-    lupin-casper \
     discover \
     laptop-detect \
     os-prober \
@@ -130,12 +155,10 @@ apt install -y --no-install-recommends \
     git \
     wget \
     nano \
-    vim \
-    ca-certificates \
-    software-properties-common
+    vim
 
 # Audio, Bluetooth & Display Server
-apt install -y --no-install-recommends \
+apt-get install -y --no-install-recommends \
     pipewire \
     wireplumber \
     pipewire-pulse \
@@ -146,20 +169,10 @@ apt install -y --no-install-recommends \
     pavucontrol \
     sddm
 
-# Enable Universe / Multiverse
-add-apt-repository -y universe || true
-add-apt-repository -y multiverse || true
-apt update -y
-
-# On Ubuntu 24.04 (noble), Hyprland is available via ppa:cpp-core/hyprland or universe in 24.10+/26.04+
-if ! apt-cache show hyprland >/dev/null 2>&1; then
-    add-apt-repository -y ppa:cpp-core/hyprland || true
-    apt update -y || true
-fi
-
 # Hyprland & Wayland Desktop Stack
-apt install -y \
+apt-get install -y \
     hyprland \
+    xdg-desktop-portal-hyprland \
     waybar \
     swaybg \
     swaylock \
@@ -177,6 +190,13 @@ apt install -y \
     btop \
     jq || true
 
+# Install official Omarchy core themes & suite into /usr/share/omarchy
+if [ ! -d "/usr/share/omarchy" ]; then
+    git clone --depth 1 --branch quattro https://github.com/omacom/omarchy.git /usr/share/omarchy || true
+fi
+git config --system --add safe.directory /usr/share/omarchy || true
+ln -sf /usr/share/omarchy/bin/* /usr/local/bin/ || true
+
 # Setup default live user: 'omarchy' with passwordless sudo
 mkdir -p /etc/sudoers.d
 groupadd -f sudo
@@ -188,14 +208,22 @@ echo "omarchy:omarchy" | chpasswd || true
 echo "omarchy ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/omarchy
 chmod 0440 /etc/sudoers.d/omarchy
 
+# Autologin into Omarchy Hyprland session via SDDM
+mkdir -p /etc/sddm.conf.d
+cat << 'AUTOLOGIN_EOF' > /etc/sddm.conf.d/autologin.conf
+[Autologin]
+User=omarchy
+Session=omarchy.desktop
+AUTOLOGIN_EOF
+
 # Enable essential systemd services
 systemctl enable NetworkManager.service 2>/dev/null || true
 systemctl enable bluetooth.service 2>/dev/null || true
 systemctl enable sddm.service 2>/dev/null || true
 
 # Clean apt cache
-apt autoremove -y
-apt clean
+apt-get autoremove -y
+apt-get clean
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 CHROOT_EOF
 
@@ -204,20 +232,34 @@ CHROOT_EOF
 # ------------------------------------------------------------------------------
 log_step "Injecting Omarchy scripts, systemd units, and skeleton user configs..."
 
-# Copy Omarchy system-wide binaries
-mkdir -p "${ROOTFS_DIR}/usr/local/bin" "${ROOTFS_DIR}/usr/share/wayland-sessions"
+# Copy Omarchy system-wide binaries & profile
+mkdir -p "${ROOTFS_DIR}/usr/local/bin" "${ROOTFS_DIR}/usr/share/wayland-sessions" "${ROOTFS_DIR}/etc/profile.d"
 cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/usr/local/bin/"
 chmod +x "${ROOTFS_DIR}/usr/local/bin/"*
 
+if [ -f "${REPO_ROOT}/system/omarchy.conf" ]; then
+    cp "${REPO_ROOT}/system/omarchy.conf" "${ROOTFS_DIR}/etc/omarchy.conf"
+fi
+if [ -f "${REPO_ROOT}/system/omarchy.sh" ]; then
+    cp "${REPO_ROOT}/system/omarchy.sh" "${ROOTFS_DIR}/etc/profile.d/omarchy.sh"
+fi
+if ! grep -q "OMARCHY_PATH" "${ROOTFS_DIR}/etc/environment" 2>/dev/null; then
+    echo "OMARCHY_PATH=/usr/share/omarchy" >> "${ROOTFS_DIR}/etc/environment"
+fi
+
 # Copy skeleton configs so every user (and live user) gets them
-mkdir -p "${ROOTFS_DIR}/etc/skel/.config" "${ROOTFS_DIR}/etc/skel/.local/bin"
+mkdir -p "${ROOTFS_DIR}/etc/skel/.config" "${ROOTFS_DIR}/etc/skel/.local/bin" "${ROOTFS_DIR}/etc/skel/.local/share/applications" "${ROOTFS_DIR}/etc/skel/.local/share/icons/hicolor/128x128/apps"
 cp -r "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/etc/skel/.config/"
 cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/etc/skel/.local/bin/"
+cp "${REPO_ROOT}/applications/"*.desktop "${ROOTFS_DIR}/etc/skel/.local/share/applications/" 2>/dev/null || true
+cp "${REPO_ROOT}/applications/icons/"*.png "${ROOTFS_DIR}/etc/skel/.local/share/icons/hicolor/128x128/apps/" 2>/dev/null || true
 
 # Also copy into the live user's home directly
-mkdir -p "${ROOTFS_DIR}/home/omarchy/.config" "${ROOTFS_DIR}/home/omarchy/.local/bin"
+mkdir -p "${ROOTFS_DIR}/home/omarchy/.config" "${ROOTFS_DIR}/home/omarchy/.local/bin" "${ROOTFS_DIR}/home/omarchy/.local/share/applications" "${ROOTFS_DIR}/home/omarchy/.local/share/icons/hicolor/128x128/apps"
 cp -r "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/home/omarchy/.config/"
 cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/home/omarchy/.local/bin/"
+cp "${REPO_ROOT}/applications/"*.desktop "${ROOTFS_DIR}/home/omarchy/.local/share/applications/" 2>/dev/null || true
+cp "${REPO_ROOT}/applications/icons/"*.png "${ROOTFS_DIR}/home/omarchy/.local/share/icons/hicolor/128x128/apps/" 2>/dev/null || true
 
 # Copy systemd units
 mkdir -p "${ROOTFS_DIR}/etc/skel/.config/systemd/user" "${ROOTFS_DIR}/home/omarchy/.config/systemd/user"
@@ -249,8 +291,19 @@ EOF
 
 # Copy kernel & initrd into casper directory for ISO booting
 log_step "Extracting kernel and initrd for live boot..."
-cp "${ROOTFS_DIR}"/boot/vmlinuz-* "${ISO_DIR}/casper/vmlinuz"
-cp "${ROOTFS_DIR}"/boot/initrd.img-* "${ISO_DIR}/casper/initrd"
+KERNEL_FILE=$(ls -1 "${ROOTFS_DIR}"/boot/vmlinuz* 2>/dev/null | head -n 1)
+INITRD_FILE=$(ls -1 "${ROOTFS_DIR}"/boot/initrd.img* 2>/dev/null | head -n 1)
+
+if [ -z "${KERNEL_FILE}" ] || [ -z "${INITRD_FILE}" ]; then
+    log_err "Failed to locate kernel or initrd in ${ROOTFS_DIR}/boot"
+    ls -la "${ROOTFS_DIR}/boot" || true
+    exit 1
+fi
+
+log_info "Using kernel: ${KERNEL_FILE}"
+log_info "Using initrd: ${INITRD_FILE}"
+cp -L "${KERNEL_FILE}" "${ISO_DIR}/casper/vmlinuz"
+cp -L "${INITRD_FILE}" "${ISO_DIR}/casper/initrd"
 
 # ------------------------------------------------------------------------------
 # 6. Compress Root Filesystem into SquashFS
@@ -263,10 +316,10 @@ umount -lf "${ROOTFS_DIR}/proc" 2>/dev/null || true
 umount -lf "${ROOTFS_DIR}/sys" 2>/dev/null || true
 
 mksquashfs "${ROOTFS_DIR}" "${ISO_DIR}/casper/filesystem.squashfs" \
-    -comp zstd -Xcompression-level 15 \
-    -e boot
+    -comp zstd -Xcompression-level 15
 
-# Generate filesystem size metadata for casper
+# Generate filesystem manifest and size metadata for casper
+chroot "${ROOTFS_DIR}" dpkg-query -W --showformat='${Package} ${Version}\n' > "${ISO_DIR}/casper/filesystem.manifest" 2>/dev/null || true
 printf $(du -sx --block-size=1 "${ROOTFS_DIR}" | cut -f1) > "${ISO_DIR}/casper/filesystem.size"
 
 # ------------------------------------------------------------------------------
