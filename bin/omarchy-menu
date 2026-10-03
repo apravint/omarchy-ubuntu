@@ -39,7 +39,7 @@ case "$route" in
     ;;
   *)
     # Root menu
-    CHOICE=$(printf "🚀 Applications Launcher\n🖥️ Display & Monitor Settings\n🔊 Sound & Audio Control (Pavucontrol)\n⚙️ System Settings\n🎨 Theme Switcher (22 Themes)\n🔤 Font Switcher\n🖱️ Cursor Theme Switcher\n🖼️ Next Background Wallpaper\n⌨️ Keybindings Cheat Sheet\n⏱️ Set Reminder\n📸 Screenshot & Screen Recording\n📋 Clipboard History\n📶 Network & Wi-Fi Settings\n󰂯 Bluetooth Devices\n󰃝 Toggle Nightlight (Eye Care)\n⏻ Power Menu (Lock, Sleep, Shutdown)" | wofi --dmenu --prompt "Omarchy Menu:" --lines 16 -i)
+    CHOICE=$(printf "🚀 Applications Launcher\n🖥️ Display and Monitor Settings\n🔊 Sound and Audio Control (Pavucontrol)\n⚙️ System Settings\n🎨 Theme Switcher (22 Themes)\n🔤 Font Switcher\n🖱️ Cursor Theme Switcher\n🖼️ Next Background Wallpaper\n⌨️ Keybindings Cheat Sheet\n⏱️ Set Reminder\n📸 Screenshot and Screen Recording\n📋 Clipboard History\n📶 Network and Wi-Fi Settings\n󰂯 Bluetooth Devices\n󰃝 Toggle Nightlight (Eye Care)\n⏻ Power Menu (Lock, Sleep, Shutdown)" | wofi --dmenu --prompt "Omarchy Menu:" --lines 16 -i)
     
     [[ -z "$CHOICE" ]] && exit 0
     
@@ -50,7 +50,7 @@ case "$route" in
       *"Display"*)
         ~/.local/bin/omarchy-displays-gui
         ;;
-      *"Sound & Audio"*)
+      *"Sound"*|*"Audio"*)
         pavucontrol
         ;;
       *"System Settings"*)
