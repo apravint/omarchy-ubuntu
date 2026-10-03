@@ -1,135 +1,164 @@
-# OmLinux 🌌
+# OmLinux OS 🌌
 
 [![Build & Release Live ISO](https://github.com/apravint/omarchy-ubuntu/actions/workflows/build-iso.yml/badge.svg)](https://github.com/apravint/omarchy-ubuntu/actions/workflows/build-iso.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/apravint/omarchy-ubuntu?color=blue&logo=github)](https://github.com/apravint/omarchy-ubuntu/releases)
+[![Type: Operating System](https://img.shields.io/badge/Type-Linux%20Operating%20System-blue.svg)](#-why-omlinux-is-a-true-operating-system-not-a-customization)
+[![Base: Ubuntu LTS](https://img.shields.io/badge/Base-Ubuntu%20LTS-orange.svg)](https://ubuntu.com)
+[![Compositor: Hyprland](https://img.shields.io/badge/Compositor-Hyprland%20Wayland-brightgreen.svg)](https://hyprland.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Platform: Ubuntu 24.04 LTS](https://img.shields.io/badge/Base-Ubuntu%2024.04%20LTS-orange.svg)](https://ubuntu.com)
-[![Compositor: Hyprland](https://img.shields.io/badge/Compositor-Hyprland-blue.svg)](https://hyprland.org)
 
-> **The turnkey Linux operating system and desktop environment powered by Hyprland, Waybar, PipeWire, and OmLinux's complete 22-theme palette suite.**  
-> Built on top of rock-solid **Ubuntu 24.04 LTS (Noble)** with out-of-the-box dual-monitor management, persistent systemd daemons, and zero-conflict keybindings.
+> **A standalone, turnkey Linux Operating System distribution powered by the Hyprland Wayland compositor, native dual-display management, persistent systemd daemons, and PipeWire audio architecture.**  
+> Built on top of the rock-solid **Ubuntu LTS** base, ready to boot live or install directly onto bare-metal hardware.
 
 ![OmLinux Preview](assets/preview.png)
 
 ---
 
-## ⚡ Get OmLinux
-
-Choose the method that suits your workflow:
-
-### Option 1: Bootable Live ISO (Recommended for New Installations)
-Download the standalone, hybrid UEFI/BIOS bootable `.iso` image and flash it to any USB drive.
-
-1. **Download the Latest ISO**:  
-   Head to [**Releases**](https://github.com/apravint/omarchy-ubuntu/releases) and download `OmLinux-24.04-amd64.iso` and `sha256sum.txt`.
-2. **Flash to USB**:  
-   Use [BalenaEtcher](https://etcher.balena.io/), [Ventoy](https://www.ventoy.net/), or [Rufus](https://rufus.ie/) to write the image to a flash drive (8GB+ recommended).
-3. **Boot & Test**:  
-   Select your USB drive from your PC's boot menu (`F12`, `F11`, or `Esc`).
-   - **Default Live User**: `omlinux`
-   - **Default Password**: `omlinux` *(Passwordless sudo enabled)*
-4. **Install**:  
-   Run the desktop installer to install OmLinux directly to your SSD or hard drive.
+> [!IMPORTANT]
+> ### 🛡️ A Full Operating System &mdash; Not a Theme, Skin, or Dotfiles Customization
+> **OmLinux is a complete, standalone Linux distribution.** It is **not** a cosmetic skin, desktop theme, or collection of shell scripts.
+>
+> * **Bootable on Bare Metal**: Ships as a hybrid **UEFI + BIOS Live ISO image** (`OmLinux-26.04-amd64.iso`) that boots directly from a USB flash drive or virtual machine without requiring an existing operating system.
+> * **Independent System Architecture**: Includes its own Linux kernel, systemd service architecture, hardware drivers, user-space skeleton (`/etc/skel/`), and dedicated OS identification (`/etc/os-release` ID: `omlinux`).
+> * **Kernel-Level Hardware Handling**: Features automated multi-monitor collision protection, GPU-aware display geometry allocation, and non-blocking PipeWire/ALSA audio arbitration.
+> * **Native Daemon Infrastructure**: Core services (status bar, wallpapers, audio init) run as managed systemd units (`waybar.service`, `swaybg.service`) with hardware-readiness loops &mdash; not ephemeral terminal subprocesses.
+> * **Built-in System Installer**: Easily installable to your SSD, NVMe drive, or dual-boot disk configuration.
 
 ---
 
-### Option 2: One-Line Installer (For Existing Ubuntu Systems)
-Already have Ubuntu 24.04 LTS installed? Transform your existing installation into OmLinux in minutes without losing your files or dual-boot setups:
+## 🏗️ Operating System Architecture
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                          OMLINUX APPLICATIONS                          │
+│   Wofi Launcher • Alacritty • Btop • Cliphist • Tesseract OCR • Pavu   │
+├────────────────────────────────────────────────────────────────────────┤
+│                       OMLINUX SYSTEM SERVICES                          │
+│   waybar.service  •  swaybg.service  •  omlinux-displays  •  Mako      │
+├────────────────────────────────────────────────────────────────────────┤
+│                     WAYLAND COMPOSITOR LAYER                           │
+│     Hyprland (Fluid Bezier Animations • Custom Window Geometry Rules)   │
+├────────────────────────────────────────────────────────────────────────┤
+│                      AUDIO & GRAPHICS STACK                            │
+│      PipeWire + WirePlumber (Direct ALSA 2-Ch Routing) • DRM / KMS     │
+├────────────────────────────────────────────────────────────────────────┤
+│                       BASE OPERATING SYSTEM                            │
+│         Ubuntu LTS (Noble / Resolute) • systemd init • Casper          │
+├────────────────────────────────────────────────────────────────────────┤
+│                       LINUX KERNEL & HARDWARE                          │
+│          Linux Kernel (x86_64) • GPU / CPU / Display Drivers           │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## ⚡ Installing & Booting OmLinux
+
+### Method 1: Bootable Live ISO (Recommended for New Installations)
+Install OmLinux directly onto your computer or test it risk-free in live mode.
+
+1. **Download the Official ISO**:  
+   Visit the [**Releases**](https://github.com/apravint/omarchy-ubuntu/releases) page and download:
+   - `OmLinux-26.04-amd64.iso`
+   - `sha256sum.txt`
+2. **Flash to USB**:  
+   Flash the `.iso` to an 8GB+ USB flash drive using [BalenaEtcher](https://etcher.balena.io/), [Ventoy](https://www.ventoy.net/), or [Rufus](https://rufus.ie/).
+3. **Boot Your Hardware**:  
+   Insert the USB drive into your PC, access your boot menu (`F12`, `F11`, `F10`, or `Esc`), and select the USB drive.
+4. **Live Environment Credentials**:  
+   - **Username**: `omlinux`
+   - **Password**: `omlinux` *(Passwordless sudo enabled)*
+5. **Install to Disk**:  
+   Click the installer icon or run the graphical setup to deploy OmLinux to your internal drive.
+
+---
+
+### Method 2: System Upgrade (For Existing Ubuntu Installations)
+If you already have Ubuntu LTS installed and want to convert your current installation into OmLinux without reformatting your drive:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/apravint/omarchy-ubuntu/main/install.sh | bash
 ```
 
-*Or clone and run manually:*
+*Or clone and inspect the installer locally:*
 ```bash
-git clone https://github.com/apravint/omarchy-ubuntu.git
-cd omarchy-ubuntu
+git clone https://github.com/apravint/omlinux.git
+cd omlinux
 ./install.sh
 ```
 
-After installation completes, log out and select **OmLinux** from your display manager session menu.
+Once installed, log out and select **OmLinux** from your login screen.
 
 ---
 
-## 🛠️ Build Your Own ISO Locally
+## 🛠️ Building the OS ISO from Source
 
-You can generate the complete bootable Live ISO on any Ubuntu or Debian machine:
+OmLinux includes a self-contained ISO generation engine that bootstraps and compiles the entire operating system from scratch:
 
 ```bash
-# 1. Clone the repository
+# 1. Clone the OS repository
 git clone https://github.com/apravint/omarchy-ubuntu.git
 cd omarchy-ubuntu
 
-# 2. Run the automated ISO builder (requires sudo)
+# 2. Compile the Live ISO (requires root privileges)
 sudo bash build/build-iso.sh
 ```
 
-The script will automatically bootstrap Ubuntu 24.04 LTS via `debootstrap`, inject all Hyprland configurations, compile the squashfs root, and produce a bootable image inside the `out/` folder:
-- `out/OmLinux-24.04-amd64.iso`
-- `out/sha256sum.txt`
+### The Build Engine Pipeline:
+1. **Debootstrap**: Pulls a clean minimal Ubuntu LTS base environment.
+2. **Chroot Provisioning**: Configures kernel modules, network managers, audio drivers, and display servers.
+3. **Desktop Injection**: Installs the Hyprland compositor, Waybar, 22 system themes, and OmLinux system utilities into `/etc/skel/`.
+4. **SquashFS Compression**: Compresses the rootfs using high-ratio `zstd` compression.
+5. **Hybrid Bootloader**: Generates dual UEFI and legacy BIOS partition tables via `xorriso` and `grub-mkrescue`.
+6. **Artifact Output**: Creates `out/OmLinux-26.04-amd64.iso` and calculates SHA256 checksums.
 
-Alternatively, you can trigger cloud builds directly on GitHub under the **Actions** tab with one click!
-
----
-
-## ✨ System Highlights
-
-- **Pre-Configured Hyprland Wayland Compositor**:
-  - Fluid bezier window animations and acrylic opacity profiles.
-  - Zero keybinding collisions; dedicated bindings for audio, screenshots, and tools.
-- **Native Dual Display Manager (`omarchy-displays-gui`)**:
-  - Built-in GUI tool to position, scale, enable, or disable multiple monitors.
-  - Automatic collision protection ensures displays never overlap at identical coordinates.
-- **PipeWire Audio Architecture**:
-  - Instant output sink toggle (`Super + Shift + A` or middle-click on Waybar volume icon) between TV, monitors, and headphones.
-  - Automatic ALSA card profile detection and unmuting.
-- **22 Curated Themes with Live Sync (`omarchy-theme-sync-all`)**:
-  - Includes *Tokyo Night, Catppuccin, Nord, Gruvbox, Everforest, Retro 82, Lumon, Matte Black, Hackerman*, and more.
-  - Dynamically re-tints Hyprland borders, Waybar modules, Wofi menus, Alacritty terminal, and Mako notifications without restarting.
-- **Robust Systemd Daemon Management**:
-  - Waybar status bar and swaybg wallpaper runs as user systemd services (`waybar.service`, `swaybg.service`) with built-in monitor readiness checks.
+*Every GitHub release automatically triggers this build engine in the cloud via GitHub Actions CI/CD.*
 
 ---
 
-## ⌨️ Essential Keybindings Reference
+## ✨ Built-in OS Features
 
-### 🚀 Launchers & Core Tools
+- **Automated Dual-Display Management (`omarchy-displays-gui`)**:
+  - Automatically identifies primary monitors and extended secondary displays.
+  - Built-in collision prevention ensures displays never overlap at identical `0x0` coordinates.
+- **Hardware-Aware Audio Routing**:
+  - Instant output sink toggle (`Super + Shift + A` or middle-click the Waybar volume module) between monitors, external TVs, and audio jacks.
+  - Dedicated ALSA stereo profiles prevent HDMI converter channel contention.
+- **22 Curated Dynamic Themes**:
+  - Includes *Tokyo Night, Catppuccin Mocha, Nord, Gruvbox, Everforest, Retro 82, Lumon, Matte Black, Hackerman*, and more.
+  - Instant live palette synchronization re-tints Hyprland borders, Waybar pills, Wofi menus, Alacritty terminal, and Mako alerts simultaneously without compositor restarts.
+- **Persistent Daemon Architecture**:
+  - Waybar and Swaybg run under systemd user slices with automatic monitor readiness checks (`waybar.service`, `swaybg.service`).
+
+---
+
+## ⌨️ Essential Keyboard Shortcuts
+
+### 🚀 System Control & Launchers
 | Shortcut | Action |
 | :--- | :--- |
-| `Super + Space` | **Omarchy Command Center Menu** |
+| `Super + Space` | **OmLinux Command Center Menu** |
 | `Super + Alt + Space` | **Wofi** Application Launcher |
-| `Super + Return` | **Alacritty** Terminal |
+| `Super + Return` | **Alacritty** GPU-Accelerated Terminal |
 | `Super + Alt + Return` | **Tmux** Persistent Terminal Session |
 | `Super + K` | **Keybindings Cheat Sheet Menu** |
-| `Super + Shift + A` | **Audio Output Switcher** (Toggle between TV, Monitor & Headphones) |
-| `Super + Ctrl + T` | **Activity / Process Monitor** (`btop`) |
+| `Super + Shift + A` | **Audio Output Switcher** (Toggle TV, Monitor, Headphones) |
+| `Super + Ctrl + T` | **Activity & Process Monitor** (`btop`) |
 | `Super + Ctrl + Shift + Space` | **22-Theme Switcher** |
 | `Super + Ctrl + Space` | **Next Background Wallpaper** |
 | `Super + V` | **Clipboard History Manager** (`cliphist`) |
-| `Super + Escape` | **Power Menu** (Lock, Suspend, Logout, Reboot, Shutdown) |
+| `Super + Escape` | **Power & Session Dashboard** (Lock, Suspend, Reboot, Shutdown) |
 
-### 📸 Capture & Text Extraction
+### 📸 Capture, Screen Recording & OCR
 | Shortcut | Action |
 | :--- | :--- |
-| `Print` or `Super + Shift + S` | **Region Screenshot** (Saves to `~/Pictures/Screenshots` & clipboard) |
+| `Print` or `Super + Shift + S` | **Region Screenshot** (Saves to `~/Pictures` & clipboard) |
 | `Alt + Print` | **Screen Recording** (Toggle Start / Stop MP4 recording) |
 | `Super + Print` | **Color Picker Eyedropper** (`hyprpicker` hex code to clipboard) |
 | `Super + Ctrl + Print` | **OCR Text Extraction** (`tesseract` directly to clipboard) |
 | `Super + Ctrl + C` | **Capture Dashboard Menu** |
 
-### 🌐 Web Apps Suite
-| Shortcut | Action |
-| :--- | :--- |
-| `Super + Ctrl + Shift + C` | **ChatGPT** AI Chatbot |
-| `Super + Shift + Alt + A` | **Grok** AI Chatbot |
-| `Super + Shift + C` | **HEY Calendar** |
-| `Super + Shift + E` | **HEY Email** |
-| `Super + Shift + Y` | **YouTube** |
-| `Super + Shift + Alt + G` | **WhatsApp Web** |
-| `Super + Shift + Ctrl + M` | **Google Maps** |
-| `Super + Shift + X` | **X / Twitter** |
-
-### 🪟 Window Management
+### 🪟 Tiling Window Management
 | Shortcut | Action |
 | :--- | :--- |
 | `Super + Q` / `Super + W` | Close active window |
@@ -144,37 +173,36 @@ Alternatively, you can trigger cloud builds directly on GitHub under the **Actio
 
 ---
 
-## 📂 Repository Layout
+## 📂 OS Source Tree
 
 ```
-omarchy-ubuntu/
+omlinux/
 ├── .github/
 │   ├── workflows/
-│   │   └── build-iso.yml       # Automated GitHub Actions ISO build & release CI
+│   │   └── build-iso.yml       # Automated cloud ISO compilation & release pipeline
 │   └── ISSUE_TEMPLATE/
 │       ├── bug_report.md       # Standardized bug reporting form
 │       └── feature_request.md  # Feature suggestion form
 ├── assets/
-│   └── preview.png             # Showcase screenshot
+│   └── preview.png             # OS desktop showcase preview
 ├── build/
-│   └── build-iso.sh            # Automated hybrid Live ISO build engine
+│   └── build-iso.sh            # Complete UEFI/BIOS Live ISO build engine
 ├── config/
 │   ├── hypr/                   # Hyprland window rules, monitors & keybindings
 │   ├── waybar/                 # Top bar layout & CSS styling
 │   ├── wofi/                   # Application launcher configuration
-│   └── systemd/user/           # Waybar & Swaybg systemd service units
-├── bin/                        # Omarchy CLI utilities, audio & display tools
+│   └── systemd/user/           # Waybar & Swaybg systemd daemon service units
+├── bin/                        # OmLinux system CLI utilities, display & audio tools
 ├── system/                     # Wayland session descriptor & profile exports
 ├── install.sh                  # One-line web and local installer
-├── uninstall.sh                # Clean uninstaller and config restorer
+├── uninstall.sh                # Clean uninstaller and configuration restorer
 ├── LICENSE                     # MIT Open Source License
-└── README.md                   # Documentation & showcase
+└── README.md                   # Operating System documentation & specifications
 ```
 
 ---
 
-## 📄 License & Credits
+## 📄 License & Open Source
 
-- Licensed under the **[MIT License](LICENSE)**.
-- Inspired by the aesthetic vision of [Omarchy by OMACOM](https://github.com/omacom/omarchy).
-- Built on [Ubuntu](https://ubuntu.com), [Hyprland](https://hyprland.org), and [Waybar](https://github.com/Alexays/Waybar).
+- Released under the open-source **[MIT License](LICENSE)**.
+- Base operating system components powered by [Ubuntu](https://ubuntu.com), [Hyprland](https://hyprland.org), [Waybar](https://github.com/Alexays/Waybar), and [PipeWire](https://pipewire.org).
