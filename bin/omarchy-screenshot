@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Omarchy Screenshot Tool for Ubuntu / Hyprland
+set -euo pipefail
+
+MODE="${1:-region}"
+SCREENSHOT_DIR="$HOME/Pictures/Screenshots"
+mkdir -p "$SCREENSHOT_DIR"
+
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+FILENAME="screenshot-${TIMESTAMP}.png"
+FILEPATH="${SCREENSHOT_DIR}/${FILENAME}"
+
+case "$MODE" in
+    fullscreen)
+        grim "$FILEPATH"
+        ;;
+    window)
+        ACTIVE_BOX=$(hyprctl activewindow -j 2>/dev/null | jq -r '"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"' 2>/dev/null || true)
+        if [[ -n "$ACTIVE_BOX" && "$ACTIVE_BOX" != "null,null nullxnull" ]]; then
+            grim -g "$ACTIVE_BOX" "$FILEPATH"
+        else
+            GEOM=$(slurp -b "#1a1b2688" -c "#7aa2f7" -s "#7aa2f722")
+            grim -g "$GEOM" "$FILEPATH"
+        fi
+        ;;
+    region|*)
+        GEOM=$(slurp -b "#1a1b2688" -c "#7aa2f7" -s "#7aa2f722" 2>/dev/null || true)
+        if [[ -z "${GEOM:-}" ]]; then
+            exit 0 # User cancelled selection
+        fi
+        grim -g "$GEOM" "$FILEPATH"
+        ;;
+esac
+
+if [[ -f "$FILEPATH" ]]; then
+    wl-copy --type image/png < "$FILEPATH"
+    notify-send -a "Omarchy" -i "$FILEPATH" "Screenshot Captured" "Saved to ~/Pictures/Screenshots and copied to clipboard."
+fi

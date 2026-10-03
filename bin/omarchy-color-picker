@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Omarchy Eyedropper Color Picker
+set -euo pipefail
+
+COLOR=$(hyprpicker -a -f hex 2>/dev/null || true)
+if [[ -n "${COLOR:-}" ]]; then
+    notify-send -a "Omarchy" "Color Picked" "Copied $COLOR to clipboard."
+fi

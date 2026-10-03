@@ -42,6 +42,8 @@ sudo apt install -y \
     btop \
     gawk \
     fonts-jetbrains-mono \
+    wf-recorder \
+    hyprpicker \
     python3 \
     git \
     socat

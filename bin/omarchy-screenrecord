@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Omarchy Screen Recording Tool for Ubuntu / Hyprland
+set -euo pipefail
+
+RECORDING_DIR="$HOME/Videos"
+mkdir -p "$RECORDING_DIR"
+
+PID_FILE="/tmp/omarchy-screenrecord.pid"
+
+# If already recording, stop it cleanly
+if pgrep -x wf-recorder >/dev/null 2>&1; then
+    pkill -SIGINT wf-recorder
+    rm -f "$PID_FILE"
+    notify-send -a "Omarchy Recording" "Recording Stopped" "Encoding and saving your video to ~/Videos..."
+    exit 0
+fi
+
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+FILENAME="screenrecording-${TIMESTAMP}.mp4"
+FILEPATH="${RECORDING_DIR}/${FILENAME}"
+
+# Select region with slurp
+GEOM=$(slurp -b "#1a1b2688" -c "#7aa2f7" -s "#7aa2f722" 2>/dev/null || true)
+if [[ -z "${GEOM:-}" ]]; then
+    exit 0 # User cancelled selection
+fi
+
+notify-send -a "Omarchy Recording" "Recording Started" "Recording region to ~/Videos/${FILENAME}. Press Alt+Print to stop."
+
+# Start recording in background
+nohup wf-recorder -g "$GEOM" -f "$FILEPATH" >/dev/null 2>&1 &
+echo $! > "$PID_FILE"

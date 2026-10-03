@@ -62,6 +62,14 @@ After installation completes, log out and select **Omarchy** from your login scr
 | `Super + Shift + Y` | YouTube Web App |
 | `Super + Shift + A` | ChatGPT / AI Web App |
 
+### 📸 Screenshots & Screen Recording
+| Shortcut | Action |
+| :--- | :--- |
+| `Print` or `Super + Shift + S` | **Region Screenshot** (Saves to `~/Pictures/Screenshots` & copies to clipboard) |
+| `Alt + Print` | **Screen Recording** (Toggle Start / Stop MP4 recording to `~/Videos`) |
+| `Super + Print` | **Color Picker Eyedropper** (`hyprpicker` hex code to clipboard) |
+| `Super + Ctrl + C` | **Capture Dashboard Menu** (Region, Fullscreen, Window, Record, Eyedropper) |
+
 ### 🎨 Theming & Backgrounds
 | Shortcut | Action |
 | :--- | :--- |
@@ -70,7 +78,6 @@ After installation completes, log out and select **Omarchy** from your login scr
 | `Super + V` | **Clipboard History Manager** (`cliphist`) |
 | `Super + Escape` | **Power Menu** (Lock, Suspend, Logout, Reboot, Shutdown) |
 | `Super + Ctrl + L` | **Lock Screen** (`swaylock`) |
-| `Super + Shift + S` or `Print` | **Snipping Tool** (Area screenshot to clipboard) |
 
 ### 🪟 Window Management & Grouping
 | Shortcut | Action |
