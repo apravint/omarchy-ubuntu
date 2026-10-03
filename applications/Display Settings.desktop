@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Display Settings
+GenericName=Display Configuration
+Comment=Configure monitors, resolutions, refresh rates, and scaling in Omarchy / Hyprland
+Exec=/home/apravint/.local/bin/omarchy-displays-gui
+Icon=video-display
+Terminal=false
+Type=Application
+Categories=Settings;HardwareSettings;
+Keywords=display;monitor;screen;resolution;scaling;hyprland;omarchy;
