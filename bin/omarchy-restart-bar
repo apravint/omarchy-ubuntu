@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-# Cleanly start / restart Waybar with output readiness check
+# Cleanly start / restart Waybar via systemd user service with output readiness check
 set -u
 
-# Kill any existing waybar instances
-pkill -9 -x waybar 2>/dev/null || true
-sleep 0.3
+# Ensure Wayland environment is imported into systemd user session
+dbus-update-activation-environment --systemd WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP 2>/dev/null || true
 
 # Wait up to 15 seconds for Hyprland socket & active monitors
 for i in {1..30}; do
@@ -14,10 +13,7 @@ for i in {1..30}; do
     sleep 0.5
 done
 
-# Give Hyprland layer-shell protocol time to settle after modesetting
-sleep 1.5
+# Restart Waybar service cleanly
+systemctl --user restart waybar
 
-# Launch waybar in background with log redirection
-nohup waybar >/tmp/waybar.log 2>&1 & disown
-
-echo "Waybar launched successfully."
+echo "Waybar service restarted successfully."
