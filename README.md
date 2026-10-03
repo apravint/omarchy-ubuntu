@@ -55,26 +55,68 @@ After installation completes, log out and select **Omarchy** from your login scr
 | :--- | :--- |
 | `Super + Space` | **Wofi** Application Launcher |
 | `Super + Return` | **Alacritty** Terminal |
+| `Super + Alt + Return` | **Tmux** Persistent Terminal Session |
+| `Super + Shift + N` | **Neovim** Code Editor |
 | `Super + K` | **Keybindings Cheat Sheet Menu** |
+| `Super + Alt + K` | **Tmux Keybindings Reference** |
 | `Super + Ctrl + T` | **Activity / Process Monitor** (`btop`) |
+| `Super + Shift + D` | **Git TUI** (`lazygit`) |
+| `Super + Ctrl + Q` | **Calculator** (`omacalc`) |
+| `Super + Ctrl + S` | **LocalSend Share Menu** (Clipboard, File, Folder) |
 | `Super + Shift + B` or `Super + B` | Preferred Web Browser |
+| `Super + Shift + Alt + B` | Private / Incognito Browser |
 | `Super + Shift + F` or `Super + E` | Preferred File Manager |
-| `Super + Shift + Y` | YouTube Web App |
-| `Super + Shift + A` | ChatGPT / AI Web App |
+| `Super + Shift + Alt + F` | File Manager in Terminal Working Directory |
 
-### 📸 Screenshots & Screen Recording
+### 🌐 Web Apps Suite
+| Shortcut | Action |
+| :--- | :--- |
+| `Super + Shift + A` | **ChatGPT** AI Chatbot |
+| `Super + Shift + Alt + A` | **Grok** AI Chatbot |
+| `Super + Shift + C` | **HEY Calendar** |
+| `Super + Shift + E` | **HEY Email** |
+| `Super + Shift + Alt + E` | Compose New Email |
+| `Super + Shift + Y` | **YouTube** |
+| `Super + Shift + Alt + G` | **WhatsApp Web** |
+| `Super + Shift + Ctrl + G` | **Google Messages Web** |
+| `Super + Shift + P` | **Google Photos** |
+| `Super + Shift + S` | **Google Maps** |
+| `Super + Shift + X` | **X / Twitter** |
+| `Super + Shift + Alt + X` | Compose New Post on X |
+
+### 📸 Capture, OCR & Text Tools
 | Shortcut | Action |
 | :--- | :--- |
 | `Print` or `Super + Shift + S` | **Region Screenshot** (Saves to `~/Pictures/Screenshots` & copies to clipboard) |
 | `Alt + Print` | **Screen Recording** (Toggle Start / Stop MP4 recording to `~/Videos`) |
 | `Super + Print` | **Color Picker Eyedropper** (`hyprpicker` hex code to clipboard) |
+| `Super + Ctrl + Print` | **OCR Text Extraction** (`tesseract` grabs text from screen directly to clipboard) |
 | `Super + Ctrl + C` | **Capture Dashboard Menu** (Region, Fullscreen, Window, Record, Eyedropper) |
+| `Super + Ctrl + D` | **Instant Dictionary Lookup** (Definition, phonetic pronunciation, examples) |
+| `Super + Ctrl + X` | **Toggle Dictation** (Voxtype speech-to-text) |
+| `F9` (Hold/Release) | **Push-to-Talk Dictation** (Voxtype) |
 
-### 🎨 Theming & Backgrounds
+### ⏱️ Reminders & System Notices
+| Shortcut | Action |
+| :--- | :--- |
+| `Super + Ctrl + R` | **Set Reminder** (Interactive Wofi dialog with presets: 5m, 15m, 25m, or custom note) |
+| `Super + Ctrl + Alt + R` | **Show Active Reminders** (Notification summary of all running timers) |
+| `Super + Ctrl + Shift + R`| **Clear All Reminders** |
+| `Super + Ctrl + Alt + T` | **Date & Time Notice** (Desktop notification with full date, time, and week) |
+| `Super + Ctrl + Alt + W` | **Weather Notice** (Current local temperature, conditions, and wind speed) |
+| `Super + Ctrl + Alt + B` | **Battery Status Notice** (Charge percentage and health) |
+| `Super + ,` | Dismiss Last Notification |
+| `Super + Shift + ,` | Dismiss All Notifications |
+| `Super + Ctrl + ,` | Toggle Do-Not-Disturb (Silencing Notifications) |
+
+### 🎨 Theming, Backgrounds & Cursors
 | Shortcut | Action |
 | :--- | :--- |
 | `Super + Ctrl + Shift + Space` | **Omarchy Theme Switcher** (22 themes) |
-| `Super + Ctrl + Space` | **Cycle Background** (Next wallpaper in theme) |
+| `Super + Ctrl + Space` | **Cycle Background** (Next wallpaper in active theme) |
+| `omarchy-cursor-switch` | **Cursor Theme Selector** (Applies dynamically across Hyprland & GTK) |
+| `Super + Backspace` | Toggle Window Acrylic Transparency |
+| `Super + Shift + Backspace` | Toggle Window Gaps |
 | `Super + V` | **Clipboard History Manager** (`cliphist`) |
 | `Super + Escape` | **Power Menu** (Lock, Suspend, Logout, Reboot, Shutdown) |
 | `Super + Ctrl + L` | **Lock Screen** (`swaylock`) |
@@ -88,7 +130,10 @@ After installation completes, log out and select **Omarchy** from your login scr
 | `Super + G` | Toggle Tabbed Window Group |
 | `Super + Alt + G` | Eject window from Group |
 | `Super + Alt + Tab` | Cycle forward through tabs in Group |
+| `Super + Alt + Shift + Tab` | Cycle backward through tabs in Group |
+| `Super + Ctrl + Left/Right` | Cycle through windows inside group |
 | `Super + F` | Toggle Fullscreen |
+| `Super + Alt + F` | Maximize window (keeping top bar) |
 | `Super + J` | Toggle Split direction |
 | `Super + P` | Toggle Pseudo-tiling |
 | `Super + -` / `Super + =` | Resize active window horizontally |
@@ -105,9 +150,11 @@ After installation completes, log out and select **Omarchy** from your login scr
 | :--- | :--- |
 | `XF86AudioRaiseVolume` / `LowerVolume` | Adjust Volume ±5% |
 | `XF86AudioMute` | Toggle Audio Mute |
+| `XF86AudioMicMute` | Toggle Microphone Mute |
 | `XF86AudioPlay` / `Next` / `Prev` | Media Play / Pause / Skip |
 
 ---
+
 
 ## 📂 Repository Layout
 

@@ -1,0 +1,11 @@
+#!/bin/bash
+# Omarchy Weather Notification with graceful fallback
+
+if pgrep -x omarchy-shell >/dev/null 2>&1; then
+  omarchy-shell shell toggle omarchy.weather
+  exit 0
+fi
+
+STATUS=$(omarchy-weather-status 2>/dev/null || echo "Weather temporarily unavailable")
+ICON=$(omarchy-weather-icon 2>/dev/null || echo "󰖐")
+omarchy-notification-send -g "$ICON" -u low "$STATUS"

@@ -1,0 +1,40 @@
+#!/bin/bash
+# Omarchy Dictionary Lookup tool
+
+WORD="$1"
+
+if [[ -z "$WORD" ]]; then
+  # Check if clipboard has a single word
+  CLIP_TEXT=$(wl-paste 2>/dev/null | tr -d '\n\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+  if [[ "$CLIP_TEXT" =~ ^[A-Za-z\-]{2,30}$ ]]; then
+    PROMPT_DEFAULT="$CLIP_TEXT"
+  else
+    PROMPT_DEFAULT=""
+  fi
+
+  WORD=$(echo "$PROMPT_DEFAULT" | wofi --dmenu --prompt "Dictionary lookup:" -i)
+fi
+
+[[ -z "$WORD" ]] && exit 0
+
+CLEAN_WORD=$(echo "$WORD" | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]' | xargs)
+[[ -z "$CLEAN_WORD" ]] && exit 0
+
+RES=$(curl -s --max-time 4 "https://api.dictionaryapi.dev/api/v2/entries/en/$CLEAN_WORD" 2>/dev/null)
+
+if [[ -z "$RES" ]] || echo "$RES" | jq -e 'has("title")' >/dev/null 2>&1; then
+  omarchy-notification-send -g 󰮔 -u low "Dictionary: $CLEAN_WORD" "No definition found for '$CLEAN_WORD'."
+  exit 1
+fi
+
+TITLE=$(echo "$RES" | jq -r '.[0] | "\(.word) \((if .phonetic then "[\(.phonetic)]" else "" end))"')
+PART=$(echo "$RES" | jq -r '.[0].meanings[0].partOfSpeech // ""')
+DEF=$(echo "$RES" | jq -r '.[0].meanings[0].definitions[0].definition // "Definition unavailable"')
+EXAMPLE=$(echo "$RES" | jq -r '.[0].meanings[0].definitions[0].example // ""')
+
+BODY="$PART: $DEF"
+if [[ -n "$EXAMPLE" && "$EXAMPLE" != "null" ]]; then
+  BODY+=$'\n\n'"\"$EXAMPLE\""
+fi
+
+omarchy-notification-send -g 󰮔 -u normal "$TITLE" "$BODY" -t 8000

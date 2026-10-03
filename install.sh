@@ -44,6 +44,16 @@ sudo apt install -y \
     fonts-jetbrains-mono \
     wf-recorder \
     hyprpicker \
+    tesseract-ocr \
+    ripgrep \
+    fd-find \
+    tmux \
+    fzf \
+    zoxide \
+    eza \
+    bat \
+    jq \
+    curl \
     python3 \
     git \
     socat
@@ -92,7 +102,11 @@ cp -r "$REPO_DIR/config/"* "$HOME/.config/"
 
 # Copy scripts & make executable
 cp "$REPO_DIR/bin/"* "$HOME/.local/bin/"
-chmod +x "$HOME/.local/bin/"omarchy-*
+chmod +x "$HOME/.local/bin/"*
+
+# Symlink Debian-specific binary names if needed
+ln -sf /usr/bin/batcat "$HOME/.local/bin/bat" 2>/dev/null || true
+ln -sf /usr/bin/fdfind "$HOME/.local/bin/fd" 2>/dev/null || true
 
 # Setup theme-set hook
 cat << 'EOF' > "$HOME/.config/omarchy/hooks/theme-set"
@@ -107,6 +121,26 @@ if command -v notify-send >/dev/null 2>&1; then
 fi
 EOF
 chmod +x "$HOME/.config/omarchy/hooks/theme-set"
+
+# Configure Omarchy Shell Environment in ~/.bashrc
+if ! grep -q "OMARCHY_PATH" "$HOME/.bashrc" 2>/dev/null; then
+    cat << 'EOF' >> "$HOME/.bashrc"
+
+# Omarchy Environment & Shell Tools
+export OMARCHY_PATH=/usr/share/omarchy
+export EDITOR=nvim
+export VISUAL=nvim
+if [[ -f "$OMARCHY_PATH/default/bash/rc" ]]; then
+    source "$OMARCHY_PATH/default/bash/rc"
+fi
+if [[ -f /usr/share/doc/fzf/examples/key-bindings.bash ]]; then
+    source /usr/share/doc/fzf/examples/key-bindings.bash
+fi
+if [[ -f /usr/share/doc/fzf/examples/completion.bash ]]; then
+    source /usr/share/doc/fzf/examples/completion.bash
+fi
+EOF
+fi
 
 echo -e "\n${YELLOW}[5/6] Initializing default Omarchy theme...${NC}"
 export OMARCHY_PATH=/usr/share/omarchy
@@ -136,6 +170,7 @@ echo -e "3. Log in and enjoy authentic Omarchy tiling!"
 echo -e "\n${YELLOW}Useful Shortcuts:${NC}"
 echo -e "  • ${GREEN}Super + Space${NC}                 : Wofi Application Launcher"
 echo -e "  • ${GREEN}Super + Return${NC}                : Terminal (Alacritty)"
+echo -e "  • ${GREEN}Super + Alt + Return${NC}          : Tmux Terminal Session"
 echo -e "  • ${GREEN}Super + K${NC}                     : Keybindings Cheat Sheet Menu"
 echo -e "  • ${GREEN}Super + V${NC}                     : Clipboard History Manager"
 echo -e "  • ${GREEN}Super + Ctrl + Shift + Space${NC}  : Omarchy 22-Theme Switcher"
@@ -144,3 +179,8 @@ echo -e "  • ${GREEN}Super + ` (Grave)${NC} / ${GREEN}Super + S${NC} : Toggle 
 echo -e "  • ${GREEN}Super + Ctrl + T${NC}              : Activity Monitor (btop)"
 echo -e "  • ${GREEN}Super + Escape${NC}                : Power Menu (Lock, Sleep, Logout, Shutdown)"
 echo -e "  • ${GREEN}Super + Shift + S${NC}             : Screenshot Snipping Tool"
+echo -e "  • ${GREEN}Super + Ctrl + Print${NC}          : OCR Text Extraction to Clipboard"
+echo -e "  • ${GREEN}Super + Ctrl + R${NC}              : Set Reminder (Timer + Message)"
+echo -e "  • ${GREEN}Super + Ctrl + Alt + T / W / B${NC}: Date/Time, Weather & Battery Notices"
+echo -e "  • ${GREEN}Super + Ctrl + D${NC}              : Instant Dictionary Definition Lookup"
+
