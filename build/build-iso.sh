@@ -195,7 +195,6 @@ if [ ! -d "/usr/share/omarchy" ]; then
     git clone --depth 1 --branch quattro https://github.com/omacom/omarchy.git /usr/share/omarchy || true
 fi
 git config --system --add safe.directory /usr/share/omarchy || true
-ln -sf /usr/share/omarchy/bin/* /usr/local/bin/ || true
 
 # Setup default live user: 'omarchy' with passwordless sudo
 mkdir -p /etc/sudoers.d
@@ -234,14 +233,28 @@ log_step "Injecting Omarchy scripts, systemd units, and skeleton user configs...
 
 # Copy Omarchy system-wide binaries & profile
 mkdir -p "${ROOTFS_DIR}/usr/local/bin" "${ROOTFS_DIR}/usr/share/wayland-sessions" "${ROOTFS_DIR}/etc/profile.d"
-cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/usr/local/bin/"
+cp -a --remove-destination "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/usr/local/bin/"
 chmod +x "${ROOTFS_DIR}/usr/local/bin/"*
 
+# Safely symlink any additional upstream omarchy binaries that were not overridden
+chroot "${ROOTFS_DIR}" /bin/bash << 'POST_CHROOT_EOF'
+if [ -d "/usr/share/omarchy/bin" ]; then
+    for bin_file in /usr/share/omarchy/bin/*; do
+        if [ -f "$bin_file" ]; then
+            base_name="$(basename "$bin_file")"
+            if [ ! -e "/usr/local/bin/${base_name}" ]; then
+                ln -sf "$bin_file" "/usr/local/bin/${base_name}" 2>/dev/null || true
+            fi
+        fi
+    done
+fi
+POST_CHROOT_EOF
+
 if [ -f "${REPO_ROOT}/system/omarchy.conf" ]; then
-    cp "${REPO_ROOT}/system/omarchy.conf" "${ROOTFS_DIR}/etc/omarchy.conf"
+    cp -a --remove-destination "${REPO_ROOT}/system/omarchy.conf" "${ROOTFS_DIR}/etc/omarchy.conf"
 fi
 if [ -f "${REPO_ROOT}/system/omarchy.sh" ]; then
-    cp "${REPO_ROOT}/system/omarchy.sh" "${ROOTFS_DIR}/etc/profile.d/omarchy.sh"
+    cp -a --remove-destination "${REPO_ROOT}/system/omarchy.sh" "${ROOTFS_DIR}/etc/profile.d/omarchy.sh"
 fi
 if ! grep -q "OMARCHY_PATH" "${ROOTFS_DIR}/etc/environment" 2>/dev/null; then
     echo "OMARCHY_PATH=/usr/share/omarchy" >> "${ROOTFS_DIR}/etc/environment"
@@ -249,29 +262,29 @@ fi
 
 # Copy skeleton configs so every user (and live user) gets them
 mkdir -p "${ROOTFS_DIR}/etc/skel/.config" "${ROOTFS_DIR}/etc/skel/.local/bin" "${ROOTFS_DIR}/etc/skel/.local/share/applications" "${ROOTFS_DIR}/etc/skel/.local/share/icons/hicolor/128x128/apps"
-cp -r "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/etc/skel/.config/"
-cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/etc/skel/.local/bin/"
-cp "${REPO_ROOT}/applications/"*.desktop "${ROOTFS_DIR}/etc/skel/.local/share/applications/" 2>/dev/null || true
-cp "${REPO_ROOT}/applications/icons/"*.png "${ROOTFS_DIR}/etc/skel/.local/share/icons/hicolor/128x128/apps/" 2>/dev/null || true
+cp -a --remove-destination "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/etc/skel/.config/"
+cp -a --remove-destination "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/etc/skel/.local/bin/"
+cp -a --remove-destination "${REPO_ROOT}/applications/"*.desktop "${ROOTFS_DIR}/etc/skel/.local/share/applications/" 2>/dev/null || true
+cp -a --remove-destination "${REPO_ROOT}/applications/icons/"*.png "${ROOTFS_DIR}/etc/skel/.local/share/icons/hicolor/128x128/apps/" 2>/dev/null || true
 
 # Also copy into the live user's home directly
 mkdir -p "${ROOTFS_DIR}/home/omarchy/.config" "${ROOTFS_DIR}/home/omarchy/.local/bin" "${ROOTFS_DIR}/home/omarchy/.local/share/applications" "${ROOTFS_DIR}/home/omarchy/.local/share/icons/hicolor/128x128/apps"
-cp -r "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/home/omarchy/.config/"
-cp -r "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/home/omarchy/.local/bin/"
-cp "${REPO_ROOT}/applications/"*.desktop "${ROOTFS_DIR}/home/omarchy/.local/share/applications/" 2>/dev/null || true
-cp "${REPO_ROOT}/applications/icons/"*.png "${ROOTFS_DIR}/home/omarchy/.local/share/icons/hicolor/128x128/apps/" 2>/dev/null || true
+cp -a --remove-destination "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/home/omarchy/.config/"
+cp -a --remove-destination "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/home/omarchy/.local/bin/"
+cp -a --remove-destination "${REPO_ROOT}/applications/"*.desktop "${ROOTFS_DIR}/home/omarchy/.local/share/applications/" 2>/dev/null || true
+cp -a --remove-destination "${REPO_ROOT}/applications/icons/"*.png "${ROOTFS_DIR}/home/omarchy/.local/share/icons/hicolor/128x128/apps/" 2>/dev/null || true
 
 # Copy systemd units
 mkdir -p "${ROOTFS_DIR}/etc/skel/.config/systemd/user" "${ROOTFS_DIR}/home/omarchy/.config/systemd/user"
-cp -r "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/etc/skel/.config/systemd/user/" 2>/dev/null || true
-cp -r "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/home/omarchy/.config/systemd/user/" 2>/dev/null || true
+cp -a --remove-destination "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/etc/skel/.config/systemd/user/" 2>/dev/null || true
+cp -a --remove-destination "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/home/omarchy/.config/systemd/user/" 2>/dev/null || true
 
 # Fix permissions
 chroot "${ROOTFS_DIR}" chown -R omarchy:omarchy /home/omarchy 2>/dev/null || true
 
 # Copy Wayland session desktop entry
 if [ -f "${REPO_ROOT}/system/omarchy.desktop" ]; then
-    cp "${REPO_ROOT}/system/omarchy.desktop" "${ROOTFS_DIR}/usr/share/wayland-sessions/omarchy.desktop"
+    cp -a --remove-destination "${REPO_ROOT}/system/omarchy.desktop" "${ROOTFS_DIR}/usr/share/wayland-sessions/omarchy.desktop"
 fi
 
 # Set custom OS Release Branding
@@ -309,6 +322,11 @@ cp -L "${INITRD_FILE}" "${ISO_DIR}/casper/initrd"
 # 6. Compress Root Filesystem into SquashFS
 # ------------------------------------------------------------------------------
 log_step "Compressing root filesystem into filesystem.squashfs (this may take a few minutes)..."
+
+# Generate filesystem manifest and size metadata for casper before unmounting
+chroot "${ROOTFS_DIR}" dpkg-query -W --showformat='${Package} ${Version}\n' > "${ISO_DIR}/casper/filesystem.manifest" 2>/dev/null || true
+printf $(du -sx --block-size=1 "${ROOTFS_DIR}" | cut -f1) > "${ISO_DIR}/casper/filesystem.size"
+
 # Unmount virtual mounts before squashing
 umount -lf "${ROOTFS_DIR}/dev/pts" 2>/dev/null || true
 umount -lf "${ROOTFS_DIR}/dev" 2>/dev/null || true
@@ -317,10 +335,6 @@ umount -lf "${ROOTFS_DIR}/sys" 2>/dev/null || true
 
 mksquashfs "${ROOTFS_DIR}" "${ISO_DIR}/casper/filesystem.squashfs" \
     -comp zstd -Xcompression-level 15
-
-# Generate filesystem manifest and size metadata for casper
-chroot "${ROOTFS_DIR}" dpkg-query -W --showformat='${Package} ${Version}\n' > "${ISO_DIR}/casper/filesystem.manifest" 2>/dev/null || true
-printf $(du -sx --block-size=1 "${ROOTFS_DIR}" | cut -f1) > "${ISO_DIR}/casper/filesystem.size"
 
 # ------------------------------------------------------------------------------
 # 7. Configure GRUB Bootloader for BIOS & UEFI Hybrid Boot
