@@ -1,28 +1,22 @@
 #!/usr/bin/env bash
 # Omarchy Interactive Theme Switcher
-set -e
+set -euo pipefail
 
 export OMARCHY_PATH="${OMARCHY_PATH:-/usr/share/omarchy}"
 
 THEMES=$(omarchy theme list)
+CURRENT=$(cat "$HOME/.local/state/omarchy/current/theme.name" 2>/dev/null || echo "None")
 
-SELECTED=$(echo "$THEMES" | wofi --dmenu --prompt "Select Omarchy Theme:" --width 350 --height 400)
+SELECTED=$(echo "$THEMES" | wofi --dmenu --prompt "Theme (Current: $CURRENT):" --width 380 --height 450)
 
-if [[ -n "$SELECTED" ]]; then
+if [[ -n "${SELECTED:-}" ]]; then
+    echo "Switching to Omarchy theme: $SELECTED..."
     omarchy theme set "$SELECTED"
 
-    # Update wallpaper
-    BG=$(readlink -f "$HOME/.local/state/omarchy/current/background" 2>/dev/null || true)
-    if [[ -n "$BG" && -f "$BG" ]]; then
-        pkill swaybg 2>/dev/null || true
-        swaybg -i "$BG" -m fill &
+    # Run complete desktop synchronization
+    if [[ -x "$HOME/.local/bin/omarchy-theme-sync-all" ]]; then
+        "$HOME/.local/bin/omarchy-theme-sync-all" || true
     fi
 
-    # Sync Waybar colors and reload Waybar
-    if [[ -x "$HOME/.local/bin/omarchy-update-waybar-theme" ]]; then
-        "$HOME/.local/bin/omarchy-update-waybar-theme" || true
-        pkill -SIGUSR2 waybar 2>/dev/null || true
-    fi
-
-    notify-send "Omarchy Theme" "Applied theme: $SELECTED" 2>/dev/null || true
+    notify-send -a "Omarchy" "Theme Changed" "Applied theme: $SELECTED" 2>/dev/null || true
 fi

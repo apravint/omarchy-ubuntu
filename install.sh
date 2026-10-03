@@ -39,6 +39,8 @@ sudo apt install -y \
     cliphist \
     playerctl \
     alacritty \
+    btop \
+    gawk \
     fonts-jetbrains-mono \
     python3 \
     git \
@@ -73,10 +75,10 @@ fi
 sudo cp "$REPO_DIR/system/omarchy.desktop" /usr/share/wayland-sessions/omarchy.desktop
 
 echo -e "\n${YELLOW}[4/6] Installing user dotfiles & scripts...${NC}"
-mkdir -p "$HOME/.config" "$HOME/.local/bin"
+mkdir -p "$HOME/.config" "$HOME/.local/bin" "$HOME/.config/omarchy/hooks"
 
 # Backup existing configs if they exist and are not symlinks
-for dir in hypr waybar wofi; do
+for dir in hypr waybar wofi mako; do
     if [ -d "$HOME/.config/$dir" ] && [ ! -d "$HOME/.config/$dir.bak" ]; then
         echo "Backing up existing ~/.config/$dir to ~/.config/$dir.bak..."
         cp -r "$HOME/.config/$dir" "$HOME/.config/$dir.bak"
@@ -90,10 +92,24 @@ cp -r "$REPO_DIR/config/"* "$HOME/.config/"
 cp "$REPO_DIR/bin/"* "$HOME/.local/bin/"
 chmod +x "$HOME/.local/bin/"omarchy-*
 
+# Setup theme-set hook
+cat << 'EOF' > "$HOME/.config/omarchy/hooks/theme-set"
+#!/usr/bin/env bash
+set -euo pipefail
+THEME_NAME="${1:-$(cat "$HOME/.local/state/omarchy/current/theme.name" 2>/dev/null || echo "Unknown")}"
+if [[ -x "$HOME/.local/bin/omarchy-theme-sync-all" ]]; then
+    "$HOME/.local/bin/omarchy-theme-sync-all" || true
+fi
+if command -v notify-send >/dev/null 2>&1; then
+    notify-send -a "Omarchy" "Theme Changed" "Active Theme: $THEME_NAME" -t 3000 2>/dev/null || true
+fi
+EOF
+chmod +x "$HOME/.config/omarchy/hooks/theme-set"
+
 echo -e "\n${YELLOW}[5/6] Initializing default Omarchy theme...${NC}"
 export OMARCHY_PATH=/usr/share/omarchy
 omarchy theme set "Tokyo Night" || true
-"$HOME/.local/bin/omarchy-update-waybar-theme" || true
+"$HOME/.local/bin/omarchy-theme-sync-all" || true
 
 # Unmute audio sinks so sound works out of the box
 for sink in $(pactl list sinks short 2>/dev/null | awk '{print $2}'); do
@@ -118,8 +134,11 @@ echo -e "3. Log in and enjoy authentic Omarchy tiling!"
 echo -e "\n${YELLOW}Useful Shortcuts:${NC}"
 echo -e "  • ${GREEN}Super + Space${NC}                 : Wofi Application Launcher"
 echo -e "  • ${GREEN}Super + Return${NC}                : Terminal (Alacritty)"
+echo -e "  • ${GREEN}Super + K${NC}                     : Keybindings Cheat Sheet Menu"
 echo -e "  • ${GREEN}Super + V${NC}                     : Clipboard History Manager"
 echo -e "  • ${GREEN}Super + Ctrl + Shift + Space${NC}  : Omarchy 22-Theme Switcher"
+echo -e "  • ${GREEN}Super + Ctrl + Space${NC}          : Next Background in Active Theme"
 echo -e "  • ${GREEN}Super + ` (Grave)${NC} / ${GREEN}Super + S${NC} : Toggle Scratchpad"
+echo -e "  • ${GREEN}Super + Ctrl + T${NC}              : Activity Monitor (btop)"
 echo -e "  • ${GREEN}Super + Escape${NC}                : Power Menu (Lock, Sleep, Logout, Shutdown)"
 echo -e "  • ${GREEN}Super + Shift + S${NC}             : Screenshot Snipping Tool"

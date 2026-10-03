@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+import sys
+import os
+import subprocess
+import shutil
+
+# If omarchy-shell is running, delegate to upstream omarchy-shell
+try:
+    res = subprocess.run(["omarchy-shell", "-q", "ping"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if res.returncode == 0:
+        subprocess.run(["/usr/share/omarchy/bin/omarchy-menu-select"] + sys.argv[1:])
+        sys.exit(0)
+except Exception:
+    pass
+
+# Parse arguments: prompt [option...] [-- menu args...]
+args = sys.argv[1:]
+if not args:
+    print("Usage: omarchy-menu-select <prompt> [option...] [-- menu args...]", file=sys.stderr)
+    sys.exit(1)
+
+prompt = args[0]
+options = []
+menu_width = "720"
+menu_height = "480"
+
+i = 1
+while i < len(args):
+    if args[i] == "--":
+        i += 1
+        while i < len(args):
+            if args[i] == "--width" and i + 1 < len(args):
+                menu_width = args[i + 1]
+                i += 2
+            elif args[i] in ("--height", "--maxheight") and i + 1 < len(args):
+                menu_height = args[i + 1]
+                i += 2
+            else:
+                i += 1
+        break
+    else:
+        options.append(args[i])
+        i += 1
+
+if not options and not sys.stdin.isatty():
+    options = [line.rstrip("\r\n") for line in sys.stdin]
+
+if not options:
+    print("No options provided", file=sys.stderr)
+    sys.exit(1)
+
+display_map = {}
+display_lines = []
+
+for opt in options:
+    parts = opt.split("\t")
+    if len(parts) == 1:
+        disp = parts[0]
+    elif len(parts) == 2:
+        disp = f"{parts[0]:<4} {parts[1]}"
+    else:
+        disp = f"{parts[0]:<4} {parts[1]} ({parts[2]})"
+    display_lines.append(disp)
+    display_map[disp] = opt
+
+wofi_cmd = [
+    "wofi",
+    "--dmenu",
+    "-i",
+    "--prompt", prompt,
+    "--width", menu_width,
+    "--height", menu_height
+]
+
+try:
+    proc = subprocess.Popen(wofi_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+    out, _ = proc.communicate(input="\n".join(display_lines))
+    if proc.returncode != 0 or not out.strip():
+        sys.exit(1)
+    
+    selected_disp = out.strip()
+    raw_opt = display_map.get(selected_disp, selected_disp)
+    
+    parts = raw_opt.split("\t")
+    if len(parts) == 1:
+        print(parts[0])
+    elif len(parts) == 2:
+        print(parts[1])
+    else:
+        print(f"{parts[1]}\t{parts[2]}")
+except Exception as e:
+    sys.exit(1)

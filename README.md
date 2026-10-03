@@ -13,8 +13,15 @@
 
 ## ✨ Features
 
-- **22 Curated Omarchy Themes**: Includes *Tokyo Night, Catppuccin, Nord, Gruvbox, Everforest, Retro 82, Lumon, Matte Black*, and more.
-- **Dynamic Waybar Sync**: When you switch themes, Waybar dynamically re-tints its workspace pills, borders, clock, and accents to match your active wallpaper and palette.
+- **22 Curated Omarchy Themes**: Includes *Tokyo Night, Catppuccin, Nord, Gruvbox, Everforest, Retro 82, Lumon, Matte Black, Hackerman*, and more.
+- **Universal Desktop Theme Engine (`omarchy-theme-sync-all`)**:
+  - **Hyprland Window Borders**: Window borders dynamically re-tint live to match the active theme's gradient and glow without restarting the compositor.
+  - **Dynamic Waybar Sync**: Waybar dynamically re-tints workspace pills, borders, clock, and system stats.
+  - **Wofi Palette Sync**: Wofi launcher inherits exact background, selection, and accent colors.
+  - **Mako Notifications**: Notification popups match the active theme styling.
+- **Background Cycling (`Super + Ctrl + Space`)**: Instantly cycle through every curated wallpaper included with your active theme via `omarchy theme bg next`.
+- **Searchable Keybindings Cheat Sheet (`Super + K`)**: Visual menu listing all shortcuts and actions.
+- **Window Tab Grouping**: Group multiple windows into tabs with `Super + G` and cycle between them with `Super + Alt + Tab`.
 - **Omarchy Window Rules**:
   - **Auto Picture-in-Picture (PiP)**: Video windows float, pin across workspaces, remove borders, and dock at `600x338`.
   - **Centered Utility Dialogs**: Volume controls (`pavucontrol`), file open/save dialogs, and portals float centered.
@@ -43,35 +50,46 @@ After installation completes, log out and select **Omarchy** from your login scr
 
 ## ⌨️ Keybindings Cheatsheet
 
-### 🚀 Applications
+### 🚀 Applications & Tools
 | Shortcut | Action |
 | :--- | :--- |
 | `Super + Space` | **Wofi** Application Launcher |
 | `Super + Return` | **Alacritty** Terminal |
+| `Super + K` | **Keybindings Cheat Sheet Menu** |
+| `Super + Ctrl + T` | **Activity / Process Monitor** (`btop`) |
 | `Super + Shift + B` or `Super + B` | Preferred Web Browser |
 | `Super + Shift + F` or `Super + E` | Preferred File Manager |
 | `Super + Shift + Y` | YouTube Web App |
 | `Super + Shift + A` | ChatGPT / AI Web App |
 
-### 🎨 Theming & Tools
+### 🎨 Theming & Backgrounds
 | Shortcut | Action |
 | :--- | :--- |
 | `Super + Ctrl + Shift + Space` | **Omarchy Theme Switcher** (22 themes) |
+| `Super + Ctrl + Space` | **Cycle Background** (Next wallpaper in theme) |
 | `Super + V` | **Clipboard History Manager** (`cliphist`) |
 | `Super + Escape` | **Power Menu** (Lock, Suspend, Logout, Reboot, Shutdown) |
+| `Super + Ctrl + L` | **Lock Screen** (`swaylock`) |
 | `Super + Shift + S` or `Print` | **Snipping Tool** (Area screenshot to clipboard) |
 
-### 🪟 Window Management
+### 🪟 Window Management & Grouping
 | Shortcut | Action |
 | :--- | :--- |
 | `Super + Q` or `Super + W` | Close active window |
 | `Super + T` | Toggle Floating mode |
+| `Super + O` | Pin & Float Window (Sticky PiP) |
+| `Super + G` | Toggle Tabbed Window Group |
+| `Super + Alt + G` | Eject window from Group |
+| `Super + Alt + Tab` | Cycle forward through tabs in Group |
 | `Super + F` | Toggle Fullscreen |
 | `Super + J` | Toggle Split direction |
 | `Super + P` | Toggle Pseudo-tiling |
+| `Super + -` / `Super + =` | Resize active window horizontally |
+| `Super + Shift + -` / `Super + Shift + =` | Resize active window vertically |
 | `Super + ` ` ` or `Super + S` | Toggle **Scratchpad** workspace |
 | `Super + Shift + ` ` ` or `Super + Alt + S` | Send window to **Scratchpad** |
 | `Super + 1..0` | Switch to Workspace 1–10 |
+| `Super + Tab` / `Super + Shift + Tab` | Cycle to next/previous Workspace |
 | `Super + Shift + 1..0` | Move active window to Workspace 1–10 |
 | `Super + Left/Right/Up/Down` | Move focus between windows |
 
@@ -101,9 +119,12 @@ omarchy-ubuntu/
 │       └── style.css           # Matching Omarchy launcher theme
 ├── bin/
 │   ├── omarchy-theme-switch    # Interactive 22-theme switcher with live sync
+│   ├── omarchy-theme-sync-all  # Universal theme engine (Waybar, Wofi, Hyprland, Mako)
+│   ├── omarchy-theme-bg-set    # Background setter with swaybg reload
+│   ├── omarchy-menu-select     # Universal menu selector with Wofi fallback
 │   ├── omarchy-power-menu      # System power & lock dashboard
 │   ├── omarchy-clipboard-menu  # Cliphist clipboard search
-│   ├── omarchy-update-waybar-theme # Extracts palette from theme to Waybar CSS
+│   ├── omarchy-update-waybar-theme # Palette extractor for Waybar CSS
 │   ├── omarchy-launch-browser  # Universal browser launcher
 │   ├── omarchy-launch-filemanager # Universal file manager launcher
 │   └── omarchy-launch-polkit   # Universal polkit authentication agent launcher
