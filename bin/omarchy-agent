@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Omarchy Agentic OS Assistant (Powered by OpenClaw + Ollama / Cloud LLM)
+# https://github.com/apravint/omarchy-ubuntu
+# ==============================================================================
+
+set -euo pipefail
+
+PROMPT="${1:-}"
+
+# If no command line prompt passed, open Wofi GUI prompt
+if [ -z "$PROMPT" ]; then
+    PROMPT=$(wofi --dmenu --prompt "🤖 Ask Omarchy Agentic OS..." --width 600 --height 150 2>/dev/null || true)
+fi
+
+if [ -z "$PROMPT" ]; then
+    exit 0
+fi
+
+# Send desktop notification
+if command -v notify-send >/dev/null 2>&1; then
+    notify-send -a "Omarchy Agent" "🤖 Processing Instruction..." "$PROMPT" -t 3000
+fi
+
+# Ensure Ollama daemon is active if local
+if command -v ollama >/dev/null 2>&1; then
+    if ! pgrep -x "ollama" >/dev/null 2>&1; then
+        ollama serve >/dev/null 2>&1 &
+        sleep 2
+    fi
+fi
+
+# Check for OpenClaw CLI
+if command -v openclaw >/dev/null 2>&1; then
+    MODEL_FLAG="--model ollama/qwen2.5:7b"
+    if [ -n "${GEMINI_API_KEY:-}" ]; then
+        MODEL_FLAG="--model gemini/gemini-2.5-flash"
+    elif [ -n "${OPENAI_API_KEY:-}" ]; then
+        MODEL_FLAG="--model openai/gpt-4o"
+    fi
+
+    openclaw $MODEL_FLAG \
+             --system-prompt "You are the native Agentic OS assistant for Omarchy Ubuntu Linux running Hyprland. You have full access to Linux shell commands, hyprctl window manager dispatches, system settings, themes, and screen captures." \
+             --prompt "$PROMPT"
+else
+    # Fallback to direct Python / Ollama REST API agent dispatch
+    python3 -c "
+import sys, json, urllib.request, subprocess
+
+prompt = sys.argv[1]
+print(f'🤖 Omarchy Agent executing: {prompt}')
+
+sys_prompt = '''You are the Omarchy Agentic OS assistant running on Ubuntu Hyprland.
+Output concise shell commands or actions to execute the user request.
+Available dispatches:
+- hyprctl dispatch workspace <N>
+- hyprctl dispatch focuswindow <class>
+- omarchy-theme-switch <theme>
+- notify-send \"title\" \"message\"
+'''
+
+url = 'http://localhost:11434/api/generate'
+data = json.dumps({
+    'model': 'qwen2.5:1.5b',
+    'prompt': f'{sys_prompt}\nUser: {prompt}\nResponse:',
+    'stream': False
+}).encode('utf-8')
+
+try:
+    req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        res = json.loads(resp.read().decode('utf-8'))
+        answer = res.get('response', '')
+        print('► Agent Answer:\n', answer)
+        # Execute lines starting with '$' or 'hyprctl' or 'omarchy'
+        for line in answer.split('\n'):
+            line = line.strip()
+            if line.startswith('hyprctl') or line.startswith('omarchy') or line.startswith('notify-send'):
+                subprocess.run(line, shell=True)
+except Exception as e:
+    print(f'Agent error: {e}')
+    subprocess.run(['notify-send', '-a', 'Omarchy Agent', 'Agent Execution Finished', prompt])
+" "$PROMPT"
+fi

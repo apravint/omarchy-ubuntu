@@ -56,6 +56,7 @@ sudo apt install -y \
     curl \
     wlsunset \
     python3 \
+    python3-pip \
     python3-gi \
     gir1.2-gtk-3.0 \
     pavucontrol \
@@ -64,6 +65,16 @@ sudo apt install -y \
     polkit-kde-agent-1 \
     git \
     socat
+
+# Install Ollama & OpenClaw Agentic Stack
+if ! command -v ollama >/dev/null 2>&1; then
+    echo "Installing Ollama Local LLM Engine..."
+    curl -fsSL https://ollama.com/install.sh | sh || true
+fi
+if command -v pip3 >/dev/null 2>&1; then
+    echo "Installing OpenClaw Agent Framework..."
+    pip3 install openclaw 2>/dev/null || true
+fi
 
 echo -e "\n${YELLOW}[2/6] Installing Omarchy core repository & theme suite...${NC}"
 if [ ! -d "/usr/share/omarchy" ]; then
@@ -187,6 +198,8 @@ echo -e "1. Log out of your current session."
 echo -e "2. In the display manager (login screen), select ${GREEN}Omarchy${NC} from the session menu."
 echo -e "3. Log in and enjoy authentic Omarchy tiling!"
 echo -e "\n${YELLOW}Useful Shortcuts:${NC}"
+echo -e "  • ${GREEN}Super + A${NC}                     : 🤖 Launch Omarchy Agentic OS Assistant"
+echo -e "  • ${GREEN}Super + Shift + A${NC}               : 💬 Launch Agent Interactive Sidecar Window"
 echo -e "  • ${GREEN}Super + Space${NC}                 : Wofi Application Launcher"
 echo -e "  • ${GREEN}Super + Return${NC}                : Terminal (Alacritty)"
 echo -e "  • ${GREEN}Super + Alt + Return${NC}          : Tmux Terminal Session"

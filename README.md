@@ -234,9 +234,11 @@ sudo bash build/build-iso.sh
 
 ## ⌨️ Comprehensive Keyboard Shortcuts
 
-### 🚀 System Control & Launchers
+### 🤖 Agentic OS & System Control Launchers
 | Shortcut | Action | Description |
 | :--- | :--- | :--- |
+| `Super + A` | **🤖 Omarchy Agentic OS** | Launches AI Agent prompt for automated OS & window management |
+| `Super + Shift + A` | **💬 Agent Interactive Sidecar** | Opens floating interactive AI chat sidecar terminal window |
 | `Super + Space` | **Command Menu** | Unified system launcher and quick action center |
 | `Super + Alt + Space` | **Wofi Application Menu** | Fast searchable desktop app launcher |
 | `Super + Return` | **Terminal** | Opens GPU-accelerated Alacritty terminal |

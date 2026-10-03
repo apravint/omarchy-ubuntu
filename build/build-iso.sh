@@ -194,6 +194,7 @@ apt-get install -y \
     wlsunset \
     network-manager-gnome \
     polkit-kde-agent-1 \
+    python3-pip \
     python3-gi \
     gir1.2-gtk-3.0 \
     ripgrep \
@@ -209,6 +210,10 @@ apt-get install -y \
     fonts-font-awesome \
     btop \
     jq || true
+
+# Install Ollama & OpenClaw Agentic OS Stack inside ISO
+curl -fsSL https://ollama.com/install.sh | sh || true
+pip3 install openclaw || true
 
 # Install official Omarchy core themes & suite into /usr/share/omarchy
 if [ ! -d "/usr/share/omarchy" ]; then
