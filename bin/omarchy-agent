@@ -72,9 +72,9 @@ try:
         res = json.loads(resp.read().decode('utf-8'))
         answer = res.get('response', '')
         print('► Agent Answer:\n', answer)
-        # Execute lines starting with '$' or 'hyprctl' or 'omarchy'
+        # Execute lines starting with 'hyprctl', 'omarchy', or 'notify-send'
         for line in answer.split('\n'):
-            line = line.strip()
+            line = line.strip().strip('`').strip()
             if line.startswith('hyprctl') or line.startswith('omarchy') or line.startswith('notify-send'):
                 subprocess.run(line, shell=True)
 except Exception as e:
