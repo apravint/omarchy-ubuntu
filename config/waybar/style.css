@@ -10,10 +10,25 @@
 
 window#waybar {
     background: @bg;
-    border-radius: 10px;
+    border-radius: 12px;
     color: @fg;
     border: 1px solid @border;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+#custom-menu {
+    padding: 0 12px;
+    margin: 3px 4px 3px 4px;
+    border-radius: 8px;
+    background: @accent_rgba;
+    color: @accent;
+    font-size: 15px;
+    transition: all 0.2s ease-in-out;
+}
+
+#custom-menu:hover {
+    background: @accent;
+    color: #0b0c16;
 }
 
 #workspaces button {
@@ -43,6 +58,15 @@ window#waybar {
     color: @fg;
 }
 
+#mpris {
+    padding: 0 12px;
+    margin: 3px 4px;
+    border-radius: 6px;
+    background: @selection;
+    color: @accent;
+    font-weight: 500;
+}
+
 #clock {
     padding: 0 14px;
     font-weight: bold;
@@ -50,6 +74,7 @@ window#waybar {
     letter-spacing: 0.5px;
 }
 
+#custom-theme,
 #pulseaudio,
 #network,
 #battery,
@@ -59,9 +84,16 @@ window#waybar {
     border-radius: 6px;
     background: @selection;
     color: @fg;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
 }
 
+#custom-theme {
+    color: @accent;
+    font-size: 14px;
+    padding: 0 10px;
+}
+
+#custom-theme:hover,
 #pulseaudio:hover,
 #network:hover,
 #battery:hover {

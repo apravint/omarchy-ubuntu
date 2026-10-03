@@ -5,37 +5,96 @@
     "margin-top": 6,
     "margin-left": 12,
     "margin-right": 12,
-    "modules-left": ["hyprland/workspaces", "hyprland/window"],
-    "modules-center": ["clock"],
-    "modules-right": ["pulseaudio", "network", "battery", "tray"],
+
+    "modules-left": [
+        "custom/menu",
+        "hyprland/workspaces",
+        "hyprland/window"
+    ],
+    "modules-center": [
+        "mpris",
+        "clock"
+    ],
+    "modules-right": [
+        "custom/theme",
+        "pulseaudio",
+        "network",
+        "battery",
+        "tray"
+    ],
+
+    "custom/menu": {
+        "format": "󰀻",
+        "tooltip": false,
+        "on-click": "wofi --show drun",
+        "on-click-right": "alacritty"
+    },
 
     "hyprland/workspaces": {
         "format": "{name}",
-        "on-click": "activate"
+        "on-click": "activate",
+        "sort-by-number": true
     },
+
     "hyprland/window": {
-        "max-length": 50,
-        "separate-outputs": true
+        "max-length": 40,
+        "separate-outputs": true,
+        "tooltip": false
     },
+
+    "mpris": {
+        "format": "󰎆 {title} - {artist}",
+        "format-paused": "󰏤 <i>{title}</i>",
+        "max-length": 32,
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous",
+        "tooltip": true
+    },
+
     "clock": {
-        "format": "{:%a %b %d  %H:%M}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+        "format": "󰃭 {:%a %b %d  %H:%M}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "on-click-middle": "omarchy menu timezone"
     },
+
+    "custom/theme": {
+        "format": "󰔎",
+        "tooltip": "Left-click: Theme Switcher | Right-click: Next Background",
+        "on-click": "~/.local/bin/omarchy-theme-switch",
+        "on-click-right": "omarchy theme bg next"
+    },
+
     "pulseaudio": {
-        "format": "VOL {volume}%",
-        "format-muted": "MUTED",
-        "on-click": "pavucontrol"
+        "format": "{icon} {volume}%",
+        "format-muted": "󰝟 MUTED",
+        "format-icons": {
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "on-click": "pavucontrol",
+        "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-scroll-up": "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
     },
+
     "network": {
-        "format-wifi": "{essid} ({signalStrength}%)",
-        "format-ethernet": "ETH",
-        "format-disconnected": "OFFLINE"
+        "format-wifi": "󰖩 {essid}",
+        "format-ethernet": "󰈀 ETH",
+        "format-disconnected": "󰖪 OFFLINE",
+        "tooltip-format": "Signal: {signalStrength}% | IP: {ipaddr}",
+        "on-click": "nm-connection-editor",
+        "on-click-right": "alacritty -e nmtui"
     },
+
     "battery": {
-        "format": "BAT {capacity}%",
-        "format-charging": "CHG {capacity}%",
-        "format-plugged": "AC {capacity}%"
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-plugged": "󰚥 {capacity}%",
+        "format-icons": ["󰂃", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "on-click": "~/.local/bin/omarchy-power-menu",
+        "tooltip": true
     },
+
     "tray": {
         "spacing": 10
     }
