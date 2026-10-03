@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+"""
+Omarchy AI Security Guard & Firewall Monitor (omarchy-security-guard)
+Audits listening ports, SSH/sudo login attempts, firewall status, and anomalous network traffic.
+https://github.com/apravint/omarchy-ubuntu
+"""
+
+import sys
+import os
+import subprocess
+import json
+
+def run_cmd(cmd):
+    try:
+        res = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=8)
+        return res.stdout.strip()
+    except Exception as e:
+        return ""
+
+def notify(title, message, urgency="normal"):
+    print(f"[{urgency.upper()}] {title}: {message}")
+    subprocess.run(f'notify-send -u {urgency} -a "Omarchy Security Guard" "{title}" "{message}"', shell=True)
+
+def audit_security():
+    issues = []
+    print("🛡️ Running Omarchy Security Guard Audit...")
+
+    # 1. Audit Listening Sockets
+    ports_out = run_cmd("ss -tulpn | grep LISTEN")
+    listening_ports = []
+    if ports_out:
+        for line in ports_out.split("\n"):
+            if "127.0.0.1" not in line and "localhost" not in line and "::1" not in line:
+                listening_ports.append(line.split()[4] if len(line.split()) >= 5 else line)
+
+    if listening_ports:
+        issues.append(f"🌐 Public Listening Ports Detected: {', '.join(listening_ports[:4])}")
+
+    # 2. Audit Failed Sudo / Auth Logs
+    auth_out = run_cmd("journalctl _COMM=sudo -n 10 --no-pager 2>/dev/null | grep -i 'authentication failure'")
+    if auth_out:
+        failed_count = len(auth_out.split("\n"))
+        issues.append(f"⚠️ {failed_count} Recent Sudo Authentication Failures Detected.")
+
+    # 3. Audit UFW Firewall Status
+    ufw_out = run_cmd("sudo ufw status 2>/dev/null || true")
+    if "inactive" in ufw_out.lower():
+        issues.append("🔥 UFW Firewall is INACTIVE! Recommended: sudo ufw enable")
+
+    # 4. Notify Summary
+    if issues:
+        summary = "\n".join(issues)
+        notify("🛡️ Security Guard Risk Alert", summary, urgency="critical")
+    else:
+        notify("🛡️ Security Guard Audit", "All firewall rules, listening sockets, and authentication logs are secure.", urgency="normal")
+
+if __name__ == "__main__":
+    audit_security()

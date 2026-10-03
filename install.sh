@@ -179,6 +179,7 @@ omarchy theme set "Tokyo Night" || true
 "$HOME/.local/bin/omarchy-theme-sync-all" || true
 systemctl --user enable --now omarchy-agentd.service 2>/dev/null || true
 systemctl --user enable --now omarchy-healthd.timer 2>/dev/null || true
+systemctl --user enable --now omarchy-security.timer 2>/dev/null || true
 
 # Unmute audio sinks so sound works out of the box
 for sink in $(pactl list sinks short 2>/dev/null | awk '{print $2}'); do
@@ -204,6 +205,9 @@ echo -e "\n${YELLOW}Useful Shortcuts:${NC}"
 echo -e "  • ${GREEN}Super + A${NC}                     : 🤖 Launch Omarchy Agentic OS Assistant"
 echo -e "  • ${GREEN}Super + Shift + A${NC}               : 💬 Launch Agent Interactive Sidecar Window"
 echo -e "  • ${GREEN}Super + Ctrl + H${NC}                : 🛡️ Instant OS Self-Healing & Service Audit"
+echo -e "  • ${GREEN}Super + Ctrl + V${NC}                : 🎙️ AI Voice Assistant & Hands-Free Control"
+echo -e "  • ${GREEN}Super + Shift + Print${NC}           : 👁️ Screen Vision AI Analyst & OCR"
+echo -e "  • ${GREEN}Super + Ctrl + G${NC}                : 🛡️ AI Security Guard & Firewall Audit"
 echo -e "  • ${GREEN}Super + Alt + N${NC}                 : 📈 Live Stock Market News & Wofi GUI"
 echo -e "  • ${GREEN}Super + Space${NC}                 : Wofi Application Launcher"
 echo -e "  • ${GREEN}Super + Return${NC}                : Terminal (Alacritty)"

@@ -1,0 +1,10 @@
+[Unit]
+Description=Omarchy AI Security Guard Inspection Service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/omarchy-security-guard
+
+[Install]
+WantedBy=default.target
