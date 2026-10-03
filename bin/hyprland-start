@@ -19,10 +19,12 @@ export MOZ_ENABLE_WAYLAND=1
 export ELECTRON_OZONE_PLATFORM_HINT=auto
 export _JAVA_AWT_WM_NONREPARENTING=1
 
-# GPU driver hints for GeForce GT 705 (Nouveau)
-export LIBVA_DRIVER_NAME=nouveau
-export GBM_BACKEND=drm
+# Hardware cursor compatibility
 export WLR_NO_HARDWARE_CURSORS=1
 
-# Launch Hyprland compositor
-exec Hyprland "$@"
+# Launch Hyprland compositor via official start-hyprland watchdog wrapper if available
+if command -v start-hyprland >/dev/null 2>&1; then
+    exec start-hyprland "$@"
+else
+    exec Hyprland "$@"
+fi
