@@ -111,12 +111,10 @@ Switch your entire operating system aesthetic instantly with `Super + Ctrl + Shi
 - Unlike standard dotfile setups that launch components via brittle `exec-once` terminal commands, Omarchy for Ubuntu manages Waybar, Swaybg, and display daemons through **systemd user units** (`waybar.service`, `swaybg.service`).
 - Includes hardware readiness polling loops: if an external monitor takes 3 seconds to wake up, the daemon waits cleanly rather than crashing the status bar.
 
-### 🚀 6. Built-in Power-User Tooling
-- **Command Center & Launcher**: Fast app searching via `Super + Space` (Command Menu) and `Super + Alt + Space` (Wofi).
-- **Clipboard History**: Full clipboard recall with text and image previews via `Super + V` (`cliphist`).
-- **Screen Capture & OCR**: Snip screen regions with `Super + Shift + S`, extract text directly to clipboard with `Super + Ctrl + Print` (`tesseract-ocr`), or record MP4 video with `Alt + Print`.
-- **System Monitoring**: Instant visual resource monitor via `Super + Ctrl + T` (`btop`).
-- **Lock & Power Dashboard**: Intuitive lock screen, suspend, reboot, and shutdown dashboard via `Super + Escape`.
+### 🌐 7. Native Model Context Protocol (MCP) Server Integration
+- **Standardized Agent Tool Protocol**: Integrates Anthropic's **Model Context Protocol (MCP)** specification directly into the desktop agent pipeline.
+- **Built-in `omarchy-mcp-server`**: Provides native JSON-RPC tools for Hyprland window manipulation (`get_hyprland_windows`, `dispatch_hyprland`), system health diagnostics, theme switching (`set_omarchy_theme`), and live stock market news (`get_stock_news`).
+- **Extensible Ecosystem**: Pre-configured in `~/.config/mcp/omarchy_mcp_config.json` with support for `@modelcontextprotocol/server-filesystem`, `mcp-server-git`, and `mcp-server-fetch`.
 
 ---
 

@@ -122,7 +122,8 @@ for dir in hypr waybar wofi mako; do
     fi
 done
 
-# Copy configurations
+# Copy configurations & MCP servers
+mkdir -p "$HOME/.config/mcp"
 cp -r "$REPO_DIR/config/"* "$HOME/.config/"
 
 # Copy scripts & make executable

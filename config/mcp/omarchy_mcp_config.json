@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "omarchy_system": {
+      "command": "/usr/local/bin/omarchy-mcp-server",
+      "args": [],
+      "description": "Native Omarchy Linux System, Hyprland Window Manager, Themes & Diagnostics MCP Server"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/home/omarchy"
+      ],
+      "description": "Safe structured filesystem access for user home directory"
+    },
+    "fetch": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-fetch"
+      ],
+      "description": "Web fetch and live search content extraction"
+    },
+    "git": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-git"
+      ],
+      "description": "Git repository inspection, commits, and diff analysis"
+    }
+  }
+}

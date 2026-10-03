@@ -1,0 +1,142 @@
+#!/usr/bin/env python3
+"""
+Omarchy System & Hyprland MCP Server (omarchy-mcp-server)
+Model Context Protocol (MCP) server providing native Linux OS & Hyprland control over stdio JSON-RPC.
+https://github.com/apravint/omarchy-ubuntu
+"""
+
+import sys
+import json
+import subprocess
+import urllib.request
+import xml.etree.ElementTree as ET
+
+def send_response(response):
+    sys.stdout.write(json.dumps(response) + "\n")
+    sys.stdout.flush()
+
+def handle_list_tools():
+    return {
+        "tools": [
+            {
+                "name": "get_hyprland_windows",
+                "description": "Get all active windows, workspaces, and window classes in Hyprland",
+                "inputSchema": {"type": "object", "properties": {}}
+            },
+            {
+                "name": "dispatch_hyprland",
+                "description": "Execute a Hyprland window manager dispatch command (e.g., workspace 2, focuswindow Alacritty)",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "dispatcher": {"type": "string", "description": "Dispatcher name (e.g. workspace, focuswindow, killactive)"},
+                        "args": {"type": "string", "description": "Dispatcher argument"}
+                    },
+                    "required": ["dispatcher"]
+                }
+            },
+            {
+                "name": "set_omarchy_theme",
+                "description": "Switch the Omarchy desktop visual color theme (e.g. Tokyo Night, Catppuccin, Nord, Gruvbox)",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "theme_name": {"type": "string", "description": "Name of the Omarchy theme"}
+                    },
+                    "required": ["theme_name"]
+                }
+            },
+            {
+                "name": "get_system_health",
+                "description": "Diagnose failed systemd units, PipeWire audio state, and system memory health",
+                "inputSchema": {"type": "object", "properties": {}}
+            },
+            {
+                "name": "get_stock_news",
+                "description": "Fetch real-time stock market headlines and financial news",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "symbol": {"type": "string", "description": "Stock symbol or company name (optional)"}
+                    }
+                }
+            }
+        ]
+    }
+
+def handle_call_tool(name, arguments):
+    if name == "get_hyprland_windows":
+        try:
+            out = subprocess.check_output(["hyprctl", "clients", "-j"], text=True)
+            return {"content": [{"type": "text", "text": out}]}
+        except Exception as e:
+            return {"content": [{"type": "text", "text": f"Error: {e}"}]}
+
+    elif name == "dispatch_hyprland":
+        dispatcher = arguments.get("dispatcher", "")
+        args = arguments.get("args", "")
+        cmd = ["hyprctl", "dispatch", dispatcher]
+        if args:
+            cmd.append(args)
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        return {"content": [{"type": "text", "text": f"Executed: {' '.join(cmd)} | Returncode: {res.returncode}"}]}
+
+    elif name == "set_omarchy_theme":
+        theme = arguments.get("theme_name", "Tokyo Night")
+        res = subprocess.run(["omarchy-theme-switch", theme], capture_output=True, text=True)
+        return {"content": [{"type": "text", "text": f"Theme set to {theme}"}]}
+
+    elif name == "get_system_health":
+        failed = subprocess.check_output(["systemctl", "--failed", "--no-legend"], text=True).strip()
+        free_mem = subprocess.check_output(["free", "-h"], text=True).strip()
+        status_text = f"Failed Services:\n{failed if failed else 'None'}\n\nMemory:\n{free_mem}"
+        return {"content": [{"type": "text", "text": status_text}]}
+
+    elif name == "get_stock_news":
+        symbol = arguments.get("symbol", "")
+        url = f"https://news.google.com/rss/search?q={urllib.parse.quote(symbol)}+stock" if symbol else "https://news.google.com/rss/headlines/section/topic/BUSINESS"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        try:
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                xml_data = resp.read()
+                root = ET.fromstring(xml_data)
+                headlines = [item.find('title').text for item in root.findall('.//item')[:5] if item.find('title') is not None]
+                return {"content": [{"type": "text", "text": "\n".join(headlines)}]}
+        except Exception as e:
+            return {"content": [{"type": "text", "text": f"Error fetching stock news: {e}"}]}
+
+    return {"content": [{"type": "text", "text": f"Unknown tool: {name}"}]}
+
+def main():
+    while True:
+        line = sys.stdin.readline()
+        if not line:
+            break
+        try:
+            req = json.loads(line)
+            req_id = req.get("id")
+            method = req.get("method")
+
+            if method == "initialize":
+                send_response({
+                    "jsonrpc": "2.0",
+                    "id": req_id,
+                    "result": {
+                        "protocolVersion": "2024-11-05",
+                        "capabilities": {"tools": {}},
+                        "serverInfo": {"name": "omarchy-mcp-server", "version": "1.0.0"}
+                    }
+                })
+            elif method == "tools/list":
+                send_response({"jsonrpc": "2.0", "id": req_id, "result": handle_list_tools()})
+            elif method == "tools/call":
+                params = req.get("params", {})
+                name = params.get("name")
+                arguments = params.get("arguments", {})
+                result = handle_call_tool(name, arguments)
+                send_response({"jsonrpc": "2.0", "id": req_id, "result": result})
+        except Exception as e:
+            pass
+
+if __name__ == "__main__":
+    main()
