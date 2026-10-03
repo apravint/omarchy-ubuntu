@@ -9,9 +9,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version tag (e.g. v24.04.1)'
+        description: 'Release version tag (e.g. v26.04.0 or v24.04.1)'
         required: true
-        default: 'v24.04.1'
+        default: 'v26.04.0'
 
 permissions:
   contents: write
@@ -19,7 +19,7 @@ permissions:
 jobs:
   build-iso:
     name: Build Bootable Live ISO
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4

@@ -5,9 +5,13 @@
 # ==============================================================================
 set -euo pipefail
 
+# Auto-detect latest Ubuntu version from host or environment
+HOST_CODENAME="$(. /etc/os-release 2>/dev/null && echo "${UBUNTU_CODENAME:-}" || echo "")"
+HOST_VERSION="$(. /etc/os-release 2>/dev/null && echo "${VERSION_ID:-}" || echo "")"
+
+CODENAME="${UBUNTU_CODENAME:-${HOST_CODENAME:-noble}}"
+DISTRO_VERSION="${DISTRO_VERSION:-${HOST_VERSION:-24.04}}"
 DISTRO_NAME="OmLinux"
-DISTRO_VERSION="24.04"
-CODENAME="noble"
 ARCH="amd64"
 ROOTFS_DIR="/tmp/omlinux-rootfs"
 ISO_DIR="/tmp/omlinux-iso"
