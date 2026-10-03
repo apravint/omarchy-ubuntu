@@ -1,0 +1,10 @@
+[Unit]
+Description=Omarchy Self-Healing OS System Inspection Service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/omarchy-health-agent
+
+[Install]
+WantedBy=default.target

@@ -239,6 +239,7 @@ sudo bash build/build-iso.sh
 | :--- | :--- | :--- |
 | `Super + A` | **🤖 Omarchy Agentic OS** | Launches AI Agent prompt for automated OS & window management |
 | `Super + Shift + A` | **💬 Agent Interactive Sidecar** | Opens floating interactive AI chat sidecar terminal window |
+| `Super + Ctrl + H` | **🛡️ Instant OS Self-Healing** | Diagnoses failed systemd units, restores PipeWire audio, cleans RAM |
 | `Super + Space` | **Command Menu** | Unified system launcher and quick action center |
 | `Super + Alt + Space` | **Wofi Application Menu** | Fast searchable desktop app launcher |
 | `Super + Return` | **Terminal** | Opens GPU-accelerated Alacritty terminal |

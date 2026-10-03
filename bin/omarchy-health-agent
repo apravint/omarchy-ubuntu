@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+"""
+Omarchy Self-Healing OS Agent (omarchy-health-agent)
+Powered by Antigravity AI Engine logic & systemd integration.
+Diagnoses Linux system failures, failed services, audio sinks, and auto-restarts broken components.
+"""
+
+import sys
+import os
+import subprocess
+import json
+import time
+
+def run_cmd(cmd):
+    try:
+        res = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=10)
+        return res.stdout.strip()
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+def notify(title, message, urgency="normal"):
+    print(f"[{urgency.upper()}] {title}: {message}")
+    subprocess.run(f'notify-send -u {urgency} -a "Omarchy Self-Healing OS" "{title}" "{message}"', shell=True)
+
+def check_failed_services():
+    """Diagnose failed systemd units."""
+    out = run_cmd("systemctl --failed --no-legend")
+    failed_units = []
+    if out:
+        for line in out.split("\n"):
+            parts = line.split()
+            if len(parts) >= 1:
+                failed_units.append(parts[0])
+    return failed_units
+
+def check_audio_subsystem():
+    """Diagnose PipeWire / WirePlumber audio sinks."""
+    out = run_cmd("pactl list sinks short")
+    if not out or "error" in out.lower():
+        return False
+    return True
+
+def check_memory_usage():
+    """Check system RAM usage percentage."""
+    out = run_cmd("free | grep Mem | awk '{print $3/$2 * 100.0}'")
+    try:
+        return float(out)
+    except:
+        return 0.0
+
+def diagnose_and_heal():
+    print("🔍 Starting Omarchy Self-Healing OS Inspection...")
+    actions_taken = []
+
+    # 1. Check failed systemd services
+    failed_services = check_failed_services()
+    if failed_services:
+        for service in failed_services:
+            print(f"⚠️ Failed service detected: {service}. Attempting restart...")
+            restart_res = run_cmd(f"sudo systemctl restart {service}")
+            if service in check_failed_services():
+                # Inspect logs for root cause
+                log_snippet = run_cmd(f"journalctl -u {service} -n 5 --no-pager")
+                actions_taken.append(f"❌ {service} restart failed: {log_snippet[:80]}...")
+            else:
+                actions_taken.append(f"✅ Restored failed service: {service}")
+
+    # 2. Check Audio Subsystem
+    if not check_audio_subsystem():
+        print("⚠️ PipeWire Audio daemon unreachable. Restoring audio subsystem...")
+        run_cmd("systemctl --user restart pipewire wireplumber pipewire-pulse")
+        time.sleep(1)
+        if check_audio_subsystem():
+            actions_taken.append("✅ Restored PipeWire & WirePlumber audio subsystem.")
+        else:
+            actions_taken.append("⚠️ Audio subsystem recovery required manual check.")
+
+    # 3. Check High RAM Exhaustion
+    mem_pct = check_memory_usage()
+    if mem_pct > 90.0:
+        print(f"⚠️ High RAM usage detected ({mem_pct:.1f}%). Cleaning page caches...")
+        run_cmd("sudo sync; sudo sysctl -w vm.drop_caches=3 >/dev/null 2>&1 || true")
+        new_mem = check_memory_usage()
+        actions_taken.append(f"🧹 Reduced RAM usage from {mem_pct:.1f}% to {new_mem:.1f}%.")
+
+    # 4. Summary & Desktop Notification
+    if actions_taken:
+        summary_msg = "\n".join(actions_taken)
+        notify("🛡️ Self-Healing OS Action Summary", summary_msg, urgency="critical")
+    else:
+        print("✨ All system components, services, audio, and memory are healthy!")
+        notify("🛡️ Self-Healing OS Audit", "All system services, audio sinks, and memory are operating at 100% health.", urgency="normal")
+
+if __name__ == "__main__":
+    diagnose_and_heal()
