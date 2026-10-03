@@ -242,10 +242,19 @@ sudo bash build/build-iso.sh
 | `Super + Return` | **Terminal** | Opens GPU-accelerated Alacritty terminal |
 | `Super + Alt + Return` | **Tmux Session** | Opens terminal attached to persistent tmux session |
 | `Super + K` | **Keybindings Cheat Sheet** | On-screen interactive shortcut cheat sheet |
-| `Super + Shift + A` | **Audio Output Toggle** | Cycles between HDMI TV, Monitor speakers, and Headphones |
+| `Super + Ctrl + A` | **Audio Control Panel** | Opens PipeWire audio mixer & output selector (`pavucontrol`) |
+| `Super + Ctrl + B` | **Bluetooth Manager** | Scans and pairs Bluetooth devices (`blueman-manager`) |
+| `Super + Ctrl + W` | **Network Settings** | Wi-Fi and network connection manager (`nm-connection-editor`) |
+| `Super + Ctrl + D` | **Displays Management** | Multi-monitor resolution and refresh rate GUI (`omarchy-displays-gui`) |
+| `Super + Ctrl + P` | **Power & Session** | Fast system power and session control (`omarchy-power-menu`) |
+| `Super + Ctrl + E` | **Emoji Picker** | 1,800+ searchable emojis with automatic clipboard copy (`omarchy-emoji-picker`) |
 | `Super + Ctrl + T` | **Activity Monitor** | Launches real-time resource monitor (`btop`) |
 | `Super + Ctrl + Shift + Space` | **22-Theme Switcher** | Open interactive theme selector palette |
 | `Super + Ctrl + Space` | **Cycle Wallpaper** | Cycles to next wallpaper in current theme |
+| `Super + Shift + Space` | **Toggle Top Bar** | Shows or hides the Waybar status bar dynamically |
+| `Super + Ctrl + Shift + B` | **Restart Top Bar** | Instantly reloads Waybar process and styles |
+| `Super + Backspace` | **Toggle Opacity** | Toggles window transparency on the focused application |
+| `Super + Shift + Backspace` | **Toggle Gaps** | Toggles Hyprland window tiling gaps on/off |
 | `Super + V` | **Clipboard Manager** | Search and paste clipboard history with previews (`cliphist`) |
 | `Super + Escape` | **Power & Session Menu** | Lock, Suspend, Reboot, or Power Off the system |
 

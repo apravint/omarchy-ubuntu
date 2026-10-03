@@ -263,6 +263,11 @@ fi
 if ! grep -q "OMARCHY_PATH" "${ROOTFS_DIR}/etc/environment" 2>/dev/null; then
     echo "OMARCHY_PATH=/usr/share/omarchy" >> "${ROOTFS_DIR}/etc/environment"
 fi
+if [ -f "${REPO_ROOT}/system/sudoers.d/omarchy-theme-browser" ]; then
+    mkdir -p "${ROOTFS_DIR}/etc/sudoers.d"
+    cp -a --remove-destination "${REPO_ROOT}/system/sudoers.d/omarchy-theme-browser" "${ROOTFS_DIR}/etc/sudoers.d/omarchy-theme-browser"
+    chmod 0440 "${ROOTFS_DIR}/etc/sudoers.d/omarchy-theme-browser"
+fi
 
 # Copy skeleton configs so every user (and live user) gets them
 mkdir -p "${ROOTFS_DIR}/etc/skel/.config" "${ROOTFS_DIR}/etc/skel/.local/bin" "${ROOTFS_DIR}/etc/skel/.local/share/applications" "${ROOTFS_DIR}/etc/skel/.local/share/icons/hicolor/128x128/apps"

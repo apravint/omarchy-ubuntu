@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# Omarchy Emoji Picker
+# Part of Omarchy for Ubuntu
+set -euo pipefail
+
+EMOJI_FILE="/usr/share/omarchy/shell/plugins/emojis/emojis.json"
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/omarchy"
+CACHE_FILE="$CACHE_DIR/emojis.txt"
+
+mkdir -p "$CACHE_DIR"
+
+if [[ ! -f "$CACHE_FILE" ]]; then
+    if [[ -f "$EMOJI_FILE" ]]; then
+        python3 -c "
+import json
+try:
+    with open('$EMOJI_FILE') as f:
+        data = json.load(f)
+    with open('$CACHE_FILE', 'w') as out:
+        for item in data:
+            e = item.get('e', '')
+            k = item.get('k', '')
+            if e:
+                out.write(f'{e}  {k}\n')
+except Exception:
+    pass
+"
+    fi
+fi
+
+if [[ ! -s "$CACHE_FILE" ]]; then
+    # Fallback popular emojis if cache or source not found
+    cat <<'EOF' > "$CACHE_FILE"
+😀  grinning face smile happy
+😂  face with tears of joy haha laugh lol
+😍  smiling face with heart eyes love
+🔥  fire hot lit flame
+👍  thumbs up approve like yes
+👎  thumbs down dislike no
+❤️  red heart love
+🎉  party popper celebration congrats
+🚀  rocket launch ship fast
+✨  sparkles magical shine
+🙏  folded hands please thank pray
+💯  hundred points 100 perfect
+🤔  thinking face wonder ponder
+😎  smiling face with sunglasses cool
+💡  light bulb idea
+⚡  high voltage zap electricity fast
+👀  eyes look see peek
+🙌  raising hands celebrate hooray
+💪  flexed biceps strong muscle
+✅  check mark button ok done
+❌  cross mark no cancel
+☕  hot beverage coffee tea
+EOF
+fi
+
+SELECTED=$(wofi --dmenu --prompt "Search Emoji:" --width 500 --height 400 < "$CACHE_FILE" 2>/dev/null || true)
+
+if [[ -n "$SELECTED" ]]; then
+    EMOJI=$(echo "$SELECTED" | awk '{print $1}')
+    if [[ -n "$EMOJI" ]]; then
+        printf '%s' "$EMOJI" | wl-copy --type text/plain
+        # Attempt to auto-type if wtype exists
+        if command -v wtype >/dev/null 2>&1; then
+            sleep 0.15
+            wtype "$EMOJI" 2>/dev/null || true
+        fi
+        notify-send -u low "Emoji Copied" "$EMOJI copied to clipboard" 2>/dev/null || true
+    fi
+fi

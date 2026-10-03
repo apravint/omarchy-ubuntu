@@ -1,0 +1,2 @@
+# Grant passwordless browser policy writing for sudo group on Ubuntu
+%sudo ALL=(root) NOPASSWD: /usr/local/bin/omarchy-theme-set-browser-policy [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f], /usr/bin/omarchy-theme-set-browser-policy [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]

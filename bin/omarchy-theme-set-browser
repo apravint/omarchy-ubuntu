@@ -1,0 +1,40 @@
+#!/bin/bash
+# Omarchy Browser Theme Setter (Ubuntu Optimized)
+# Applies theme color to Chromium, Chrome, Edge, and Brave policies without prompting for passwords
+
+OMARCHY_PATH="${OMARCHY_PATH:-/usr/share/omarchy}"
+CHROMIUM_THEME="$HOME/.local/state/omarchy/current/theme/chromium.theme"
+DEFAULT_COLOR="#1f2335"
+
+THEME_HEX_COLOR="$DEFAULT_COLOR"
+if [[ -f "$CHROMIUM_THEME" ]]; then
+    THEME_HEX_COLOR=$(cat "$CHROMIUM_THEME" | tr -d ' \n\r')
+    [[ "$THEME_HEX_COLOR" =~ ^#?[0-9a-fA-F]{6}$ ]] || THEME_HEX_COLOR="$DEFAULT_COLOR"
+    [[ "$THEME_HEX_COLOR" == \#* ]] || THEME_HEX_COLOR="#$THEME_HEX_COLOR"
+fi
+
+POLICY_DIRS=(
+    /etc/chromium/policies/managed
+    /etc/opt/chrome/policies/managed
+    /etc/opt/edge/policies/managed
+    /etc/brave/policies/managed
+)
+
+# Check if any managed policy directory exists on the system
+saw_any=false
+for dir in "${POLICY_DIRS[@]}"; do
+    if [[ -d "$dir" && ! -L "$dir" ]]; then
+        saw_any=true
+        break
+    fi
+done
+
+# If no enterprise policy roots exist, nothing to do
+if ! $saw_any; then
+    exit 0
+fi
+
+# Run the policy updater non-interactively
+omarchy-theme-set-browser-policy "${THEME_HEX_COLOR#\#}" </dev/null >/dev/null 2>&1 || true
+
+exit 0

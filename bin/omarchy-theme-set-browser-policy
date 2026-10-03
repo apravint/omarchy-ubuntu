@@ -1,0 +1,48 @@
+#!/bin/bash
+# Omarchy Browser Policy Writer (Ubuntu Optimized)
+# Writes browser theme policies safely; never prompts for sudo/pkexec passwords
+set -euo pipefail
+
+POLICY_DIRS=(
+    /etc/chromium/policies/managed
+    /etc/opt/chrome/policies/managed
+    /etc/opt/edge/policies/managed
+    /etc/brave/policies/managed
+)
+
+color="${1:-}"
+if [[ ! "$color" =~ ^[0-9a-fA-F]{6}$ ]]; then
+    exit 0
+fi
+
+saw_any=false
+for dir in "${POLICY_DIRS[@]}"; do
+    if [[ -d "$dir" && ! -L "$dir" ]]; then
+        saw_any=true
+        break
+    fi
+done
+
+if ! $saw_any; then
+    exit 0
+fi
+
+# If not running as root, attempt passwordless sudo only. Never prompt or block.
+if (( EUID != 0 )); then
+    if sudo -n true 2>/dev/null; then
+        exec sudo "$0" "$color"
+    else
+        # Passwordless sudo is not available; skip privileged write cleanly
+        exit 0
+    fi
+fi
+
+# Privileged write to existing managed policy directories
+for dir in "${POLICY_DIRS[@]}"; do
+    [[ -d "$dir" && ! -L "$dir" ]] || continue
+    dest="$dir/color.json"
+    printf '{"BrowserThemeColor": "#%s", "BrowserColorScheme": "device"}\n' "$color" > "$dest" 2>/dev/null || true
+    chmod 0644 "$dest" 2>/dev/null || true
+done
+
+exit 0

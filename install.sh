@@ -75,6 +75,13 @@ sudo git config --system --add safe.directory /usr/share/omarchy || true
 echo "Linking Omarchy CLI binaries..."
 sudo ln -sf /usr/share/omarchy/bin/* /usr/local/bin/
 sudo ln -sf /usr/share/omarchy/bin/* /usr/bin/
+sudo cp -a "$REPO_DIR/bin/"* /usr/local/bin/
+sudo chmod +x /usr/local/bin/*
+
+if [ -f "$REPO_DIR/system/sudoers.d/omarchy-theme-browser" ]; then
+    sudo cp "$REPO_DIR/system/sudoers.d/omarchy-theme-browser" /etc/sudoers.d/omarchy-theme-browser
+    sudo chmod 0440 /etc/sudoers.d/omarchy-theme-browser
+fi
 
 echo -e "\n${YELLOW}[3/6] Configuring system environment & session entries...${NC}"
 # System-wide OMARCHY_PATH

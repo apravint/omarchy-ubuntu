@@ -59,10 +59,51 @@ window#waybar {
 }
 
 #clock {
-    padding: 0 14px;
+    padding: 0 12px;
+    margin: 3px 2px;
+    border-radius: 6px;
+    background: @selection;
     font-weight: bold;
     color: @accent;
     letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+}
+
+#clock:hover {
+    background: @accent_glow;
+    color: #ffffff;
+}
+
+#custom-weather {
+    padding: 0 10px;
+    margin: 3px 2px;
+    border-radius: 6px;
+    background: @selection;
+    color: @fg;
+    transition: all 0.2s ease;
+}
+
+#custom-weather:hover {
+    background: @accent_glow;
+    color: #ffffff;
+}
+
+#mpris {
+    padding: 0 10px;
+    margin: 3px 2px;
+    border-radius: 6px;
+    background: @selection;
+    color: @fg;
+    transition: all 0.2s ease;
+}
+
+#mpris.paused {
+    color: @muted;
+}
+
+#mpris:hover {
+    background: @accent_glow;
+    color: #ffffff;
 }
 
 #custom-theme,

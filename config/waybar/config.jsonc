@@ -12,7 +12,9 @@
         "hyprland/window"
     ],
     "modules-center": [
-        "clock"
+        "clock",
+        "custom/weather",
+        "mpris"
     ],
     "modules-right": [
         "custom/theme",
@@ -47,6 +49,32 @@
         "format": "󰃭 {:%a %b %d  %H:%M}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
         "on-click-middle": "omarchy menu timezone"
+    },
+
+    "custom/weather": {
+        "format": "{}",
+        "interval": 900,
+        "exec": "echo \"$(omarchy weather icon 2>/dev/null) $(omarchy weather status 2>/dev/null | cut -d'·' -f2 | xargs)\"",
+        "tooltip": true,
+        "exec-tooltip": "omarchy weather status 2>/dev/null",
+        "on-click": "omarchy-notification-weather"
+    },
+
+    "mpris": {
+        "format": "{player_icon} {title} - {artist}",
+        "format-paused": "{status_icon} <i>{title}</i>",
+        "max-length": 30,
+        "player-icons": {
+            "default": "󰐊",
+            "spotify": "󰓇",
+            "chromium": "󰊯",
+            "chrome": "󰊯",
+            "firefox": "󰈹",
+            "mpv": "󰕼"
+        },
+        "status-icons": {
+            "paused": "󰏤"
+        }
     },
 
     "custom/theme": {
