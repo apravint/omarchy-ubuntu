@@ -111,9 +111,11 @@ Switch your entire operating system aesthetic instantly with `Super + Ctrl + Shi
 - Unlike standard dotfile setups that launch components via brittle `exec-once` terminal commands, Omarchy for Ubuntu manages Waybar, Swaybg, and display daemons through **systemd user units** (`waybar.service`, `swaybg.service`).
 - Includes hardware readiness polling loops: if an external monitor takes 3 seconds to wake up, the daemon waits cleanly rather than crashing the status bar.
 
-### 🤖 6. Autonomous Desktop Agent Suite & Waybar Telemetry
-- **Dedicated Waybar AI Telemetry**: Live status pill (`custom/ai-agent`) showing the active LLM (`qwen2.5`), daemon execution state (`idle` / `executing`), and rapid interactive triggers (Left: Sidecar terminal, Right: Model Manager GUI, Middle: Instant Self-Healing audit).
-- **100% Local & Private**: Runs entirely on bare-metal silicon via Ollama without requiring external cloud subscriptions, internet connectivity, or API keys.
+### 🤖 6. Autonomous Desktop Agent Suite, Streaming Sidecar & App Launcher Integration
+- **Dedicated Waybar AI Telemetry**: Live status pill (`custom/ai-agent`) displaying the active LLM (`qwen2.5`), daemon execution state (`idle` / `executing`), and rapid interactive triggers (Left: Sidecar terminal, Right: Model Manager GUI, Middle: Instant Self-Healing audit).
+- **Floating Interactive Streaming Sidecar (`Super + Shift + A`)**: A dedicated floating terminal HUD window running `omarchy-agent-interactive`. Features real-time token streaming, Markdown formatting, command execution confirmations, and direct conversation memory.
+- **Native XDG Desktop App Launcher Integration**: Includes 10 pre-configured `.desktop` launchers in `applications/` allowing every agentic capability (Agent Sidecar, Shell Copilot, System Digest, Voice Assistant, Vision OCR, Security Guard, Model Manager, Repo Traffic) to be launched directly from Wofi (`Super + Space`) or any Linux application launcher.
+- **100% Local & Sovereign Intelligence**: Runs entirely on bare-metal silicon via Ollama without requiring external cloud subscriptions, internet connectivity, or remote API keys.
 
 ### 🌐 7. Native Model Context Protocol (MCP) Server Integration
 - **Standardized Agent Tool Protocol**: Integrates Anthropic's **Model Context Protocol (MCP)** specification directly into the desktop agent pipeline.
@@ -124,6 +126,15 @@ Switch your entire operating system aesthetic instantly with `Super + Ctrl + Shi
 - **Instant Natural Language Copilot**: Type `?? <task>` in any shell (e.g. `?? convert all flac files to 320k mp3`) to translate plain English into safe, executable bash commands with interactive execution preview.
 - **True Dense Vector Embeddings**: `omarchy-memory` generates 1,536-dimensional vector embeddings locally via Ollama with cosine similarity ranking for semantic recall of user preferences, system notes, and command patterns.
 - **Executive AI Briefing (`omarchy-ai-digest`)**: Automated system digest synthesizing service health, RAM usage, uptime, repository commits, and market news into an actionable morning intelligence brief.
+
+### 🛡️ 9. Autonomous Proactive Self-Healing & Security Guard Daemons
+- **Automated Health Recovery (`omarchy-healthd`)**: Continuous background watcher that monitors failing systemd units, recovers stalled PipeWire audio sinks, cleans zombie processes, and frees memory buffers.
+- **AI Security Guard (`omarchy-security`)**: Background security auditor inspecting newly opened listening ports, unauthorized SSH or sudo attempts, and UFW firewall integrity.
+- **Intelligent Alert Filtering**: Operates with near-zero overhead and noise suppression—routine healthy sweeps remain silent, only notifying your desktop when high-priority or actionable remediation occurs.
+
+### 📈 10. Automated GitHub Repository Analytics (`omarchy-repo-traffic`)
+- **Permanent Traffic History**: Overcomes GitHub's default 14-day traffic retention limit by archiving clone and view traffic directly to dedicated automated storage ([`apravint/github-traffic`](https://github.com/apravint/github-traffic)).
+- **Integrated CLI & GUI Viewer**: Run `repo-traffic` or launch from Wofi to view all-time views, unique clones, and referral traffic charts in your terminal.
 
 ---
 
@@ -248,15 +259,17 @@ sudo bash build/build-iso.sh
 | `Super + A` | **🤖 Omarchy Agentic OS** | Launches AI Agent prompt for automated OS & window management |
 | `Super + Shift + A` | **💬 Agent Interactive Sidecar** | Opens floating interactive AI chat sidecar terminal window |
 | `Super + Ctrl + H` | **🛡️ Instant OS Self-Healing** | Diagnoses failed systemd units, restores PipeWire audio, cleans RAM |
-| `Super + Ctrl + V` | **🎙️ AI Voice Assistant** | Hands-free audio recording, transcription, and agent execution |
+| `Super + Alt + V` | **🎙️ AI Voice Assistant** | Hands-free audio recording, transcription, and agent execution |
 | `Super + Shift + Print` | **👁️ Screen Vision Analyst** | Captures screen region and analyzes code errors/tables with Vision AI |
 | `Super + Ctrl + G` | **🛡️ AI Security Guard** | Audits listening ports, SSH/sudo login attempts, and firewall status |
 | `Super + Shift + V` | **🪄 AI Smart Clipboard** | 1-click text summarization, code refactoring, and translation |
-| `Super + Ctrl + W` | **🎨 AI Ambient Wallpaper** | Dynamic ambient wallpaper switching with live theme palette sync |
+| `Super + Alt + W` | **🎨 AI Ambient Wallpaper** | Dynamic ambient wallpaper switching with live theme palette sync |
 | `Super + Ctrl + F` | **📂 AI File Curator** | Auto-organizes Downloads into clean subfolders and renames files |
 | `Super + Alt + M` | **🤖 AI Model Manager GUI** | Interactive Wofi menu to download and manage local GGUF/Ollama models |
 | `Super + Alt + N` | **📈 Live Stock Market News** | Interactive Wofi menu for real-time financial headlines & ticker news |
-| `Super + Space` | **Command Menu** | Unified system launcher and quick action center |
+| `Super + Ctrl + Alt + N` | **📊 Executive Market Briefing** | Detailed AI financial analysis & morning macro market summary |
+| `repo-traffic` | **📊 GitHub Repository Analytics** | CLI/GUI archive viewer for repository views, clones, and referrers |
+| `Super + Space` | **Command Menu / App Launcher** | Unified system launcher featuring all AI tools and desktop applications |
 | `Super + Alt + Space` | **Wofi Application Menu** | Fast searchable desktop app launcher |
 | `Super + Return` | **Terminal** | Opens GPU-accelerated Alacritty terminal |
 | `Super + Alt + Return` | **Tmux Session** | Opens terminal attached to persistent tmux session |
@@ -353,6 +366,9 @@ omarchy-ubuntu/
 │   └── ISSUE_TEMPLATE/
 │       ├── bug_report.md       # Standardized bug reporting form
 │       └── feature_request.md  # Feature suggestion form
+├── applications/               # XDG Desktop application entries & icons for Wofi/system menus
+│   ├── icons/                  # High-resolution application icons
+│   └── *.desktop               # Native launchers for Agent Sidecar, Shell Copilot, Vision, etc.
 ├── assets/
 │   └── preview.png             # OS desktop showcase preview
 ├── build/
@@ -360,13 +376,14 @@ omarchy-ubuntu/
 ├── config/
 │   ├── alacritty/              # GPU-accelerated terminal styling & font settings
 │   ├── hypr/                   # Hyprland window rules, monitor configs & keybindings
+│   ├── mcp/                    # Anthropic Model Context Protocol (MCP) server configurations
 │   ├── pipewire/               # Low-latency PipeWire audio daemon profiles
-│   ├── systemd/user/           # Waybar & Swaybg systemd service definitions
-│   ├── waybar/                 # Waybar status bar layout, modules & CSS styling
+│   ├── systemd/user/           # Waybar, Swaybg & agentic systemd service definitions
+│   ├── waybar/                 # Waybar status bar layout, AI agent pill & CSS styling
 │   ├── wireplumber/            # WirePlumber hardware arbitration policies
 │   ├── wofi/                   # Application launcher themes & menu layouts
 │   └── xdg-desktop-portal/     # Screen-sharing & Wayland portal configurations
-├── bin/                        # Omarchy CLI utilities, audio toggles & display scripts
+├── bin/                        # Omarchy CLI utilities, AI sidecars, health daemons & tools
 ├── system/                     # Session desktop entry, system profile & environment exports
 ├── install.sh                  # One-line web and local installer script
 ├── uninstall.sh                # Clean uninstaller and configuration restorer
