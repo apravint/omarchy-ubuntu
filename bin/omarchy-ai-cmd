@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Omarchy Natural Language Shell Copilot (omarchy-ai-cmd / ??)
-Translates plain English questions into executable Linux commands using local Ollama.
+Omarchy Natural Language Shell Copilot (omarchy-ai-cmd / ?? / ai)
+Translates plain English requests into executable Linux commands using Google Gemini & Local Ollama.
+Includes smart error fixing ('ai fix') and git commit generation ('ai commit').
 https://github.com/apravint/omarchy-ubuntu
 """
 import sys
@@ -9,53 +10,81 @@ import os
 import json
 import urllib.request
 import subprocess
+import re
 
 CYAN = "\033[1;36m"
 GREEN = "\033[1;32m"
 YELLOW = "\033[1;33m"
+MAGENTA = "\033[1;35m"
 BOLD = "\033[1m"
+DIM = "\033[2m"
 RESET = "\033[0m"
 
-def query_gemini(prompt):
-    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+def get_api_key():
+    key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if key:
+        return key
+    env_file = os.path.expanduser("~/.config/environment.d/20-gemini.conf")
+    if os.path.exists(env_file):
+        try:
+            with open(env_file, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("GEMINI_API_KEY=") or line.startswith("GOOGLE_API_KEY="):
+                        val = line.split("=", 1)[1].strip().strip('"').strip("'")
+                        if val:
+                            return val
+        except Exception:
+            pass
+    zshrc = os.path.expanduser("~/.zshrc")
+    if os.path.exists(zshrc):
+        try:
+            with open(zshrc, "r") as f:
+                for line in f:
+                    if "GEMINI_API_KEY=" in line and not line.strip().startswith("#"):
+                        return line.split("GEMINI_API_KEY=", 1)[1].strip().strip('"').strip("'")
+        except Exception:
+            pass
+    return ""
+
+def query_gemini(prompt, system_prompt=None):
+    api_key = get_api_key()
     if not api_key:
         return ""
     model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
-    system_prompt = (
-        "You are an expert Linux CLI terminal copilot on Ubuntu with Hyprland. "
-        "Convert the user's plain English request into the single most efficient, modern bash command. "
-        "OUTPUT RULES: Output ONLY the bash command itself. "
-        "Do NOT include markdown code blocks, do NOT write explanations, do NOT wrap in backticks."
-    )
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+    if not system_prompt:
+        system_prompt = (
+            "You are an expert Linux CLI terminal copilot on Ubuntu with Hyprland. "
+            "Convert the user's plain English request into the single most efficient, modern bash command. "
+            "OUTPUT RULES: Output ONLY the bash command itself. "
+            "Do NOT include markdown code blocks, do NOT write explanations, do NOT wrap in backticks."
+        )
     payload = {
-        "contents": [{"parts": [{"text": f"{system_prompt}\nUser request: {prompt}\nCommand:"}]}]
+        "systemInstruction": {"parts": [{"text": system_prompt}]},
+        "contents": [{"parts": [{"text": prompt}]}]
     }
     try:
         req = urllib.request.Request(
             url,
             data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json"}
+            headers={"Content-Type": "application/json", "x-goog-api-key": api_key}
         )
-        with urllib.request.urlopen(req, timeout=8) as resp:
+        with urllib.request.urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-            cmd = data["candidates"][0]["content"]["parts"][0]["text"].strip()
-            lines = [l.strip().strip("`").strip() for l in cmd.split("\n") if l.strip()]
-            for l in lines:
-                if not l.startswith("#") and not l.startswith("Here") and not l.startswith("To"):
-                    return l
-            return lines[0] if lines else ""
+            return data["candidates"][0]["content"]["parts"][0]["text"].strip()
     except Exception:
         return ""
 
-def query_ollama(prompt):
+def query_ollama(prompt, system_prompt=None):
     url = "http://localhost:11434/api/generate"
-    system_prompt = (
-        "You are an expert Linux CLI terminal copilot on Ubuntu with Hyprland. "
-        "Convert the user's plain English request into the single most efficient, modern bash command. "
-        "OUTPUT RULES: Output ONLY the bash command itself. "
-        "Do NOT include markdown code blocks, do NOT write explanations, do NOT wrap in backticks."
-    )
+    if not system_prompt:
+        system_prompt = (
+            "You are an expert Linux CLI terminal copilot on Ubuntu with Hyprland. "
+            "Convert the user's plain English request into the single most efficient, modern bash command. "
+            "OUTPUT RULES: Output ONLY the bash command itself. "
+            "Do NOT include markdown code blocks, do NOT write explanations, do NOT wrap in backticks."
+        )
     
     payload = {
         "model": os.environ.get("OLLAMA_MODEL", "qwen2.5:1.5b"),
@@ -63,7 +92,7 @@ def query_ollama(prompt):
         "stream": False,
         "options": {
             "num_ctx": 2048,
-            "num_predict": 64
+            "num_predict": 128
         }
     }
     
@@ -75,34 +104,140 @@ def query_ollama(prompt):
         )
         with urllib.request.urlopen(req, timeout=15) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-            cmd = data.get("response", "").strip()
-            # Clean any stray formatting
-            lines = [l.strip().strip("`").strip() for l in cmd.split("\n") if l.strip()]
-            for l in lines:
-                if not l.startswith("#") and not l.startswith("Here") and not l.startswith("To"):
-                    return l
-            return lines[0] if lines else ""
+            return data.get("response", "").strip()
     except Exception as e:
-        print(f"{YELLOW}Error contacting local Ollama: {e}{RESET}")
         return ""
 
-def main():
-    if len(sys.argv) < 2:
-        print(f"{BOLD}Usage:{RESET} ?? <plain english request>")
-        print(f"Example: ?? find all files larger than 500MB")
+def clean_command(raw_text):
+    if not raw_text:
+        return ""
+    lines = [l.strip().strip("`").strip() for l in raw_text.split("\n") if l.strip()]
+    for l in lines:
+        if not l.startswith("#") and not l.startswith("Here") and not l.startswith("To"):
+            return l
+    return lines[0] if lines else ""
+
+def get_last_history_command():
+    candidates = [
+        os.path.expanduser("~/.zsh_history"),
+        os.path.expanduser("~/.bash_history")
+    ]
+    for hist_file in candidates:
+        if os.path.exists(hist_file):
+            try:
+                with open(hist_file, "r", encoding="utf-8", errors="ignore") as f:
+                    lines = f.readlines()
+                for line in reversed(lines):
+                    line = line.strip()
+                    if ";" in line:
+                        cmd = line.split(";", 1)[1].strip()
+                    else:
+                        cmd = line
+                    # Skip empty and self-referential copilot commands
+                    if not cmd or any(cmd.startswith(p) for p in ["??", "ai", "noglob", "exit", "history"]):
+                        continue
+                    return cmd
+            except Exception:
+                pass
+    return ""
+
+def handle_fix(extra_context=""):
+    last_cmd = get_last_history_command()
+    if not last_cmd:
+        print(f"{YELLOW}No previous command found in shell history to fix.{RESET}")
+        sys.exit(0)
+
+    print(f"\n{BOLD}🔍 Diagnosing previous command:{RESET} {CYAN}{last_cmd}{RESET}")
+    if extra_context:
+        print(f"{DIM}Additional error context: {extra_context}{RESET}")
+    print(f"{DIM}Asking AI for diagnosis & fix...{RESET}\n")
+
+    prompt = f"The user executed this command in a Linux terminal which failed:\n`{last_cmd}`\n"
+    if extra_context:
+        prompt += f"Error output: {extra_context}\n"
+    prompt += "Diagnose why it failed in 1 brief sentence, then provide the exact corrected command. Format as:\nDIAGNOSIS: <1-line reason>\nCOMMAND: <corrected bash command>"
+
+    system_prompt = "You are a Linux CLI recovery expert. Diagnose the failed command and output the corrected command clearly."
+    response = query_gemini(prompt, system_prompt) or query_ollama(prompt, system_prompt)
+
+    if not response:
+        print(f"{YELLOW}Could not generate a fix for this command.{RESET}")
         sys.exit(1)
-        
-    query = " ".join(sys.argv[1:])
-    print(f"\n{BOLD}🤖 Omarchy Copilot:{RESET} Thinking for \"{query}\"...")
-    
-    cmd = query_gemini(query) or query_ollama(query)
-    if not cmd:
-        print(f"{YELLOW}Could not generate command.{RESET}")
+
+    diagnosis = ""
+    suggested_cmd = ""
+    for line in response.split("\n"):
+        if line.startswith("DIAGNOSIS:"):
+            diagnosis = line.replace("DIAGNOSIS:", "").strip()
+        elif line.startswith("COMMAND:"):
+            suggested_cmd = line.replace("COMMAND:", "").strip().strip("`")
+
+    if not suggested_cmd:
+        suggested_cmd = clean_command(response)
+
+    if diagnosis:
+        print(f"{YELLOW}💡 Reason:{RESET} {diagnosis}")
+    print(f"{BOLD}Suggested Fix:{RESET}")
+    print(f"  {GREEN}{suggested_cmd}{RESET}\n")
+
+    prompt_action(suggested_cmd)
+
+def handle_commit():
+    try:
+        subprocess.check_output(["git", "rev-parse", "--is-inside-work-tree"], stderr=subprocess.DEVNULL)
+    except Exception:
+        print(f"{YELLOW}Not inside a git repository.{RESET}")
         sys.exit(1)
-        
-    print(f"\n{BOLD}Suggested Command:{RESET}")
-    print(f"  {CYAN}{cmd}{RESET}\n")
-    
+
+    diff = ""
+    try:
+        diff = subprocess.check_output(["git", "diff", "--cached"], text=True).strip()
+        if not diff:
+            diff = subprocess.check_output(["git", "diff"], text=True).strip()
+        if not diff:
+            diff = subprocess.check_output(["git", "status", "-s"], text=True).strip()
+    except Exception:
+        pass
+
+    if not diff:
+        print(f"{YELLOW}No changes detected to commit.{RESET}")
+        sys.exit(0)
+
+    print(f"\n{BOLD}🤖 Generating Conventional Commit Message...{RESET}")
+    prompt = f"Generate a concise Conventional Commit message (e.g. feat(scope): ..., fix(scope): ...) for this git diff:\n\n{diff[:3000]}\n\nOutput ONLY the commit message line, no explanations or quotes."
+    system_prompt = "You are a Git expert. Output ONLY a clean conventional commit message."
+    commit_msg = query_gemini(prompt, system_prompt) or query_ollama(prompt, system_prompt)
+    commit_msg = commit_msg.strip().strip('"').strip("'").strip("`").split("\n")[0]
+
+    if not commit_msg:
+        commit_msg = "chore: update code changes"
+
+    print(f"\n{BOLD}Proposed Message:{RESET}")
+    print(f"  {CYAN}{commit_msg}{RESET}\n")
+
+    try:
+        choice = input(f"{BOLD}Action [{GREEN}C{RESET}{BOLD}ommit / {YELLOW}E{RESET}{BOLD}dit / {BOLD}Q{RESET}{BOLD}uit] (Default: C): {RESET}").strip().lower()
+    except (KeyboardInterrupt, EOFError):
+        print("\nAborted.")
+        sys.exit(0)
+
+    if choice in ["", "c", "commit"]:
+        # Stage all tracked changes if nothing staged
+        staged = subprocess.check_output(["git", "diff", "--cached"], text=True).strip()
+        if not staged:
+            subprocess.run(["git", "add", "-u"])
+        subprocess.run(["git", "commit", "-m", commit_msg])
+        print(f"\n{GREEN}✓ Committed successfully!{RESET}")
+    elif choice in ["e", "edit"]:
+        custom = input(f"{BOLD}Custom message: {RESET}").strip()
+        if custom:
+            subprocess.run(["git", "commit", "-m", custom])
+            print(f"\n{GREEN}✓ Committed with custom message!{RESET}")
+    else:
+        print("Cancelled.")
+    sys.exit(0)
+
+def prompt_action(cmd):
     try:
         choice = input(f"{BOLD}Action [{GREEN}E{RESET}{BOLD}xecute / {YELLOW}C{RESET}{BOLD}opy / {BOLD}Q{RESET}{BOLD}uit] (Default: E): {RESET}").strip().lower()
     except (KeyboardInterrupt, EOFError):
@@ -117,6 +252,38 @@ def main():
         print(f"{GREEN}✓ Copied to clipboard.{RESET}")
     else:
         print("Cancelled.")
+
+def main():
+    if len(sys.argv) < 2:
+        print(f"{BOLD}Usage:{RESET}")
+        print(f"  ?? <plain english request>     (e.g., ?? find files over 500MB)")
+        print(f"  ai fix [optional error info]   (Auto-diagnoses & fixes last failed command)")
+        print(f"  ai commit                      (Auto-generates conventional git commit)")
+        sys.exit(1)
+        
+    first_arg = sys.argv[1].lower()
+    if first_arg == "fix":
+        extra = " ".join(sys.argv[2:]) if len(sys.argv) > 2 else ""
+        handle_fix(extra)
+        return
+
+    if first_arg == "commit":
+        handle_commit()
+        return
+
+    query = " ".join(sys.argv[1:])
+    print(f"\n{BOLD}🤖 Omarchy Copilot:{RESET} Thinking for \"{query}\"...")
+    
+    raw = query_gemini(query) or query_ollama(query)
+    cmd = clean_command(raw)
+    if not cmd:
+        print(f"{YELLOW}Could not generate command.{RESET}")
+        sys.exit(1)
+        
+    print(f"\n{BOLD}Suggested Command:{RESET}")
+    print(f"  {CYAN}{cmd}{RESET}\n")
+    
+    prompt_action(cmd)
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Omarchy Visual AI Analyst (omarchy-vision)
-Captures screen regions and uses multimodal Vision AI (Qwen2-VL / LLaVA / Gemini) to analyze code errors, tables, and UI layouts.
+Omarchy Visual AI Analyst & OCR Extractor (omarchy-vision)
+Captures screen regions and uses multimodal Vision AI (Google Gemini / Qwen2-VL / LLaVA)
+to analyze code errors, tables, and UI layouts, or extract text directly to clipboard (--ocr).
 https://github.com/apravint/omarchy-ubuntu
 """
 
@@ -13,6 +14,33 @@ import base64
 import urllib.request
 
 IMG_PATH = "/tmp/omarchy_vision.png"
+
+def get_api_key():
+    key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if key:
+        return key
+    env_file = os.path.expanduser("~/.config/environment.d/20-gemini.conf")
+    if os.path.exists(env_file):
+        try:
+            with open(env_file, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("GEMINI_API_KEY=") or line.startswith("GOOGLE_API_KEY="):
+                        val = line.split("=", 1)[1].strip().strip('"').strip("'")
+                        if val:
+                            return val
+        except Exception:
+            pass
+    zshrc = os.path.expanduser("~/.zshrc")
+    if os.path.exists(zshrc):
+        try:
+            with open(zshrc, "r") as f:
+                for line in f:
+                    if "GEMINI_API_KEY=" in line and not line.strip().startswith("#"):
+                        return line.split("GEMINI_API_KEY=", 1)[1].strip().strip('"').strip("'")
+        except Exception:
+            pass
+    return ""
 
 def capture_region():
     try:
@@ -32,14 +60,14 @@ def get_wofi_prompt():
         return "Analyze and explain what is visible in this image in detail."
 
 def analyze_image_gemini(img_path, prompt):
-    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    api_key = get_api_key()
     if not api_key or not os.path.exists(img_path):
         return ""
     try:
         with open(img_path, "rb") as f:
             img_b64 = base64.b64encode(f.read()).decode("utf-8")
         model = os.environ.get("GEMINI_VISION_MODEL", os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite"))
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         payload = {
             "contents": [{
                 "parts": [
@@ -51,7 +79,7 @@ def analyze_image_gemini(img_path, prompt):
         req = urllib.request.Request(
             url,
             data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json"}
+            headers={"Content-Type": "application/json", "x-goog-api-key": api_key}
         )
         with urllib.request.urlopen(req, timeout=20) as resp:
             data = json.loads(resp.read().decode("utf-8"))
@@ -80,7 +108,6 @@ def analyze_image_ollama(img_path, prompt):
             data = json.loads(resp.read().decode("utf-8"))
             return data.get("response", "No vision response received.")
     except Exception as e:
-        # Fallback to OCR text extraction via Tesseract
         try:
             ocr_text = subprocess.check_output(f"tesseract {img_path} stdout 2>/dev/null", shell=True, text=True)
             return f"👁️ OCR Extracted Text:\n{ocr_text.strip()}"
@@ -88,21 +115,41 @@ def analyze_image_ollama(img_path, prompt):
             return f"Error contacting Ollama vision model: {e}"
 
 def main():
-    subprocess.run("notify-send -a 'Omarchy Vision' '👁️ Select Screen Region' 'Drag a box over the region you want to analyze.' -t 2000", shell=True)
+    is_ocr = "--ocr" in sys.argv
+
+    if is_ocr:
+        subprocess.run("notify-send -a 'Omarchy Vision' '📝 Select Text to Extract' 'Drag a box over any text, code, or image.' -t 2000", shell=True)
+    else:
+        subprocess.run("notify-send -a 'Omarchy Vision' '👁️ Select Screen Region' 'Drag a box over the region you want to analyze.' -t 2000", shell=True)
+
     if not capture_region():
         sys.exit(0)
 
-    prompt = get_wofi_prompt()
-    subprocess.run("notify-send -a 'Omarchy Vision' '🤖 Analyzing Image...' 'Processing visual model analysis...' -t 3000", shell=True)
+    if is_ocr:
+        prompt = (
+            "Perform optical character recognition (OCR) on this image. "
+            "Extract all text exactly as written, preserving original layout and line breaks where appropriate. "
+            "Return ONLY the extracted text. Do not wrap in markdown code blocks unless the image contains code. "
+            "Do not include conversational preamble or commentary."
+        )
+        subprocess.run("notify-send -a 'Omarchy Vision' '⚡ Extracting Text with Gemini...' 'Reading characters...' -t 2000", shell=True)
+    else:
+        prompt = get_wofi_prompt()
+        subprocess.run("notify-send -a 'Omarchy Vision' '🤖 Analyzing Image...' 'Processing visual model analysis...' -t 3000", shell=True)
 
     analysis = analyze_image_gemini(IMG_PATH, prompt) or analyze_image_ollama(IMG_PATH, prompt)
 
+    if not analysis:
+        subprocess.run('notify-send -a "Omarchy Vision AI" "⚠️ Extraction Failed" "Could not extract or analyze image."', shell=True)
+        sys.exit(1)
+
     # Copy analysis result to clipboard
-    subprocess.run(f"echo {json.dumps(analysis)} | wl-copy", shell=True)
+    subprocess.run(["wl-copy"], input=analysis.encode("utf-8"))
 
     # Display desktop alert summary
     short_summary = analysis[:250] + ("..." if len(analysis) > 250 else "")
-    subprocess.run(f'notify-send -a "Omarchy Vision AI" "👁️ Vision Analysis Result (Copied to Clipboard)" "{short_summary}"', shell=True)
+    title = "✨ Text Copied to Clipboard!" if is_ocr else "👁️ Vision Analysis Result (Copied to Clipboard)"
+    subprocess.run(["notify-send", "-a", "Omarchy Vision AI", title, short_summary])
 
 if __name__ == "__main__":
     main()

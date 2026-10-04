@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Omarchy Interactive Agent Sidecar (omarchy-agent-interactive)
-Real-time, streaming conversational AI terminal interface with local Ollama,
-Internet Web Search (DDGS), and Desktop System Control.
+Real-time, streaming conversational AI terminal interface powered by Google Gemini (Cloud · 0% CPU)
+with automatic Local Ollama offline fallback, Internet Web Search, and Desktop System Control.
 https://github.com/apravint/omarchy-ubuntu
 """
 
@@ -10,11 +10,9 @@ import sys
 import os
 import json
 import urllib.request
+import urllib.error
 import subprocess
 import re
-
-MODEL = os.environ.get("OMARCHY_MODEL", "qwen2.5:1.5b")
-OLLAMA_URL = "http://localhost:11434/api/chat"
 
 CYAN = "\033[0;36m"
 GREEN = "\033[0;32m"
@@ -37,13 +35,52 @@ Common dispatches:
 - pactl set-sink-volume @DEFAULT_AUDIO_SINK@ <level>%
 """
 
+def get_api_key():
+    key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if key:
+        return key
+    env_file = os.path.expanduser("~/.config/environment.d/20-gemini.conf")
+    if os.path.exists(env_file):
+        try:
+            with open(env_file, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("GEMINI_API_KEY=") or line.startswith("GOOGLE_API_KEY="):
+                        val = line.split("=", 1)[1].strip().strip('"').strip("'")
+                        if val:
+                            return val
+        except Exception:
+            pass
+    zshrc = os.path.expanduser("~/.zshrc")
+    if os.path.exists(zshrc):
+        try:
+            with open(zshrc, "r") as f:
+                for line in f:
+                    if "GEMINI_API_KEY=" in line and not line.strip().startswith("#"):
+                        return line.split("GEMINI_API_KEY=", 1)[1].strip().strip('"').strip("'")
+        except Exception:
+            pass
+    return ""
+
+def get_gemini_model():
+    return os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
+
+def get_ollama_model():
+    return os.environ.get("OLLAMA_MODEL", "qwen2.5:1.5b")
+
 def print_header():
+    api_key = get_api_key()
+    if api_key:
+        engine_str = f"{CYAN}✨ Google Gemini ({get_gemini_model()}){NC} {GREEN}[0% CPU · Cloud TPU]{NC}"
+    else:
+        engine_str = f"{YELLOW}🖥️ Local Ollama ({get_ollama_model()}){NC} {DIM}[Local CPU]{NC}"
+
     print(f"{BLUE}╔════════════════════════════════════════════════════════════════════╗{NC}")
     print(f"{BLUE}║{GREEN}{BOLD}               🤖 OMARCHY AGENTIC OS SIDECAR CHAT                  {BLUE}║{NC}")
     print(f"{BLUE}╠════════════════════════════════════════════════════════════════════╣{NC}")
-    print(f"{BLUE}║{NC}  ► Model: {CYAN}{MODEL}{NC} (Local Silicon / Zero Cloud Latency)           {BLUE}║{NC}")
+    print(f"{BLUE}║{NC}  ► Engine: {engine_str:<66}{BLUE}║{NC}")
     print(f"{BLUE}║{NC}  ► Capabilities: {MAGENTA}Live Web Search • Hyprland • Waybar • Audio{NC}    {BLUE}║{NC}")
-    print(f"{BLUE}║{NC}  ► Commands: {YELLOW}/search <query>{NC} • {YELLOW}/voice <text>{NC} • {GREEN}exit{NC}                      {BLUE}║{NC}")
+    print(f"{BLUE}║{NC}  ► Commands: {YELLOW}/search <query>{NC} • {YELLOW}/model <name>{NC} • {GREEN}exit{NC}                   {BLUE}║{NC}")
     print(f"{BLUE}╚════════════════════════════════════════════════════════════════════╝{NC}\n")
 
 def web_search(query: str, max_results: int = 3) -> str:
@@ -65,7 +102,6 @@ def web_search(query: str, max_results: int = 3) -> str:
         return f"Web search could not be completed: {e}"
 
 def should_trigger_web_search(user_text: str) -> bool:
-    """Heuristic to detect if user query requires live web / real-time search."""
     keywords = [
         "search", "google", "lookup", "weather", "news", "price", "stock",
         "latest", "current", "release date", "what is happening", "who won"
@@ -73,18 +109,61 @@ def should_trigger_web_search(user_text: str) -> bool:
     text_lower = user_text.lower()
     return any(re.search(r'\b' + re.escape(w) + r'\b', text_lower) for w in keywords)
 
-def chat_stream(messages):
+def stream_gemini(conversation_turns):
+    api_key = get_api_key()
+    model = get_gemini_model()
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:streamGenerateContent?alt=sse"
+
+    contents = []
+    for turn in conversation_turns:
+        role = "user" if turn["role"] == "user" else "model"
+        contents.append({"role": role, "parts": [{"text": turn["content"]}]})
+
     payload = {
-        "model": MODEL,
+        "systemInstruction": {"parts": [{"text": SYSTEM_PROMPT}]},
+        "contents": contents
+    }
+
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json", "x-goog-api-key": api_key}
+    )
+
+    full_response = []
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            for line in resp:
+                line = line.decode("utf-8").strip()
+                if line.startswith("data: "):
+                    try:
+                        chunk = json.loads(line[6:])
+                        parts = chunk.get("candidates", [{}])[0].get("content", {}).get("parts", [])
+                        for p in parts:
+                            txt = p.get("text", "")
+                            sys.stdout.write(txt)
+                            sys.stdout.flush()
+                            full_response.append(txt)
+                    except Exception:
+                        pass
+        print()
+        return "".join(full_response)
+    except Exception as e:
+        return None
+
+def stream_ollama(conversation_turns):
+    url = "http://localhost:11434/api/chat"
+    model = get_ollama_model()
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation_turns
+
+    payload = {
+        "model": model,
         "messages": messages,
         "stream": True,
-        "options": {
-            "num_ctx": 4096,
-            "num_predict": 256
-        }
+        "options": {"num_ctx": 4096, "num_predict": 512}
     }
     data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(OLLAMA_URL, data=data, headers={"Content-Type": "application/json"})
+    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
 
     full_response = []
     try:
@@ -96,21 +175,28 @@ def chat_stream(messages):
                     sys.stdout.write(msg)
                     sys.stdout.flush()
                     full_response.append(msg)
+        print()
+        return "".join(full_response)
     except urllib.error.URLError:
-        print(f"\n{YELLOW}⚠️ Error: Ollama is not responding at {OLLAMA_URL}. Starting Ollama daemon...{NC}")
+        print(f"\n{YELLOW}⚠️ Local Ollama is offline. Starting daemon...{NC}")
         subprocess.run(["systemctl", "--user", "start", "ollama"], check=False)
-        return "I could not connect to Ollama. Please ensure Ollama is running."
+        return "Could not connect to Ollama. Please ensure it is running."
     except Exception as e:
-        print(f"\n{YELLOW}⚠️ Stream error: {e}{NC}")
+        print(f"\n{YELLOW}⚠️ Local inference error: {e}{NC}")
         return f"Error: {e}"
 
-    print()
-    return "".join(full_response)
+def chat_stream(conversation_turns):
+    if get_api_key():
+        res = stream_gemini(conversation_turns)
+        if res:
+            return res
+        print(f"\n{YELLOW}ℹ️ Failing over to local Ollama...{NC}\n")
+
+    return stream_ollama(conversation_turns)
 
 def main():
-    global MODEL
     print_header()
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    conversation_turns = []
 
     while True:
         try:
@@ -121,14 +207,16 @@ def main():
                 print(f"\n{CYAN}Session ended. Have a great day!{NC}")
                 break
 
-            # Handle /model switch
+            # Handle model inspection / switch
             if user_input.startswith("/model"):
                 parts = user_input.split(maxsplit=1)
                 if len(parts) > 1:
-                    MODEL = parts[1].strip()
-                    print(f"{GREEN}Switched model to: {MODEL}{NC}\n")
+                    new_model = parts[1].strip()
+                    os.environ["GEMINI_MODEL"] = new_model
+                    print(f"{GREEN}✓ Switched active model to: {new_model}{NC}\n")
                 else:
-                    print(f"{CYAN}Current model: {MODEL}{NC}\n")
+                    print(f"{CYAN}Active Gemini Model: {get_gemini_model()}{NC}")
+                    print(f"{CYAN}Active Ollama Model: {get_ollama_model()}{NC}\n")
                 continue
 
             # Handle manual /search command or automatic live search heuristic
@@ -146,19 +234,19 @@ def main():
 
 User Question:
 {user_input}"""
-                messages.append({"role": "user", "content": augmented_prompt})
+                conversation_turns.append({"role": "user", "content": augmented_prompt})
             else:
-                messages.append({"role": "user", "content": user_input})
+                conversation_turns.append({"role": "user", "content": user_input})
 
             print(f"\n{CYAN}{BOLD}🤖 Agent ► {NC}", end="")
-            assistant_reply = chat_stream(messages)
-            messages.append({"role": "assistant", "content": assistant_reply})
+            assistant_reply = chat_stream(conversation_turns)
+            conversation_turns.append({"role": "assistant", "content": assistant_reply})
 
             # Check if command was suggested and offer execution
             lines = [l.strip().strip("`") for l in assistant_reply.split("\n")]
             exec_candidate = None
             for l in lines:
-                if l.startswith("hyprctl dispatch") or l.startswith("omarchy theme") or l.startswith("pactl set-sink"):
+                if any(l.startswith(prefix) for prefix in ["hyprctl dispatch", "omarchy theme", "pactl set-sink", "systemctl"]):
                     exec_candidate = l
                     break
 

@@ -12,8 +12,42 @@ import subprocess
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
 
-api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-default_model = "Gemini 3.5 Flash" if api_key else "qwen2.5:1.5b"
+def get_api_key():
+    key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if key:
+        return key
+    env_file = os.path.expanduser("~/.config/environment.d/20-gemini.conf")
+    if os.path.exists(env_file):
+        try:
+            with open(env_file, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("GEMINI_API_KEY=") or line.startswith("GOOGLE_API_KEY="):
+                        val = line.split("=", 1)[1].strip().strip('"').strip("'")
+                        if val:
+                            return val
+        except Exception:
+            pass
+    return ""
+
+def get_current_model():
+    m = os.environ.get("GEMINI_MODEL")
+    if m:
+        return m
+    env_file = os.path.expanduser("~/.config/environment.d/20-gemini.conf")
+    if os.path.exists(env_file):
+        try:
+            with open(env_file, "r") as f:
+                for line in f:
+                    if line.startswith("GEMINI_MODEL="):
+                        return line.split("=", 1)[1].strip().strip('"').strip("'")
+        except Exception:
+            pass
+    return "gemini-3.5-flash-lite"
+
+api_key = get_api_key()
+active_model = get_current_model()
+default_model = f"Gemini ({active_model})" if api_key else "qwen2.5:1.5b"
 engine = "Google Gemini Cloud (0% CPU)" if api_key else "Ollama Local (qwen2.5)"
 
 AGENT_STATE = {
