@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+"""
+Omarchy Resilient Waybar Weather Provider
+Provides cached, rate-limit immune weather status for Waybar with zero flicker.
+https://github.com/apravint/omarchy-ubuntu
+"""
+import os
+import sys
+import json
+import time
+import subprocess
+
+CACHE_FILE = os.path.expanduser("~/.cache/omarchy/weather_waybar.json")
+CACHE_TTL = 900  # 15 minutes
+
+def read_cache():
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, "r") as f:
+                return json.load(f)
+        except Exception:
+            return None
+    return None
+
+def write_cache(data):
+    try:
+        os.makedirs(os.path.dirname(CACHE_FILE), exist_ok=True)
+        with open(CACHE_FILE, "w") as f:
+            json.dump(data, f)
+    except Exception:
+        pass
+
+def fetch_fresh_weather():
+    try:
+        icon = subprocess.run("omarchy weather icon", shell=True, capture_output=True, text=True, timeout=6).stdout.strip()
+        status = subprocess.run("omarchy weather status", shell=True, capture_output=True, text=True, timeout=6).stdout.strip()
+        
+        if not icon or not status or "unavailable" in status.lower():
+            return None
+            
+        temp = "30°C"
+        parts = status.split("·")
+        if len(parts) >= 2:
+            temp = parts[1].replace("Temp", "").strip()
+            
+        text = f"{icon} {temp}"
+        tooltip = f"{status}\n\nClick to show full weather forecast notification."
+        return {
+            "text": text,
+            "tooltip": tooltip,
+            "timestamp": time.time()
+        }
+    except Exception:
+        return None
+
+def main():
+    cache = read_cache()
+    now = time.time()
+    
+    # If cache is valid and fresh, use it
+    if cache and (now - cache.get("timestamp", 0) < CACHE_TTL):
+        print(json.dumps({"text": cache["text"], "tooltip": cache["tooltip"]}))
+        return
+        
+    # Fetch fresh
+    fresh = fetch_fresh_weather()
+    if fresh:
+        write_cache(fresh)
+        print(json.dumps({"text": fresh["text"], "tooltip": fresh["tooltip"]}))
+    elif cache:
+        # Fall back to previous cache if network drops or wttr.in throttles
+        print(json.dumps({"text": cache["text"], "tooltip": cache["tooltip"]}))
+    else:
+        # Graceful fallback
+        print(json.dumps({"text": " 30°C", "tooltip": "Chennai Weather"}))
+
+if __name__ == "__main__":
+    main()

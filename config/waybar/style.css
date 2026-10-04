@@ -106,6 +106,7 @@ window#waybar {
     color: #ffffff;
 }
 
+#custom-ai-agent,
 #custom-theme,
 #cpu,
 #memory,
@@ -120,6 +121,22 @@ window#waybar {
     background: @selection;
     color: @fg;
     transition: all 0.2s ease;
+}
+
+#custom-ai-agent {
+    color: @accent;
+    font-weight: bold;
+    padding: 0 11px;
+}
+
+#custom-ai-agent:hover {
+    background: @accent_glow;
+    color: #ffffff;
+}
+
+#custom-ai-agent.executing {
+    color: #f7768e;
+    animation: blink 0.8s linear infinite alternate;
 }
 
 #custom-theme {

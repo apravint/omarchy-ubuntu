@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+"""
+Omarchy Natural Language Shell Copilot (omarchy-ai-cmd / ??)
+Translates plain English questions into executable Linux commands using local Ollama.
+https://github.com/apravint/omarchy-ubuntu
+"""
+import sys
+import os
+import json
+import urllib.request
+import subprocess
+
+CYAN = "\033[1;36m"
+GREEN = "\033[1;32m"
+YELLOW = "\033[1;33m"
+BOLD = "\033[1m"
+RESET = "\033[0m"
+
+def query_ollama(prompt):
+    url = "http://localhost:11434/api/generate"
+    system_prompt = (
+        "You are an expert Linux CLI terminal copilot on Ubuntu with Hyprland. "
+        "Convert the user's plain English request into the single most efficient, modern bash command. "
+        "OUTPUT RULES: Output ONLY the bash command itself. "
+        "Do NOT include markdown code blocks, do NOT write explanations, do NOT wrap in backticks."
+    )
+    
+    payload = {
+        "model": "qwen2.5:1.5b",
+        "prompt": f"{system_prompt}\nUser request: {prompt}\nCommand:",
+        "stream": False
+    }
+    
+    try:
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"}
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            cmd = data.get("response", "").strip()
+            # Clean any stray formatting
+            lines = [l.strip().strip("`").strip() for l in cmd.split("\n") if l.strip()]
+            for l in lines:
+                if not l.startswith("#") and not l.startswith("Here") and not l.startswith("To"):
+                    return l
+            return lines[0] if lines else ""
+    except Exception as e:
+        print(f"{YELLOW}Error contacting local Ollama: {e}{RESET}")
+        return ""
+
+def main():
+    if len(sys.argv) < 2:
+        print(f"{BOLD}Usage:{RESET} ?? <plain english request>")
+        print(f"Example: ?? find all files larger than 500MB")
+        sys.exit(1)
+        
+    query = " ".join(sys.argv[1:])
+    print(f"\n{BOLD}🤖 Omarchy Copilot:{RESET} Thinking for \"{query}\"...")
+    
+    cmd = query_ollama(query)
+    if not cmd:
+        print(f"{YELLOW}Could not generate command.{RESET}")
+        sys.exit(1)
+        
+    print(f"\n{BOLD}Suggested Command:{RESET}")
+    print(f"  {CYAN}{cmd}{RESET}\n")
+    
+    try:
+        choice = input(f"{BOLD}Action [{GREEN}E{RESET}{BOLD}xecute / {YELLOW}C{RESET}{BOLD}opy / {BOLD}Q{RESET}{BOLD}uit] (Default: E): {RESET}").strip().lower()
+    except (KeyboardInterrupt, EOFError):
+        print("\nAborted.")
+        sys.exit(0)
+        
+    if choice in ["", "e", "exec"]:
+        print(f"{GREEN}Executing...{RESET}\n")
+        subprocess.run(cmd, shell=True)
+    elif choice in ["c", "copy"]:
+        subprocess.run(["wl-copy"], input=cmd.encode("utf-8"))
+        print(f"{GREEN}✓ Copied to clipboard.{RESET}")
+    else:
+        print("Cancelled.")
+
+if __name__ == "__main__":
+    main()

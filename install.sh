@@ -127,7 +127,7 @@ mkdir -p "$HOME/.config/mcp"
 cp -r "$REPO_DIR/config/"* "$HOME/.config/"
 
 # Copy scripts & make executable
-cp "$REPO_DIR/bin/"* "$HOME/.local/bin/"
+cp -a "$REPO_DIR/bin/"* "$HOME/.local/bin/"
 chmod +x "$HOME/.local/bin/"*
 
 # Copy Omarchy desktop webapps and icons
@@ -170,6 +170,12 @@ fi
 if [[ -f /usr/share/doc/fzf/examples/completion.bash ]]; then
     source /usr/share/doc/fzf/examples/completion.bash
 fi
+
+# Omarchy AI Shell Copilot & Intelligence Tools
+alias '??'='omarchy-ai-cmd'
+alias 'ai-cmd'='omarchy-ai-cmd'
+alias 'ai-digest'='omarchy-ai-digest'
+alias 'ai-memory'='omarchy-memory'
 EOF
 fi
 
@@ -203,6 +209,7 @@ echo -e "1. Log out of your current session."
 echo -e "2. In the display manager (login screen), select ${GREEN}Omarchy${NC} from the session menu."
 echo -e "3. Log in and enjoy authentic Omarchy tiling!"
 echo -e "\n${YELLOW}Useful Shortcuts:${NC}"
+echo -e "  • ${GREEN}?? <query>${NC}                    : 🧠 Natural Language Shell Copilot (e.g. ?? find large files)"
 echo -e "  • ${GREEN}Super + A${NC}                     : 🤖 Launch Omarchy Agentic OS Assistant"
 echo -e "  • ${GREEN}Super + Shift + A${NC}               : 💬 Launch Agent Interactive Sidecar Window"
 echo -e "  • ${GREEN}Super + Ctrl + H${NC}                : 🛡️ Instant OS Self-Healing & Service Audit"

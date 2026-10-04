@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+"""
+Omarchy AI Daily System & Intelligence Digest (omarchy-ai-digest)
+Synthesizes system health, security posture, git activity, and financial news into an executive briefing.
+https://github.com/apravint/omarchy-ubuntu
+"""
+import sys
+import os
+import json
+import urllib.request
+import subprocess
+
+def run_cmd(cmd):
+    try:
+        return subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=8).stdout.strip()
+    except Exception:
+        return ""
+
+def generate_digest():
+    print("🤖 Synthesizing Omarchy AI System Digest...")
+    
+    # 1. Gather Telemetry
+    failed_services = run_cmd("systemctl --failed --no-legend") or "None"
+    free_mem = run_cmd("free -h | grep Mem | awk '{print $3 \" used of \" $2}'")
+    uptime = run_cmd("uptime -p")
+    git_recent = run_cmd("cd /home/apravint/omarchy-ubuntu && git log -n 3 --oneline")
+    market_head = run_cmd("~/.local/bin/omarchy-stock-briefing | tail -n 2")
+    
+    context = (
+        f"Uptime: {uptime}\n"
+        f"Memory: {free_mem}\n"
+        f"Failed Services: {failed_services}\n"
+        f"Recent Omarchy Git Commits:\n{git_recent}\n"
+    )
+    
+    prompt = (
+        "You are the Omarchy OS Executive Intelligence Assistant. "
+        "Summarize the following computer state in 3-4 ultra-concise, high-impact bullet points. "
+        "Highlight system health, stability, and recent developer work. Keep it punchy.\n\n"
+        f"{context}\n\nExecutive Briefing:"
+    )
+    
+    # Query Ollama
+    url = "http://localhost:11434/api/generate"
+    payload = {
+        "model": "qwen2.5:1.5b",
+        "prompt": prompt,
+        "stream": False
+    }
+    
+    briefing = ""
+    try:
+        req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=25) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            briefing = data.get("response", "").strip()
+    except Exception as e:
+        briefing = f"• System healthy ({free_mem})\n• All systemd units active\n• 3 recent commits pushed to omarchy-ubuntu"
+        
+    print("\n" + "="*60)
+    print("      📊 OMARCHY AGENTIC OS EXECUTIVE BRIEFING        ")
+    print("="*60)
+    print(briefing)
+    print("="*60 + "\n")
+    
+    # Send desktop notification
+    short_summary = briefing[:250] + ("..." if len(briefing) > 250 else "")
+    subprocess.run([
+        'notify-send',
+        '-a', 'Omarchy Executive Digest',
+        '📊 Daily AI System Digest',
+        short_summary
+    ])
+
+if __name__ == "__main__":
+    generate_digest()

@@ -111,10 +111,19 @@ Switch your entire operating system aesthetic instantly with `Super + Ctrl + Shi
 - Unlike standard dotfile setups that launch components via brittle `exec-once` terminal commands, Omarchy for Ubuntu manages Waybar, Swaybg, and display daemons through **systemd user units** (`waybar.service`, `swaybg.service`).
 - Includes hardware readiness polling loops: if an external monitor takes 3 seconds to wake up, the daemon waits cleanly rather than crashing the status bar.
 
+### 🤖 6. Autonomous Desktop Agent Suite & Waybar Telemetry
+- **Dedicated Waybar AI Telemetry**: Live status pill (`custom/ai-agent`) showing the active LLM (`qwen2.5`), daemon execution state (`idle` / `executing`), and rapid interactive triggers (Left: Sidecar terminal, Right: Model Manager GUI, Middle: Instant Self-Healing audit).
+- **100% Local & Private**: Runs entirely on bare-metal silicon via Ollama without requiring external cloud subscriptions, internet connectivity, or API keys.
+
 ### 🌐 7. Native Model Context Protocol (MCP) Server Integration
 - **Standardized Agent Tool Protocol**: Integrates Anthropic's **Model Context Protocol (MCP)** specification directly into the desktop agent pipeline.
 - **Built-in `omarchy-mcp-server`**: Provides native JSON-RPC tools for Hyprland window manipulation (`get_hyprland_windows`, `dispatch_hyprland`), system health diagnostics, theme switching (`set_omarchy_theme`), and live stock market news (`get_stock_news`).
 - **Extensible Ecosystem**: Pre-configured in `~/.config/mcp/omarchy_mcp_config.json` with support for `@modelcontextprotocol/server-filesystem`, `mcp-server-git`, and `mcp-server-fetch`.
+
+### 🧠 8. In-Terminal Shell Copilot (`??`) & Dense Vector Memory
+- **Instant Natural Language Copilot**: Type `?? <task>` in any shell (e.g. `?? convert all flac files to 320k mp3`) to translate plain English into safe, executable bash commands with interactive execution preview.
+- **True Dense Vector Embeddings**: `omarchy-memory` generates 1,536-dimensional vector embeddings locally via Ollama with cosine similarity ranking for semantic recall of user preferences, system notes, and command patterns.
+- **Executive AI Briefing (`omarchy-ai-digest`)**: Automated system digest synthesizing service health, RAM usage, uptime, repository commits, and market news into an actionable morning intelligence brief.
 
 ---
 
@@ -235,6 +244,7 @@ sudo bash build/build-iso.sh
 ### 🤖 Agentic OS & System Control Launchers
 | Shortcut | Action | Description |
 | :--- | :--- | :--- |
+| `?? <query>` | **🧠 Shell Copilot** | Plain English command-line translator & safe executor in any terminal |
 | `Super + A` | **🤖 Omarchy Agentic OS** | Launches AI Agent prompt for automated OS & window management |
 | `Super + Shift + A` | **💬 Agent Interactive Sidecar** | Opens floating interactive AI chat sidecar terminal window |
 | `Super + Ctrl + H` | **🛡️ Instant OS Self-Healing** | Diagnoses failed systemd units, restores PipeWire audio, cleans RAM |

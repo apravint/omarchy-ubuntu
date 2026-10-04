@@ -17,6 +17,7 @@
         "mpris"
     ],
     "modules-right": [
+        "custom/ai-agent",
         "custom/theme",
         "cpu",
         "memory",
@@ -53,11 +54,20 @@
 
     "custom/weather": {
         "format": "{}",
-        "interval": 900,
-        "exec": "echo \"$(omarchy weather icon 2>/dev/null) $(omarchy weather status 2>/dev/null | sed -E 's/ *· *Temp / /; s/ *·.*//')\"",
-        "tooltip": true,
-        "exec-tooltip": "omarchy weather status 2>/dev/null",
-        "on-click": "omarchy-notification-weather"
+        "return-type": "json",
+        "interval": 300,
+        "exec": "~/.local/bin/omarchy-waybar-weather",
+        "on-click": "~/.local/bin/omarchy-notification-weather"
+    },
+
+    "custom/ai-agent": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": 5,
+        "exec": "~/.local/bin/omarchy-waybar-agent",
+        "on-click": "~/.local/bin/omarchy-agent-sidecar",
+        "on-click-right": "~/.local/bin/omarchy-models",
+        "on-click-middle": "~/.local/bin/omarchy-health-agent"
     },
 
     "mpris": {
