@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=🛡️ Omarchy AI Security Guard
+Comment=Automated firewall, port, and security audit (Super + Ctrl + G)
+Exec=/home/apravint/.local/bin/omarchy-security-guard
+Icon=security-high
+Terminal=false
+Categories=Utility;ArtificialIntelligence;Security;
+StartupNotify=true

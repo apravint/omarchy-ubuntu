@@ -89,7 +89,7 @@ def diagnose_and_heal():
         notify("🛡️ Self-Healing OS Action Summary", summary_msg, urgency="critical")
     else:
         print("✨ All system components, services, audio, and memory are healthy!")
-        notify("🛡️ Self-Healing OS Audit", "All system services, audio sinks, and memory are operating at 100% health.", urgency="normal")
+        # Routine check is silent - only notify if actions were required
 
 if __name__ == "__main__":
     diagnose_and_heal()

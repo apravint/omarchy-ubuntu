@@ -52,7 +52,8 @@ def audit_security():
         summary = "\n".join(issues)
         notify("🛡️ Security Guard Risk Alert", summary, urgency="critical")
     else:
-        notify("🛡️ Security Guard Audit", "All firewall rules, listening sockets, and authentication logs are secure.", urgency="normal")
+        print("✨ All firewall rules, listening sockets, and authentication logs are secure.")
+        # Routine check is silent - only notify if security risks or unauthorized attempts are detected
 
 if __name__ == "__main__":
     audit_security()

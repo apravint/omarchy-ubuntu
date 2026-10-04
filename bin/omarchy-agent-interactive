@@ -1,0 +1,116 @@
+#!/usr/bin/env python3
+"""
+Omarchy Interactive Agent Sidecar (omarchy-agent-interactive)
+Real-time, streaming conversational AI terminal interface with local Ollama.
+https://github.com/apravint/omarchy-ubuntu
+"""
+
+import sys
+import os
+import json
+import urllib.request
+import subprocess
+
+MODEL = os.environ.get("OMARCHY_MODEL", "qwen2.5:1.5b")
+OLLAMA_URL = "http://localhost:11434/api/chat"
+
+CYAN = "\033[0;36m"
+GREEN = "\033[0;32m"
+YELLOW = "\033[1;33m"
+BLUE = "\033[0;34m"
+BOLD = "\033[1m"
+DIM = "\033[2m"
+NC = "\033[0m"
+
+SYSTEM_PROMPT = """You are the Omarchy Agentic OS Desktop Assistant running natively on Ubuntu Linux with Hyprland.
+You help the user control their desktop, windows, workspaces, themes, audio, and Linux system tasks.
+Be concise, practical, and conversational.
+If a user request can be accomplished with a command, provide the exact bash or hyprctl command in a code block or specify it clearly.
+Common dispatches:
+- hyprctl dispatch workspace <N>
+- hyprctl dispatch focuswindow <class>
+- omarchy theme set "<theme_name>"
+- pactl set-sink-volume @DEFAULT_AUDIO_SINK@ <level>%
+"""
+
+def print_header():
+    print(f"{BLUE}╔════════════════════════════════════════════════════════════════════╗{NC}")
+    print(f"{BLUE}║{GREEN}{BOLD}               🤖 OMARCHY AGENTIC OS SIDECAR CHAT                  {BLUE}║{NC}")
+    print(f"{BLUE}╠════════════════════════════════════════════════════════════════════╣{NC}")
+    print(f"{BLUE}║{NC}  ► Model: {CYAN}{MODEL}{NC} (Local Silicon / Zero Cloud Latency)           {BLUE}║{NC}")
+    print(f"{BLUE}║{NC}  ► Context: {YELLOW}Hyprland • Waybar • Audio • Shell • Workspaces{NC}         {BLUE}║{NC}")
+    print(f"{BLUE}║{NC}  ► Type {GREEN}exit{NC} or press {GREEN}Ctrl+C{NC} to return to desktop                   {BLUE}║{NC}")
+    print(f"{BLUE}╚════════════════════════════════════════════════════════════════════╝{NC}\n")
+
+def chat_stream(messages):
+    payload = {
+        "model": MODEL,
+        "messages": messages,
+        "stream": True
+    }
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(OLLAMA_URL, data=data, headers={"Content-Type": "application/json"})
+    
+    full_response = []
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            for line in resp:
+                if line:
+                    chunk = json.loads(line.decode("utf-8"))
+                    msg = chunk.get("message", {}).get("content", "")
+                    sys.stdout.write(msg)
+                    sys.stdout.flush()
+                    full_response.append(msg)
+    except urllib.error.URLError:
+        print(f"\n{YELLOW}⚠️ Error: Ollama is not responding at {OLLAMA_URL}. Starting Ollama daemon...{NC}")
+        subprocess.run(["systemctl", "--user", "start", "ollama"], check=False)
+        return "I could not connect to Ollama. Please ensure Ollama is running."
+    except Exception as e:
+        print(f"\n{YELLOW}⚠️ Stream error: {e}{NC}")
+        return f"Error: {e}"
+
+    print()
+    return "".join(full_response)
+
+def main():
+    print_header()
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+
+    while True:
+        try:
+            user_input = input(f"{GREEN}{BOLD}󱙺 User ► {NC}").strip()
+            if not user_input:
+                continue
+            if user_input.lower() in ["exit", "quit", "q"]:
+                print(f"\n{CYAN}Session ended. Have a great day!{NC}")
+                break
+
+            messages.append({"role": "user", "content": user_input})
+            print(f"\n{CYAN}{BOLD}🤖 Agent ► {NC}", end="")
+            assistant_reply = chat_stream(messages)
+            messages.append({"role": "assistant", "content": assistant_reply})
+
+            # Check if command was suggested and offer execution
+            lines = [l.strip().strip("`") for l in assistant_reply.split("\n")]
+            exec_candidate = None
+            for l in lines:
+                if l.startswith("hyprctl dispatch") or l.startswith("omarchy theme") or l.startswith("pactl set-sink"):
+                    exec_candidate = l
+                    break
+
+            if exec_candidate:
+                confirm = input(f"\n{YELLOW}⚡ Execute suggested action: `{exec_candidate}`? [Y/n]: {NC}").strip().lower()
+                if confirm in ["", "y", "yes"]:
+                    subprocess.run(exec_candidate, shell=True)
+                    print(f"{GREEN}✓ Executed successfully.{NC}\n")
+                else:
+                    print(f"{DIM}Skipped execution.{NC}\n")
+            else:
+                print()
+
+        except (KeyboardInterrupt, EOFError):
+            print(f"\n\n{CYAN}Agent Sidecar closed.{NC}")
+            break
+
+if __name__ == "__main__":
+    main()

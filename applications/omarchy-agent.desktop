@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=🤖 Omarchy Agentic OS
+Comment=Autonomous Linux AI Desktop Assistant (Super + A)
+Exec=/home/apravint/.local/bin/omarchy-agent
+Icon=system-search
+Terminal=false
+Categories=Utility;ArtificialIntelligence;System;
+StartupNotify=true

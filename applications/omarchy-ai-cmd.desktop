@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=🧠 Omarchy AI Shell Copilot
+Comment=Natural Language Bash Command Assistant (??)
+Exec=alacritty -e /home/apravint/.local/bin/omarchy-ai-cmd
+Icon=utilities-terminal
+Terminal=false
+Categories=Utility;ArtificialIntelligence;Development;
+StartupNotify=true

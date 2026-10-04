@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=📋 Omarchy Executive AI Digest
+Comment=System health, metrics, git history, and news briefing
+Exec=alacritty --hold -e /home/apravint/.local/bin/omarchy-ai-digest
+Icon=text-x-generic
+Terminal=false
+Categories=Utility;ArtificialIntelligence;System;
+StartupNotify=true

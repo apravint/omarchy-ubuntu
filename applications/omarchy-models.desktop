@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=📦 Omarchy AI Model Manager
+Comment=Download and manage local Ollama and GGUF models (Super + Alt + M)
+Exec=/home/apravint/.local/bin/omarchy-models
+Icon=system-software-install
+Terminal=false
+Categories=Utility;ArtificialIntelligence;Settings;
+StartupNotify=true

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=🎙️ Omarchy AI Voice Assistant
+Comment=Hands-free voice commands and audio transcription (Super + Ctrl + V)
+Exec=/home/apravint/.local/bin/omarchy-voice-agent
+Icon=audio-input-microphone
+Terminal=false
+Categories=Utility;ArtificialIntelligence;Audio;
+StartupNotify=true

@@ -3,39 +3,19 @@
 # Omarchy Agentic OS Sidecar Window (Super + Shift + A)
 # Launches a floating interactive agent terminal sidecar
 # ==============================================================================
-
 set -euo pipefail
+
+INTERACTIVE_BIN="$HOME/.local/bin/omarchy-agent-interactive"
+if [ ! -f "$INTERACTIVE_BIN" ]; then
+    INTERACTIVE_BIN="$(dirname "$0")/omarchy-agent-interactive"
+fi
 
 if command -v alacritty >/dev/null 2>&1; then
     alacritty --title "Omarchy Agent Sidecar" \
-              --option "window.dimensions.columns=90" \
-              --option "window.dimensions.lines=30" \
-              -e bash -c "
-echo '===================================================================='
-echo '               🤖 OMARCHY AGENTIC OS SIDECAR CHAT                  '
-echo '===================================================================='
-echo '  ► Model: Ollama / OpenClaw (qwen2.5 / DeepSeek-R1 / Gemini)'
-echo '  ► Capabilities: Hyprland control, theme toggle, shell commands, OCR'
-echo '===================================================================='
-echo ''
-if command -v openclaw >/dev/null 2>&1; then
-    openclaw --interactive
+              --class "OmarchySidecar" \
+              --option "window.dimensions.columns=95" \
+              --option "window.dimensions.lines=32" \
+              -e "$INTERACTIVE_BIN"
 else
-    echo 'Launching interactive Omarchy Agent session...'
-    python3 -c \"
-import os, sys
-print('Omarchy Agentic Shell Ready. Type your request or quit.')
-while True:
-    try:
-        query = input('\n🤖 omarchy-agent> ')
-        if query.lower() in ['exit', 'quit', 'q']:
-            break
-        os.system(f'omarchy-agent \"{query}\"')
-    except (KeyboardInterrupt, EOFError):
-        break
-\"
-fi
-"
-else
-    omarchy-agent
+    "$INTERACTIVE_BIN"
 fi
