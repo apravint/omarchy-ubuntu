@@ -72,8 +72,8 @@ if ! command -v ollama >/dev/null 2>&1; then
     curl -fsSL https://ollama.com/install.sh | sh || true
 fi
 if command -v pip3 >/dev/null 2>&1; then
-    echo "Installing OpenClaw Agent Framework..."
-    pip3 install openclaw 2>/dev/null || true
+    echo "Installing OpenClaw, Edge-TTS & DDGS Agent stack..."
+    pip3 install --break-system-packages openclaw edge-tts ddgs 2>/dev/null || pip3 install openclaw edge-tts ddgs 2>/dev/null || true
 fi
 
 echo -e "\n${YELLOW}[2/6] Installing Omarchy core repository & theme suite...${NC}"

@@ -213,7 +213,7 @@ apt-get install -y \
 
 # Install Ollama & OpenClaw Agentic OS Stack inside ISO
 curl -fsSL https://ollama.com/install.sh | sh || true
-pip3 install openclaw || true
+pip3 install --break-system-packages openclaw edge-tts ddgs || pip3 install openclaw edge-tts ddgs || true
 
 # Install official Omarchy core themes & suite into /usr/share/omarchy
 if [ ! -d "/usr/share/omarchy" ]; then

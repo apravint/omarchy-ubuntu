@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Omarchy High-Fidelity Neural TTS Synthesizer
+# Uses Microsoft Edge Neural Speech with automatic Tamil/English voice mapping.
+# ==============================================================================
+set -euo pipefail
+
+TEXT="${1:-}"
+OUTPUT="${2:-/tmp/speech.wav}"
+LANG="${3:-en}"
+VOICE_OVERRIDE="${4:-${OMARCHY_VOICE:-}}"
+
+if [ -z "$TEXT" ]; then
+    echo "Usage: omarchy-tts <text> [output_file] [lang] [voice]"
+    exit 1
+fi
+
+# Select default neural voice based on language
+if [ -n "$VOICE_OVERRIDE" ]; then
+    VOICE="$VOICE_OVERRIDE"
+elif [[ "$LANG" =~ ^(ta|tamil) ]]; then
+    VOICE="ta-IN-ValluvarNeural"
+else
+    VOICE="en-US-ChristopherNeural"
+fi
+
+TMP_MP3="${OUTPUT}.tmp.mp3"
+
+if command -v edge-tts >/dev/null 2>&1; then
+    edge-tts --voice "$VOICE" --text "$TEXT" --write-media "$TMP_MP3" >/dev/null 2>&1 || true
+fi
+
+if [ -f "$TMP_MP3" ] && [ -s "$TMP_MP3" ]; then
+    if command -v ffmpeg >/dev/null 2>&1; then
+        ffmpeg -y -i "$TMP_MP3" -ar 44100 -ac 2 "$OUTPUT" -loglevel error
+        rm -f "$TMP_MP3"
+    else
+        mv "$TMP_MP3" "$OUTPUT"
+    fi
+    echo "✓ Synthesized neural speech (${VOICE}) -> $OUTPUT"
+    exit 0
+fi
+
+# Fallback to Node.js google-tts-api if edge-tts fails or is offline
+NODE_EXEC="$(command -v node 2>/dev/null || true)"
+for candidate in "$HOME/.nvm/versions/node/"*"/bin/node" /usr/local/bin/node /usr/bin/node; do
+    if [ -x "$candidate" ]; then
+        NODE_EXEC="$candidate"
+        break
+    fi
+done
+
+NODE_MODS=""
+for candidate in "$HOME/.nvm/versions/node/"*"/lib/node_modules" /usr/local/lib/node_modules /usr/lib/node_modules; do
+    if [ -d "$candidate/google-tts-api" ]; then
+        NODE_MODS="$candidate"
+        break
+    fi
+done
+
+if [ -x "$NODE_EXEC" ]; then
+    NODE_PATH="$NODE_MODS" "$NODE_EXEC" - "$TEXT" "$OUTPUT" "$LANG" << 'EOF'
+const googleTTS = require("google-tts-api");
+const fs = require("fs");
+const https = require("https");
+const { execSync } = require("child_process");
+
+const text = process.argv[2];
+const outputPath = process.argv[3];
+const lang = process.argv[4] || "en";
+
+async function download(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      if (res.statusCode !== 200) {
+        return reject(new Error(`Failed request status ${res.statusCode}`));
+      }
+      const data = [];
+      res.on("data", chunk => data.push(chunk));
+      res.on("end", () => resolve(Buffer.concat(data)));
+      res.on("error", reject);
+    });
+  });
+}
+
+async function synthesize() {
+  const results = googleTTS.getAllAudioUrls(text, {
+    lang: lang,
+    slow: false,
+    host: "https://translate.google.com",
+    timeout: 10000,
+    splitPunct: ".?,!:"
+  });
+
+  const buffers = [];
+  for (const item of results) {
+    const buf = await download(item.url);
+    buffers.push(buf);
+  }
+
+  const combinedMp3 = Buffer.concat(buffers);
+  const tempMp3 = `${outputPath}.tmp.mp3`;
+  fs.writeFileSync(tempMp3, combinedMp3);
+
+  try {
+    execSync(`ffmpeg -y -i "${tempMp3}" -ar 44100 -ac 2 "${outputPath}" -loglevel error`);
+    fs.unlinkSync(tempMp3);
+    console.log(`✓ Synthesized speech via fallback (${combinedMp3.length} bytes) -> ${outputPath}`);
+  } catch (e) {
+    fs.renameSync(tempMp3, outputPath);
+    console.log(`✓ Saved fallback audio -> ${outputPath}`);
+  }
+}
+
+synthesize().catch(err => {
+  console.error("TTS Synthesis error:", err);
+  process.exit(1);
+});
+EOF
+fi
