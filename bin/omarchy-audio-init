@@ -18,6 +18,12 @@ for i in {1..20}; do
     sleep 0.5
 done
 
+# Ensure NVIDIA GF119 Pin 0x05 (HDMI 1 / Samsung) has OUT enabled and connected to Converter 0x09
+if [[ -e /dev/snd/hwC2D0 ]] && command -v hda-verb >/dev/null 2>&1; then
+    hda-verb /dev/snd/hwC2D0 0x05 SET_PIN_WIDGET_CONTROL 0x40 >/dev/null 2>&1 || true
+    hda-verb /dev/snd/hwC2D0 0x05 SET_CONNECT_SEL 0x01 >/dev/null 2>&1 || true
+fi
+
 TARGET_SINK="alsa_output.pci-0000_01_00.1.playback.7.0"
 
 # If a Bluetooth speaker/headset is already connected, preserve it!

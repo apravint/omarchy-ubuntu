@@ -5,12 +5,16 @@ CURRENT_SINK=$(pactl get-default-sink 2>/dev/null)
 
 case "$CURRENT_SINK" in
     *"combined_displays"*)
-        TARGET_SINK="alsa_output.pci-0000_01_00.1.pro-output-7"
+        TARGET_SINK="alsa_output.pci-0000_01_00.1.playback.7.0"
         LABEL="Samsung Monitor Only"
         ICON="video-display"
+        if command -v hda-verb >/dev/null 2>&1 && [[ -e /dev/snd/hwC2D0 ]]; then
+            hda-verb /dev/snd/hwC2D0 0x05 SET_PIN_WIDGET_CONTROL 0x40 >/dev/null 2>&1 || true
+            hda-verb /dev/snd/hwC2D0 0x05 SET_CONNECT_SEL 0x01 >/dev/null 2>&1 || true
+        fi
         ;;
-    *"pro-output-7"*|*"extra1"*)
-        TARGET_SINK="alsa_output.pci-0000_01_00.1.pro-output-3"
+    *"playback.7.0"*|*"pro-output-7"*|*"extra1"*)
+        TARGET_SINK="alsa_output.pci-0000_01_00.1.playback.3.0"
         LABEL="Sony TV Only"
         ICON="tv"
         ;;
