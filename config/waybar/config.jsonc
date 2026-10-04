@@ -112,12 +112,13 @@
         "format-icons": {
             "default": ["󰕿", "󰖀", "󰕾"]
         },
-        "tooltip-format": "{desc} | Left: Audio mixer | Middle: Toggle Samsung/Sony TV | Right: Mute",
+        "scroll-step": 5,
+        "tooltip-format": "{desc} | Left: Audio mixer | Middle: Cycle output (Bluetooth/TV/Monitor) | Right: Mute",
         "on-click": "pavucontrol",
         "on-click-middle": "~/.local/bin/omarchy-audio-toggle",
-        "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
-        "on-scroll-up": "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+",
-        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+        "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+        "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
+        "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%"
     },
 
     "battery": {

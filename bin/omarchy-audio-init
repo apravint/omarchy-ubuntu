@@ -20,8 +20,10 @@ done
 
 TARGET_SINK="alsa_output.pci-0000_01_00.1.playback.7.0"
 
-# If Samsung sink exists, set as default and unmute
-if pactl list sinks short 2>/dev/null | grep -q "$TARGET_SINK"; then
+# If a Bluetooth speaker/headset is already connected, preserve it!
+if pactl list sinks short 2>/dev/null | grep -q "bluez_output"; then
+    echo "Bluetooth audio device detected; preserving as active output."
+elif pactl list sinks short 2>/dev/null | grep -q "$TARGET_SINK"; then
     pactl set-default-sink "$TARGET_SINK" 2>/dev/null || true
     pactl set-sink-mute "$TARGET_SINK" 0 2>/dev/null || true
     pactl set-sink-volume "$TARGET_SINK" 100% 2>/dev/null || true

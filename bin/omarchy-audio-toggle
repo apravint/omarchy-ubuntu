@@ -1,25 +1,81 @@
-#!/usr/bin/env bash
-# Omarchy Audio Output Toggle (Samsung Monitor <-> Sony TV)
+#!/usr/bin/env python3
+"""
+Omarchy Audio Output Cycler (omarchy-audio-toggle)
+Dynamically cycles through all available audio outputs:
+- Bluetooth (e.g. JBL Flip 4, headphones)
+- Samsung Monitor (HDMI)
+- Sony TV (HDMI)
+- All Displays (Combined)
+Moves all active audio streams and notifies the user.
+https://github.com/apravint/omarchy-ubuntu
+"""
 
-SAMSUNG_SINK="alsa_output.pci-0000_01_00.1.playback.7.0"
-SONY_SINK="alsa_output.pci-0000_01_00.1.playback.3.0"
+import subprocess
+import json
+import sys
 
-CURRENT_SINK=$(pactl get-default-sink 2>/dev/null)
+def get_sinks():
+    try:
+        out = subprocess.check_output(["pactl", "-f", "json", "list", "sinks"], text=True)
+        sinks = json.loads(out)
+        # Filter out internal dummy sinks
+        valid_sinks = [s for s in sinks if "dummy" not in s.get("name", "").lower()]
+        return valid_sinks
+    except Exception as e:
+        print(f"Error listing sinks: {e}")
+        return []
 
-if [ "$CURRENT_SINK" = "$SAMSUNG_SINK" ]; then
-    TARGET_SINK="$SONY_SINK"
-    DISPLAY_NAME="Sony TV (HDMI)"
-else
-    TARGET_SINK="$SAMSUNG_SINK"
-    DISPLAY_NAME="Samsung Monitor (HDMI)"
-fi
+def get_default_sink():
+    try:
+        return subprocess.check_output(["pactl", "get-default-sink"], text=True).strip()
+    except Exception:
+        return ""
 
-pactl set-default-sink "$TARGET_SINK" 2>/dev/null || true
-pactl set-sink-mute "$TARGET_SINK" 0 2>/dev/null || true
-pactl set-sink-volume "$TARGET_SINK" 100% 2>/dev/null || true
+def main():
+    sinks = get_sinks()
+    if not sinks:
+        sys.exit(0)
 
-for input in $(pactl list sink-inputs short 2>/dev/null | awk '{print $1}'); do
-    pactl move-sink-input "$input" "$TARGET_SINK" 2>/dev/null || true
-done
+    current_default = get_default_sink()
+    sink_names = [s["name"] for s in sinks]
 
-notify-send "Audio Output" "Switched to $DISPLAY_NAME" -i audio-speakers -t 3000 2>/dev/null || true
+    # Find next sink in cycle
+    try:
+        curr_idx = sink_names.index(current_default)
+        next_idx = (curr_idx + 1) % len(sink_names)
+    except ValueError:
+        next_idx = 0
+
+    target_sink = sinks[next_idx]
+    target_name = target_sink["name"]
+    display_name = target_sink.get("description") or target_name
+
+    # Set default sink
+    subprocess.run(["pactl", "set-default-sink", target_name], check=False)
+    subprocess.run(["pactl", "set-sink-mute", target_name, "0"], check=False)
+
+    # Move active playback streams to new sink
+    try:
+        inputs_out = subprocess.check_output(["pactl", "list", "sink-inputs", "short"], text=True)
+        for line in inputs_out.strip().split("\n"):
+            if line.strip():
+                input_id = line.split()[0]
+                subprocess.run(["pactl", "move-sink-input", input_id, target_name], check=False)
+    except Exception:
+        pass
+
+    # Send desktop alert with appropriate icon
+    icon = "audio-speakers-bluetooth" if "bluez" in target_name else "audio-card"
+    subprocess.run([
+        "notify-send",
+        "-a", "Omarchy Audio",
+        "🔊 Audio Output Switched",
+        f"Active Device: {display_name}",
+        "-i", icon,
+        "-t", "2500"
+    ], check=False)
+
+    print(f"✓ Switched to {display_name} ({target_name})")
+
+if __name__ == "__main__":
+    main()
