@@ -17,6 +17,22 @@ def get_clipboard_text():
     except Exception:
         return ""
 
+def ask_gemini(prompt, content):
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
+        return ""
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key={api_key}"
+    payload = {
+        "contents": [{"parts": [{"text": f"{prompt}:\n\n```\n{content}\n```\n\nOutput clean, concise result:"}]}]
+    }
+    try:
+        req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return data["candidates"][0]["content"]["parts"][0]["text"].strip()
+    except Exception:
+        return ""
+
 def ask_ollama(prompt, content):
     url = "http://localhost:11434/api/generate"
     payload = {
@@ -69,7 +85,7 @@ def show_wofi_actions(clip_text):
         elif "Action Items" in selected_action:
             prompt_type = "Extract bullet point key action items and takeaways"
 
-        result = ask_ollama(prompt_type, clip_text)
+        result = ask_gemini(prompt_type, clip_text) or ask_ollama(prompt_type, clip_text)
 
         # Copy back to clipboard
         subprocess.run(["wl-copy"], input=result.encode("utf-8"))

@@ -27,6 +27,7 @@ import sys
 import json
 import urllib.request
 import subprocess
+import os
 
 prompt = sys.argv[1]
 print(f"🤖 Omarchy Agent executing: {prompt}")
@@ -41,29 +42,51 @@ Common actions:
 - notify-send "title" "message"
 """
 
-url = "http://localhost:11434/api/generate"
-data = json.dumps({
-    "model": "qwen2.5:1.5b",
-    "prompt": f"{sys_prompt}\nUser: {prompt}\nResponse:",
-    "stream": False
-}).encode("utf-8")
+answer = ""
+api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
 
-try:
-    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        res = json.loads(resp.read().decode("utf-8"))
-        answer = res.get("response", "").strip()
-        print("► Agent Response:\n", answer)
+if api_key:
+    try:
+        gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key={api_key}"
+        payload = {
+            "contents": [{"parts": [{"text": f"{sys_prompt}\nUser: {prompt}\nResponse:"}]}]
+        }
+        req = urllib.request.Request(
+            gemini_url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"}
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            answer = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+    except Exception:
+        pass
+
+if not answer:
+    url = "http://localhost:11434/api/generate"
+    data = json.dumps({
+        "model": "qwen2.5:1.5b",
+        "prompt": f"{sys_prompt}\nUser: {prompt}\nResponse:",
+        "stream": False
+    }).encode("utf-8")
+
+    try:
+        req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            res = json.loads(resp.read().decode("utf-8"))
+            answer = res.get("response", "").strip()
+    except Exception as e:
+        print(f"Error contacting agent model: {e}")
+        sys.exit(1)
+
+print("► Agent Response:\n", answer)
+
+# Execute supported system dispatches
+for line in answer.split("\n"):
+    clean_line = line.strip().strip("`").strip()
+    if any(clean_line.startswith(prefix) for prefix in ["hyprctl", "omarchy", "notify-send", "pactl"]):
+        print(f"⚡ Dispatching: {clean_line}")
+        subprocess.run(clean_line, shell=True)
         
-        # Execute supported system dispatches
-        for line in answer.split("\n"):
-            clean_line = line.strip().strip("`").strip()
-            if any(clean_line.startswith(prefix) for prefix in ["hyprctl", "omarchy", "notify-send", "pactl"]):
-                print(f"⚡ Dispatching: {clean_line}")
-                subprocess.run(clean_line, shell=True)
-                
-        subprocess.run(["notify-send", "-a", "Omarchy Agent", "✓ Action Completed", answer[:120]])
-except Exception as e:
-    print(f"Agent error: {e}")
-    subprocess.run(["notify-send", "-a", "Omarchy Agent", "Agent Notice", prompt])
+subprocess.run(["notify-send", "-a", "Omarchy Agent", "✓ Action Completed", answer[:120]])
 EOF
