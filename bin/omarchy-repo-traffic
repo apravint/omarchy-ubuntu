@@ -100,5 +100,5 @@ for name, c_count, c_uniq, v_count, v_uniq, stars in rows:
 print("-" * 69)
 print(f"{'TOTAL ACROSS ALL REPOS':<26} | {total_clones} ({total_clone_uniques} uniq) | {total_views} ({total_view_uniques} uniq) |")
 print("-" * 69)
-print(f"Permanent archive branch: https://github.com/{owner}/omarchy-ubuntu/tree/traffic-data")
+print(f"Permanent archive: https://github.com/{owner}/github-traffic")
 EOF
