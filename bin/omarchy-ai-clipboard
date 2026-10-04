@@ -21,7 +21,8 @@ def ask_gemini(prompt, content):
     api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     if not api_key:
         return ""
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key={api_key}"
+    model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
     payload = {
         "contents": [{"parts": [{"text": f"{prompt}:\n\n```\n{content}\n```\n\nOutput clean, concise result:"}]}]
     }
@@ -35,8 +36,9 @@ def ask_gemini(prompt, content):
 
 def ask_ollama(prompt, content):
     url = "http://localhost:11434/api/generate"
+    model = os.environ.get("OLLAMA_MODEL", "qwen2.5:1.5b")
     payload = {
-        "model": "qwen2.5:1.5b",
+        "model": model,
         "prompt": f"{prompt}:\n\n```\n{content}\n```\n\nOutput clean, concise result:",
         "stream": False,
         "options": {

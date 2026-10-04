@@ -20,7 +20,8 @@ def query_gemini(prompt):
     api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     if not api_key:
         return ""
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key={api_key}"
+    model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
     system_prompt = (
         "You are an expert Linux CLI terminal copilot on Ubuntu with Hyprland. "
         "Convert the user's plain English request into the single most efficient, modern bash command. "
@@ -57,7 +58,7 @@ def query_ollama(prompt):
     )
     
     payload = {
-        "model": "qwen2.5:1.5b",
+        "model": os.environ.get("OLLAMA_MODEL", "qwen2.5:1.5b"),
         "prompt": f"{system_prompt}\nUser request: {prompt}\nCommand:",
         "stream": False,
         "options": {
