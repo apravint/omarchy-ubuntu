@@ -28,7 +28,11 @@ def query_ollama(prompt):
     payload = {
         "model": "qwen2.5:1.5b",
         "prompt": f"{system_prompt}\nUser request: {prompt}\nCommand:",
-        "stream": False
+        "stream": False,
+        "options": {
+            "num_ctx": 2048,
+            "num_predict": 64
+        }
     }
     
     try:

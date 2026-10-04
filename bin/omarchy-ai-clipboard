@@ -22,7 +22,11 @@ def ask_ollama(prompt, content):
     payload = {
         "model": "qwen2.5:1.5b",
         "prompt": f"{prompt}:\n\n```\n{content}\n```\n\nOutput clean, concise result:",
-        "stream": False
+        "stream": False,
+        "options": {
+            "num_ctx": 4096,
+            "num_predict": 256
+        }
     }
     try:
         req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"})

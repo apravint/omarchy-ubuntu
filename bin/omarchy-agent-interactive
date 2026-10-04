@@ -77,7 +77,11 @@ def chat_stream(messages):
     payload = {
         "model": MODEL,
         "messages": messages,
-        "stream": True
+        "stream": True,
+        "options": {
+            "num_ctx": 4096,
+            "num_predict": 256
+        }
     }
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(OLLAMA_URL, data=data, headers={"Content-Type": "application/json"})

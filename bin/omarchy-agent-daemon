@@ -15,7 +15,7 @@ import threading
 AGENT_STATE = {
     "status": "Idle",
     "last_task": "None",
-    "model": "qwen2.5:7b",
+    "model": "qwen2.5:1.5b",
     "updated_at": time.time()
 }
 
