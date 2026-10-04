@@ -4,30 +4,41 @@ Omarchy Waybar AI Agent Telemetry Provider
 Provides real-time agent status, model info, and interactive click actions for Waybar.
 https://github.com/apravint/omarchy-ubuntu
 """
+import os
 import sys
 import json
 import urllib.request
 
 def main():
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    default_name = "Gemini 3.5 Flash" if api_key else "qwen2.5:1.5b"
+    engine_name = "Google Gemini Cloud (0% CPU)" if api_key else "Ollama Local (qwen2.5)"
+
     try:
         req = urllib.request.Request("http://127.0.0.1:9090/api/status", headers={'User-Agent': 'Waybar'})
         with urllib.request.urlopen(req, timeout=1.5) as resp:
             data = json.loads(resp.read().decode('utf-8'))
             status = data.get("status", "Idle")
-            model_raw = data.get("model", "qwen2.5:1.5b")
-            model = model_raw.split(":")[0]
-            last_task = data.get("last_task", "None")
+            model_raw = data.get("model", default_name)
+            engine_name = data.get("engine", engine_name)
             
-            icon = "󱙺"
+            if "gemini" in model_raw.lower() or api_key:
+                icon = "✨"
+                model_label = "Gemini"
+            else:
+                icon = "󱙺"
+                model_label = model_raw.split(":")[0]
+
             if "execut" in status.lower() or "think" in status.lower():
                 icon = "󰚩"
-                
-            text = f"{icon} {model}"
+
+            text = f"{icon} {model_label}"
             tooltip = (
                 f"🤖 Omarchy Agentic OS\n"
                 f"• Model: {model_raw}\n"
+                f"• Engine: {engine_name}\n"
                 f"• Daemon State: {status}\n"
-                f"• Last Action: {last_task}\n\n"
+                f"• Last Action: {data.get('last_task', 'None')}\n\n"
                 f"🖱️ Left-Click: Open Agent Sidecar\n"
                 f"🖱️ Right-Click: AI Model Manager\n"
                 f"🖱️ Middle-Click: Self-Healing Audit"
@@ -35,9 +46,10 @@ def main():
             print(json.dumps({"text": text, "tooltip": tooltip, "class": status.lower()}))
             return
     except Exception:
+        text_icon = "✨ Gemini" if api_key else "󱙺 AI Ready"
         print(json.dumps({
-            "text": "󱙺 AI Ready",
-            "tooltip": "🤖 Omarchy Agentic OS\n• Engine: Ollama Local (qwen2.5)\n\n🖱️ Left-Click: Open Agent Sidecar\n🖱️ Right-Click: AI Model Manager",
+            "text": text_icon,
+            "tooltip": f"🤖 Omarchy Agentic OS\n• Engine: {engine_name}\n\n🖱️ Left-Click: Open Agent Sidecar\n🖱️ Right-Click: AI Model Manager",
             "class": "idle"
         }))
 

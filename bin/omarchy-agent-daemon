@@ -12,10 +12,15 @@ import subprocess
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
 
+api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+default_model = "Gemini 3.5 Flash" if api_key else "qwen2.5:1.5b"
+engine = "Google Gemini Cloud (0% CPU)" if api_key else "Ollama Local (qwen2.5)"
+
 AGENT_STATE = {
     "status": "Idle",
     "last_task": "None",
-    "model": "qwen2.5:1.5b",
+    "model": default_model,
+    "engine": engine,
     "updated_at": time.time()
 }
 
