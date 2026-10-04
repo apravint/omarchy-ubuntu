@@ -4,7 +4,8 @@ After=network.target hyprland.service
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/omarchy-agent-daemon
+Environment="PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=/bin/sh -c 'if [ -x /usr/local/bin/omarchy-agent-daemon ]; then exec /usr/local/bin/omarchy-agent-daemon; else exec %h/.local/bin/omarchy-agent-daemon; fi'
 Restart=always
 RestartSec=5
 

@@ -30,7 +30,7 @@ def audit_security():
     listening_ports = []
     if ports_out:
         for line in ports_out.split("\n"):
-            if "127.0.0.1" not in line and "localhost" not in line and "::1" not in line:
+            if not any(loopback in line for loopback in ["127.", "localhost", "::1"]):
                 listening_ports.append(line.split()[4] if len(line.split()) >= 5 else line)
 
     if listening_ports:
@@ -43,8 +43,8 @@ def audit_security():
         issues.append(f"⚠️ {failed_count} Recent Sudo Authentication Failures Detected.")
 
     # 3. Audit UFW Firewall Status
-    ufw_out = run_cmd("sudo ufw status 2>/dev/null || true")
-    if "inactive" in ufw_out.lower():
+    ufw_status = run_cmd("systemctl is-active ufw")
+    if ufw_status != "active":
         issues.append("🔥 UFW Firewall is INACTIVE! Recommended: sudo ufw enable")
 
     # 4. Notify Summary

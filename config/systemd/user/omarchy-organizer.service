@@ -4,7 +4,8 @@ After=network.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/omarchy-ai-organizer
+Environment="PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=/bin/sh -c 'if [ -x /usr/local/bin/omarchy-ai-organizer ]; then exec /usr/local/bin/omarchy-ai-organizer; else exec %h/.local/bin/omarchy-ai-organizer; fi'
 
 [Install]
 WantedBy=default.target
