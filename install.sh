@@ -176,6 +176,7 @@ alias '??'='omarchy-ai-cmd'
 alias 'ai-cmd'='omarchy-ai-cmd'
 alias 'ai-digest'='omarchy-ai-digest'
 alias 'ai-memory'='omarchy-memory'
+alias 'repo-traffic'='omarchy-repo-traffic'
 EOF
 fi
 

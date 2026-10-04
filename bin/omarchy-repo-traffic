@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Omarchy GitHub Repository Traffic & Clone Monitor
+# Displays real-time clone counts, unique cloners, and view statistics.
+# https://github.com/apravint/omarchy-ubuntu
+# ==============================================================================
+set -euo pipefail
+
+OWNER="${1:-apravint}"
+
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+echo -e "${BLUE}=================================================================${NC}"
+echo -e "${GREEN}${BOLD}     GitHub Traffic & Clone Analytics for @${OWNER}${NC}"
+echo -e "${BLUE}=================================================================${NC}"
+
+if ! command -v gh >/dev/null 2>&1; then
+    echo "Error: GitHub CLI (gh) is not installed."
+    exit 1
+fi
+
+if ! gh auth status >/dev/null 2>&1; then
+    echo "Error: gh is not authenticated. Run 'gh auth login' first."
+    exit 1
+fi
+
+echo -e "Fetching repositories and 14-day traffic metrics...\n"
+
+python3 - << EOF
+import subprocess
+import json
+import sys
+
+owner = "${OWNER}"
+try:
+    repos_json = subprocess.check_output(
+        ["gh", "repo", "list", owner, "--limit", "100", "--json", "name,isFork,stargazerCount"],
+        text=True
+    )
+    repos = json.loads(repos_json)
+except Exception as e:
+    print(f"Error listing repos: {e}")
+    sys.exit(1)
+
+tracked_repos = [r for r in repos if not r.get("isFork", False)]
+
+print(f"{'Repository':<26} | {'Clones (14d)':<15} | {'Views (14d)':<15} | {'Stars':<5}")
+print("-" * 69)
+
+total_clones = 0
+total_clone_uniques = 0
+total_views = 0
+total_view_uniques = 0
+
+rows = []
+
+for r in tracked_repos:
+    name = r["name"]
+    stars = r.get("stargazerCount", 0)
+    
+    # Clones
+    try:
+        c_res = subprocess.check_output(["gh", "api", f"repos/{owner}/{name}/traffic/clones"], text=True, stderr=subprocess.DEVNULL)
+        c_data = json.loads(c_res)
+        c_count = c_data.get("count", 0)
+        c_uniq = c_data.get("uniques", 0)
+    except Exception:
+        c_count, c_uniq = 0, 0
+        
+    # Views
+    try:
+        v_res = subprocess.check_output(["gh", "api", f"repos/{owner}/{name}/traffic/views"], text=True, stderr=subprocess.DEVNULL)
+        v_data = json.loads(v_res)
+        v_count = v_data.get("count", 0)
+        v_uniq = v_data.get("uniques", 0)
+    except Exception:
+        v_count, v_uniq = 0, 0
+
+    total_clones += c_count
+    total_clone_uniques += c_uniq
+    total_views += v_count
+    total_view_uniques += v_uniq
+
+    if c_count > 0 or v_count > 0 or stars > 0:
+        rows.append((name, c_count, c_uniq, v_count, v_uniq, stars))
+
+# Sort by clones descending
+rows.sort(key=lambda x: (x[1], x[3]), reverse=True)
+
+for name, c_count, c_uniq, v_count, v_uniq, stars in rows:
+    c_str = f"{c_count} ({c_uniq} uniq)"
+    v_str = f"{v_count} ({v_uniq} uniq)"
+    print(f"{name:<26} | {c_str:<15} | {v_str:<15} | ⭐ {stars}")
+
+print("-" * 69)
+print(f"{'TOTAL ACROSS ALL REPOS':<26} | {total_clones} ({total_clone_uniques} uniq) | {total_views} ({total_view_uniques} uniq) |")
+print("-" * 69)
+print(f"Permanent archive branch: https://github.com/{owner}/omarchy-ubuntu/tree/traffic-data")
+EOF
