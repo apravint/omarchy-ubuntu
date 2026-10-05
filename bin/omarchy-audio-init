@@ -19,9 +19,13 @@ for i in {1..20}; do
 done
 
 # Ensure NVIDIA GF119 Pin 0x05 (HDMI 1 / Samsung) has OUT enabled and connected to Converter 0x09
-if [[ -e /dev/snd/hwC2D0 ]] && command -v hda-verb >/dev/null 2>&1; then
-    hda-verb /dev/snd/hwC2D0 0x05 SET_PIN_WIDGET_CONTROL 0x40 >/dev/null 2>&1 || true
-    hda-verb /dev/snd/hwC2D0 0x05 SET_CONNECT_SEL 0x01 >/dev/null 2>&1 || true
+NVIDIA_HW=$(ls -d /sys/bus/pci/devices/0000:01:00.1/sound/card*/hwC*D0 2>/dev/null | head -n 1)
+if [[ -n "$NVIDIA_HW" ]] && command -v hda-verb >/dev/null 2>&1; then
+    DEV_PATH="/dev/snd/$(basename "$NVIDIA_HW")"
+    if [[ -e "$DEV_PATH" ]]; then
+        hda-verb "$DEV_PATH" 0x05 SET_PIN_WIDGET_CONTROL 0x40 >/dev/null 2>&1 || true
+        hda-verb "$DEV_PATH" 0x05 SET_CONNECT_SEL 0x01 >/dev/null 2>&1 || true
+    fi
 fi
 
 TARGET_SINK="alsa_output.pci-0000_01_00.1.playback.7.0"
