@@ -3,6 +3,7 @@
 Omarchy Self-Healing OS Agent (omarchy-health-agent)
 Powered by Antigravity AI Engine logic & systemd integration.
 Diagnoses Linux system failures, failed services, audio sinks, and auto-restarts broken components.
+https://github.com/apravint/omarchy-ubuntu
 """
 
 import sys
@@ -10,6 +11,7 @@ import os
 import subprocess
 import json
 import time
+import urllib.request
 
 def run_cmd(cmd):
     try:
@@ -20,18 +22,79 @@ def run_cmd(cmd):
 
 def notify(title, message, urgency="normal"):
     print(f"[{urgency.upper()}] {title}: {message}")
-    subprocess.run(f'notify-send -u {urgency} -a "Omarchy Self-Healing OS" "{title}" "{message}"', shell=True)
+    subprocess.run(["notify-send", "-u", urgency, "-a", "Omarchy Self-Healing OS", title, message])
+
+def get_api_key():
+    key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if key:
+        return key
+    env_file = os.path.expanduser("~/.config/environment.d/20-gemini.conf")
+    if os.path.exists(env_file):
+        try:
+            with open(env_file, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("GEMINI_API_KEY=") or line.startswith("GOOGLE_API_KEY="):
+                        val = line.split("=", 1)[1].strip().strip('"').strip("'")
+                        if val:
+                            return val
+        except Exception:
+            pass
+    return ""
+
+def ask_gemini_diagnosis(service_name, log_snippet):
+    api_key = get_api_key()
+    if not api_key:
+        return ""
+    model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+    prompt = (
+        f"A systemd service '{service_name}' failed on Ubuntu Linux.\n"
+        f"Recent journal log:\n```\n{log_snippet[:1500]}\n```\n"
+        f"In 1 concise sentence, what is the root cause and recommended action?"
+    )
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}]
+    }
+    try:
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json", "x-goog-api-key": api_key}
+        )
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return data["candidates"][0]["content"]["parts"][0]["text"].strip()
+    except Exception:
+        return ""
 
 def check_failed_services():
-    """Diagnose failed systemd units."""
-    out = run_cmd("systemctl --failed --no-legend")
-    failed_units = []
-    if out:
-        for line in out.split("\n"):
+    """Diagnose failed systemd units across user and system scopes."""
+    failed = []
+
+    # 1. User units
+    out_user = run_cmd("systemctl --user --failed --no-legend")
+    if out_user:
+        for line in out_user.split("\n"):
             parts = line.split()
-            if len(parts) >= 1:
-                failed_units.append(parts[0])
-    return failed_units
+            if not parts:
+                continue
+            unit = parts[1] if parts[0] in ["●", "*"] else parts[0]
+            if "." in unit:
+                failed.append((unit, True))
+
+    # 2. System units
+    out_sys = run_cmd("systemctl --failed --no-legend")
+    if out_sys:
+        for line in out_sys.split("\n"):
+            parts = line.split()
+            if not parts:
+                continue
+            unit = parts[1] if parts[0] in ["●", "*"] else parts[0]
+            if "." in unit:
+                failed.append((unit, False))
+
+    return failed
 
 def check_audio_subsystem():
     """Diagnose PipeWire / WirePlumber audio sinks."""
@@ -45,7 +108,15 @@ def check_memory_usage():
     out = run_cmd("free | grep Mem | awk '{print $3/$2 * 100.0}'")
     try:
         return float(out)
-    except:
+    except Exception:
+        return 0.0
+
+def check_disk_usage():
+    """Check root filesystem disk usage percentage."""
+    out = run_cmd("df / --output=pcent | tail -n 1 | tr -d ' %'")
+    try:
+        return float(out)
+    except Exception:
         return 0.0
 
 def diagnose_and_heal():
@@ -55,13 +126,23 @@ def diagnose_and_heal():
     # 1. Check failed systemd services
     failed_services = check_failed_services()
     if failed_services:
-        for service in failed_services:
-            print(f"⚠️ Failed service detected: {service}. Attempting restart...")
-            restart_res = run_cmd(f"sudo systemctl restart {service}")
-            if service in check_failed_services():
-                # Inspect logs for root cause
-                log_snippet = run_cmd(f"journalctl -u {service} -n 5 --no-pager")
-                actions_taken.append(f"❌ {service} restart failed: {log_snippet[:80]}...")
+        for service, is_user in failed_services:
+            scope = "--user" if is_user else "system"
+            print(f"⚠️ Failed service detected [{scope}]: {service}. Attempting restart...")
+
+            if is_user:
+                run_cmd(f"systemctl --user restart {service}")
+            else:
+                run_cmd(f"sudo systemctl restart {service}")
+
+            # Verify if still failing
+            current_failed = [s[0] for s in check_failed_services()]
+            if service in current_failed:
+                log_cmd = f"journalctl --user -u {service} -n 10 --no-pager" if is_user else f"journalctl -u {service} -n 10 --no-pager"
+                log_snippet = run_cmd(log_cmd)
+                ai_diagnosis = ask_gemini_diagnosis(service, log_snippet)
+                diag_msg = f" ({ai_diagnosis})" if ai_diagnosis else ""
+                actions_taken.append(f"❌ {service} restart failed{diag_msg}")
             else:
                 actions_taken.append(f"✅ Restored failed service: {service}")
 
@@ -75,7 +156,7 @@ def diagnose_and_heal():
         else:
             actions_taken.append("⚠️ Audio subsystem recovery required manual check.")
 
-    # 3. Check High RAM Exhaustion
+    # 3. Check High RAM Exhaustion (>90%)
     mem_pct = check_memory_usage()
     if mem_pct > 90.0:
         print(f"⚠️ High RAM usage detected ({mem_pct:.1f}%). Cleaning page caches...")
@@ -83,13 +164,19 @@ def diagnose_and_heal():
         new_mem = check_memory_usage()
         actions_taken.append(f"🧹 Reduced RAM usage from {mem_pct:.1f}% to {new_mem:.1f}%.")
 
-    # 4. Summary & Desktop Notification
+    # 4. Check Disk Space (>95%)
+    disk_pct = check_disk_usage()
+    if disk_pct > 95.0:
+        print(f"⚠️ High Disk usage detected ({disk_pct:.1f}%). Cleaning package cache...")
+        run_cmd("sudo apt-get clean >/dev/null 2>&1 || true")
+        actions_taken.append(f"💾 Cleaned package cache to recover disk space ({disk_pct:.1f}% full).")
+
+    # 5. Summary & Desktop Notification
     if actions_taken:
         summary_msg = "\n".join(actions_taken)
         notify("🛡️ Self-Healing OS Action Summary", summary_msg, urgency="critical")
     else:
         print("✨ All system components, services, audio, and memory are healthy!")
-        # Routine check is silent - only notify if actions were required
 
 if __name__ == "__main__":
     diagnose_and_heal()
