@@ -4,7 +4,8 @@
 # Experience authentic Omarchy (Hyprland + Themes + Waybar) on Ubuntu
 # https://github.com/apravint/omarchy-ubuntu
 # ==============================================================================
-set -e
+set -euo pipefail
+trap 'echo -e "\033[0;31m[ERROR] Omarchy installation failed at line $LINENO. Exiting gracefully.\033[0m"; exit 1' ERR
 
 REPO_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 

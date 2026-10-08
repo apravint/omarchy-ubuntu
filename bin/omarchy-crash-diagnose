@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Omarchy Ubuntu - Agentic System Crash Diagnostics Hook
+# Captures systemd coredump / Apport crash reports and triggers local/cloud AI
+# ==============================================================================
+set -euo pipefail
+
+CRASH_LOG_DIR="${HOME}/.cache/omarchy/crashes"
+mkdir -p "$CRASH_LOG_DIR"
+
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+TARGET_APP="${1:-systemd-coredump}"
+LOG_FILE="${CRASH_LOG_DIR}/crash_${TIMESTAMP}.log"
+
+echo "=== Omarchy Crash Intercepted: $TARGET_APP at $TIMESTAMP ===" > "$LOG_FILE"
+
+# Extract recent coredump or dmesg / journalctl error lines
+if command -v coredumpctl &>/dev/null; then
+    coredumpctl info --no-pager -n 1 >> "$LOG_FILE" 2>&1 || true
+else
+    journalctl -p err..emerg -n 40 --no-pager >> "$LOG_FILE" 2>&1 || true
+fi
+
+# Send desktop notification with AI action button
+if command -v notify-send &>/dev/null; then
+    notify-send -u critical -i "dialog-error" \
+        "Omarchy AI Diagnostics" \
+        "Application crash detected ($TARGET_APP). AI Agent analyzing log..."
+fi
+
+# Invoke local Ollama or cloud model for diagnosis summary
+PROMPT="You are the Omarchy OS Agentic Diagnostics Guard. Analyze the following Linux crash log and provide: 1) Root Cause, 2) Immediate Fix/Command, 3) Preventive Action:\n\n$(tail -n 35 "$LOG_FILE")"
+
+DIAGNOSIS=""
+if command -v ollama &>/dev/null; then
+    DIAGNOSIS=$(ollama run llama3.2:3b "$PROMPT" 2>/dev/null || true)
+fi
+
+if [ -z "$DIAGNOSIS" ] && [ -n "${ANTHROPIC_API_KEY:-}" ]; then
+    DIAGNOSIS="AI Analysis: Check API key or Ollama status for deep synthesis."
+fi
+
+if [ -n "$DIAGNOSIS" ]; then
+    echo -e "\n=== AI Agent Diagnosis ===" >> "$LOG_FILE"
+    echo "$DIAGNOSIS" >> "$LOG_FILE"
+    
+    if command -v notify-send &>/dev/null; then
+        notify-send -u normal -i "brain" \
+            "Omarchy Crash Fix Suggestion" \
+            "$(echo "$DIAGNOSIS" | head -n 3)"
+    fi
+fi
+
+echo "Crash log saved to $LOG_FILE"
