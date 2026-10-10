@@ -4,5 +4,5 @@ Name=YouTube
 Exec=iram-launch-webapp https://youtube.com/
 Terminal=false
 Type=Application
-Icon=youtube
+Icon=iram-youtube
 StartupNotify=true

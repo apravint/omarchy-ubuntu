@@ -4,6 +4,6 @@ Name=Zoom
 Exec=iram-webapp-handler-zoom %u
 Terminal=false
 Type=Application
-Icon=zoom
+Icon=iram-zoom
 StartupNotify=true
 MimeType=x-scheme-handler/zoommtg;x-scheme-handler/zoomus

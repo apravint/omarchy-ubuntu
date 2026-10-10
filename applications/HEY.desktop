@@ -4,6 +4,6 @@ Name=HEY
 Exec=iram-webapp-handler-hey %u
 Terminal=false
 Type=Application
-Icon=hey
+Icon=iram-hey
 StartupNotify=true
 MimeType=x-scheme-handler/mailto

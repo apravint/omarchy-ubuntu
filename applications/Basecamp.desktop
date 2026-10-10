@@ -4,5 +4,5 @@ Name=Basecamp
 Exec=iram-launch-webapp https://launchpad.37signals.com
 Terminal=false
 Type=Application
-Icon=basecamp
+Icon=iram-basecamp
 StartupNotify=true

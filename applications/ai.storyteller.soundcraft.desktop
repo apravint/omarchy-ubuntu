@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=SoundCraft
+GenericName=Digital Audio Workstation (Pro Tools)
+Comment=Open-source clean-room reimplementation of Avid Pro Tools in pure Rust
+Exec=craft-soundcraft %F
+Icon=ai.storyteller.soundcraft
+Terminal=false
+StartupNotify=true
+StartupWMClass=soundcraft
+Categories=AudioVideo;Audio;AudioVideoEditing;Midi;
+Keywords=audio;protools;sound;daw;music;midi;mixing;mastering;

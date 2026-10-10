@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# IRAM OS - Storytold Craft Suite Application Runner
+APP_NAME="$(basename "$0" | sed 's/^craft-//')"
+
+# If an explicit argument was passed as first arg matching known apps
+if [ "$1" = "photocraft" ] || [ "$1" = "vectorcraft" ] || [ "$1" = "filmcraft" ] || \
+   [ "$1" = "soundcraft" ] || [ "$1" = "lightcraft" ] || [ "$1" = "cadcraft" ] || \
+   [ "$1" = "wordcraft" ] || [ "$1" = "gridcraft" ] || [ "$1" = "deckcraft" ] || \
+   [ "$1" = "pdfcraft" ] || [ "$1" = "designcraft" ] || [ "$1" = "effectcraft" ]; then
+    APP_NAME="$1"
+    shift
+fi
+
+# 1. Check if a dedicated compiled native binary exists
+for candidate in "/usr/local/bin/$APP_NAME" "$HOME/.local/bin/$APP_NAME-bin" "$HOME/.local/share/craft-suite/$APP_NAME"; do
+    if [ -x "$candidate" ]; then
+        exec "$candidate" "$@"
+    fi
+done
+
+# 2. Check if ArtCraft Launcher AppImage exists
+LAUNCHER="$HOME/.local/bin/artcraft-launcher"
+if [ ! -x "$LAUNCHER" ]; then
+    LAUNCHER="$HOME/.local/share/craft-suite/artcraft-launcher.AppImage"
+fi
+
+if [ -x "$LAUNCHER" ]; then
+    notify-send "Storytold $APP_NAME" "Opening $APP_NAME via ArtCraft Launcher..." --icon="ai.storyteller.$APP_NAME" 2>/dev/null || true
+    exec "$LAUNCHER" "$@"
+fi
+
+# 3. Fallback to ArtCraft Web / Studio
+notify-send "Storytold $APP_NAME" "Opening ArtCraft Cloud Studio..." --icon="ai.storyteller.$APP_NAME" 2>/dev/null || true
+if command -v xdg-open >/dev/null 2>&1; then
+    exec xdg-open "https://getartcraft.com"
+fi

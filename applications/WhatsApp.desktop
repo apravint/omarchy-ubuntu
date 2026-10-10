@@ -4,5 +4,5 @@ Name=WhatsApp
 Exec=iram-launch-webapp https://web.whatsapp.com/
 Terminal=false
 Type=Application
-Icon=whatsapp
+Icon=iram-whatsapp
 StartupNotify=true

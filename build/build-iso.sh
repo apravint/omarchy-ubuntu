@@ -313,6 +313,8 @@ cp -a --remove-destination "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/h
 
 # Fix permissions
 chroot "${ROOTFS_DIR}" chown -R iram:iram /home/iram 2>/dev/null || true
+chroot "${ROOTFS_DIR}" gtk-update-icon-cache -f -t /usr/share/icons/hicolor 2>/dev/null || true
+chroot "${ROOTFS_DIR}" update-desktop-database 2>/dev/null || true
 
 # Copy Wayland session desktop entry
 if [ -f "${REPO_ROOT}/system/iram.desktop" ]; then

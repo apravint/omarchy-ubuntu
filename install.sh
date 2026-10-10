@@ -144,6 +144,8 @@ chmod +x "$HOME/.local/bin/"*
 mkdir -p "$HOME/.local/share/applications" "$HOME/.local/share/icons/hicolor/128x128/apps"
 cp "$REPO_DIR/applications/"*.desktop "$HOME/.local/share/applications/" 2>/dev/null || true
 cp "$REPO_DIR/applications/icons/"*.png "$HOME/.local/share/icons/hicolor/128x128/apps/" 2>/dev/null || true
+gtk-update-icon-cache -f -t "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
+update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 
 # Symlink Debian-specific binary names if needed
 ln -sf /usr/bin/batcat "$HOME/.local/bin/bat" 2>/dev/null || true

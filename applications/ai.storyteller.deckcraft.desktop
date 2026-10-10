@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=DeckCraft
+GenericName=Presentation & Slide Studio (PowerPoint)
+Comment=Open-source clean-room reimplementation of Microsoft PowerPoint in pure Rust
+Exec=craft-deckcraft %F
+Icon=ai.storyteller.deckcraft
+Terminal=false
+StartupNotify=true
+StartupWMClass=deckcraft
+Categories=Office;Presentation;
+Keywords=powerpoint;slides;presentation;deck;pitch;pptx;

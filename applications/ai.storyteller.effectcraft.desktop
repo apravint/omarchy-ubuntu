@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=EffectCraft
+GenericName=Motion Graphics & Visual Effects (After Effects)
+Comment=Open-source clean-room reimplementation of Adobe After Effects in pure Rust
+Exec=craft-effectcraft %F
+Icon=ai.storyteller.effectcraft
+Terminal=false
+StartupNotify=true
+StartupWMClass=effectcraft
+Categories=Graphics;Video;AudioVideoEditing;3DGraphics;
+Keywords=aftereffects;motion;vfx;effects;compositing;animation;

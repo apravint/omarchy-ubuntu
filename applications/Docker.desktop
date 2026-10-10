@@ -4,5 +4,5 @@ Name=Docker
 Exec=xdg-terminal-exec --app-id=TUI.tile -e iram-launch-docker-tui
 Terminal=false
 Type=Application
-Icon=docker
+Icon=iram-docker
 StartupNotify=true

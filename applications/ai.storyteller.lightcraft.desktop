@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=LightCraft
+GenericName=RAW Photo Processor (Lightroom)
+Comment=Open-source clean-room reimplementation of Adobe Lightroom in pure Rust
+Exec=craft-lightcraft %F
+Icon=ai.storyteller.lightcraft
+Terminal=false
+StartupNotify=true
+StartupWMClass=lightcraft
+Categories=Graphics;Photography;RasterGraphics;
+Keywords=raw;lightroom;photo;exposure;grading;catalog;

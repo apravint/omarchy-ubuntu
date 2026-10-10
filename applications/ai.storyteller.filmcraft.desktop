@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=FilmCraft
+GenericName=Video Editor & Color Studio (Premiere Pro)
+Comment=Open-source clean-room reimplementation of Adobe Premiere Pro in pure Rust
+Exec=craft-filmcraft %F
+Icon=ai.storyteller.filmcraft
+Terminal=false
+StartupNotify=true
+StartupWMClass=filmcraft
+Categories=AudioVideo;Video;AudioVideoEditing;
+Keywords=video;premiere;timeline;edit;color;montage;grading;

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Power Menu
+Comment=Lock, Sleep, Logout, Reboot or Shutdown system
+Exec=/home/apravint/.local/bin/iram-power-menu
+Icon=iram-power
+Categories=System;Settings;
+Keywords=power;shutdown;reboot;lock;suspend;logout;
+Terminal=false
+StartupNotify=false

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=VectorCraft
+GenericName=Vector Illustration & Design (Illustrator)
+Comment=Open-source clean-room reimplementation of Adobe Illustrator in pure Rust
+Exec=craft-vectorcraft %F
+Icon=ai.storyteller.vectorcraft
+Terminal=false
+StartupNotify=true
+StartupWMClass=vectorcraft
+Categories=Graphics;VectorGraphics;2DGraphics;
+Keywords=vector;illustrator;svg;bezier;drawing;pen;curves;

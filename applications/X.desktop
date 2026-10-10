@@ -4,5 +4,5 @@ Name=X
 Exec=iram-launch-webapp https://x.com/
 Terminal=false
 Type=Application
-Icon=x
+Icon=iram-x
 StartupNotify=true

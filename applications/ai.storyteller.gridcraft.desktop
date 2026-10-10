@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=GridCraft
+GenericName=High-Performance Spreadsheet (Excel)
+Comment=Open-source clean-room reimplementation of Microsoft Excel in pure Rust
+Exec=craft-gridcraft %F
+Icon=ai.storyteller.gridcraft
+Terminal=false
+StartupNotify=true
+StartupWMClass=gridcraft
+Categories=Office;Spreadsheet;
+Keywords=excel;spreadsheet;xlsx;grid;formula;data;finance;

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Theme Switcher
+Comment=Switch between 22 synchronized IRAM OS desktop themes
+Exec=/home/apravint/.local/bin/iram-theme-switch
+Icon=iram-themes
+Categories=Settings;DesktopSettings;
+Keywords=theme;switch;palette;colors;dark;light;catppuccin;nord;tokyo;
+Terminal=false
+StartupNotify=false

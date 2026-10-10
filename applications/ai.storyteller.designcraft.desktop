@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=DesignCraft
+GenericName=Editorial Layout & Design (InDesign/Figma)
+Comment=Open-source clean-room reimplementation of Adobe InDesign in pure Rust
+Exec=craft-designcraft %F
+Icon=ai.storyteller.designcraft
+Terminal=false
+StartupNotify=true
+StartupWMClass=designcraft
+Categories=Graphics;Publishing;2DGraphics;
+Keywords=indesign;figma;layout;publishing;editorial;magazine;

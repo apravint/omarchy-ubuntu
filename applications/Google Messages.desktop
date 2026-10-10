@@ -4,5 +4,5 @@ Name=Google Messages
 Exec=iram-launch-webapp https://messages.google.com/web/conversations
 Terminal=false
 Type=Application
-Icon=google-messages
+Icon=iram-google-messages
 StartupNotify=true

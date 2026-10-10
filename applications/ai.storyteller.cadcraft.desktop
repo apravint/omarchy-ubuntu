@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=CADCraft
+GenericName=Computer-Aided Design & 3D Drafting (AutoCAD)
+Comment=Open-source clean-room reimplementation of Autodesk AutoCAD in pure Rust
+Exec=craft-cadcraft %F
+Icon=ai.storyteller.cadcraft
+Terminal=false
+StartupNotify=true
+StartupWMClass=cadcraft
+Categories=Graphics;Engineering;3DGraphics;
+Keywords=cad;autocad;drafting;dwg;dxf;3d;engineering;modeling;

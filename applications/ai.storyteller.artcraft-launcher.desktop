@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=ArtCraft Launcher
+GenericName=Storytold Craft Suite Hub
+Comment=Install, update and launch the complete Storytold Craft App Suite
+Exec=artcraft-launcher
+Icon=ai.storyteller.artcraft-launcher
+Terminal=false
+StartupNotify=true
+StartupWMClass=artcraft-launcher
+Categories=Utility;PackageManager;Graphics;
+Keywords=artcraft;craft;launcher;storytold;suite;apps;

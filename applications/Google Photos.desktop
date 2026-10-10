@@ -4,5 +4,5 @@ Name=Google Photos
 Exec=iram-launch-webapp https://photos.google.com/
 Terminal=false
 Type=Application
-Icon=google-photos
+Icon=iram-google-photos
 StartupNotify=true

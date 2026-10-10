@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=PdfCraft
+GenericName=PDF Studio & Document Editor (Acrobat)
+Comment=Open-source clean-room reimplementation of Adobe Acrobat in pure Rust
+Exec=craft-pdfcraft %F
+Icon=ai.storyteller.pdfcraft
+Terminal=false
+StartupNotify=true
+StartupWMClass=pdfcraft
+Categories=Office;Viewer;Graphics;Publishing;
+Keywords=pdf;acrobat;reader;editor;annotation;sign;forms;

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=PhotoCraft
+GenericName=Image & Layered Photo Editor (Photoshop)
+Comment=Open-source clean-room reimplementation of Adobe Photoshop in pure Rust
+Exec=craft-photocraft %F
+Icon=ai.storyteller.photocraft
+Terminal=false
+StartupNotify=true
+StartupWMClass=photocraft
+Categories=Graphics;2DGraphics;RasterGraphics;Photography;
+Keywords=photo;psd;photoshop;layers;raster;edit;paint;

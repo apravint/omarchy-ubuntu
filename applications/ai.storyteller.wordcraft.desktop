@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=WordCraft
+GenericName=Document Processor & Typography (Word)
+Comment=Open-source clean-room reimplementation of Microsoft Word in pure Rust
+Exec=craft-wordcraft %F
+Icon=ai.storyteller.wordcraft
+Terminal=false
+StartupNotify=true
+StartupWMClass=wordcraft
+Categories=Office;WordProcessor;TextEditor;
+Keywords=word;document;docx;text;typography;writing;office;

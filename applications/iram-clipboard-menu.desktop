@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Clipboard History
+Comment=Search and restore clipboard history
+Exec=/home/apravint/.local/bin/iram-clipboard-menu
+Icon=iram-clipboard
+Categories=Utility;
+Keywords=clipboard;paste;history;cliphist;
+Terminal=false
+StartupNotify=false
