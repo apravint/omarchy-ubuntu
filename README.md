@@ -321,6 +321,7 @@ This project is open-source software licensed under the **[MIT License](LICENSE)
 
 ### Legal & Trademark Notices
 - **IRAM OS**: IRAM OS is an independent open-source desktop operating system project maintained by Ayyappa Pravin.
+- **Ubuntu**: Ubuntu is a registered trademark of Canonical Ltd. IRAM OS is an independent project and is not affiliated with, sponsored by, or endorsed by Canonical Ltd.
 - **Third-Party Trademarks**: All other trademarks, service marks, trade names, product names, and logos appearing in this repository are the property of their respective owners. Use of these names, logos, and brands is for identification purposes only and does not imply endorsement or affiliation.
 
 ---
@@ -329,6 +330,7 @@ This project is open-source software licensed under the **[MIT License](LICENSE)
 
 IRAM OS stands on the shoulders of brilliant open-source pioneers, communities, and projects:
 
+- **Canonical & The Ubuntu Community**: For providing the rock-solid Debian-based package ecosystem, hardware drivers, and long-term release foundations that empower our system binaries and live ISO media.
 - **David Heinemeier Hansson (DHH)** & the **Omarchy Community**: For the foundational desktop concept and aesthetic inspiration that sparked the initial journey.
 - **Vaxry and the Hyprland Team**: For engineering the fluid, dynamic Wayland compositor that powers this desktop.
 - **Alexays and the Waybar Contributors**: For building the modular, flexible status bar framework.
