@@ -1,6 +1,12 @@
 #!/bin/bash
 # Iram Root Menu Bridge for IRAM OS
 
+# Clean Toggle: if wofi is currently open, close it and exit cleanly
+if pgrep -x wofi >/dev/null 2>&1; then
+  pkill -x wofi 2>/dev/null || true
+  exit 0
+fi
+
 if pgrep -x iram-shell >/dev/null 2>&1; then
   exec /usr/share/iram/bin/iram-menu "$@"
 fi
@@ -9,6 +15,9 @@ verb="${1-toggle}"
 route="${2-root}"
 
 case "$route" in
+  apps|applications)
+    exec ~/.local/bin/iram-app-launcher
+    ;;
   theme*|style.theme)
     exec ~/.local/bin/iram-theme-switch
     ;;
@@ -42,13 +51,13 @@ case "$route" in
     ;;
   *)
     # Root menu
-    CHOICE=$(printf "🚀 Applications Launcher\n🖥️ Display and Monitor Settings\n🔊 Sound and Audio Control (Pavucontrol)\n⚙️ System Settings\n🎨 Theme Switcher (22 Themes)\n🔤 Font Switcher\n🖱️ Cursor Theme Switcher\n🖼️ Next Background Wallpaper\n⌨️ Keybindings Cheat Sheet\n⏱️ Set Reminder\n📸 Screenshot and Screen Recording\n📋 Clipboard History\n📶 Network and Wi-Fi Settings\n󰂯 Bluetooth Devices\n󰃝 Toggle Nightlight (Eye Care)\n⏻ Power Menu (Lock, Sleep, Shutdown)" | wofi --dmenu --prompt "Iram Menu:" --lines 16 -i)
+    CHOICE=$(printf "🚀 Applications Launcher (All Apps)\n🖥️ Display and Monitor Settings\n🔊 Sound and Audio Control (Pavucontrol)\n⚙️ System Settings\n🎨 Theme Switcher (22 Themes)\n🔤 Font Switcher\n🖱️ Cursor Theme Switcher\n🖼️ Next Background Wallpaper\n⌨️ Keybindings Cheat Sheet\n⏱️ Set Reminder\n📸 Screenshot and Screen Recording\n📋 Clipboard History\n📶 Network and Wi-Fi Settings\n󰂯 Bluetooth Devices\n󰃝 Toggle Nightlight (Eye Care)\n⏻ Power Menu (Lock, Sleep, Shutdown)" | wofi --dmenu --prompt "Iram Menu:" --lines 16 --style ~/.config/wofi/style.css -i)
     
     [[ -z "$CHOICE" ]] && exit 0
     
     case "$CHOICE" in
       *"Applications"*)
-        wofi --show drun
+        exec ~/.local/bin/iram-app-launcher
         ;;
       *"Display"*)
         ~/.local/bin/iram-displays-gui
