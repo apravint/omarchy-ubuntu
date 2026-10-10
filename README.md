@@ -186,7 +186,7 @@ A bootable hybrid UEFI/BIOS ISO is available for bare-metal deployment and testi
 
 | Shortcut | Action | Description |
 | :--- | :--- | :--- |
-| `Super + Ctrl + Shift + Space` | **Theme Switcher** | Opens visual card-grid selector for Curated Modern Themes (Cyberpunk Neon, Dracula, Oxocarbon, Vesper, Material Ocean, Aura Dark, Rose Pine Moon, Monokai Pro) & legacy palettes |
+| `Super + Ctrl + Shift + Space` | **Theme Switcher** | Opens visual card-grid selector for 18 Curated World-Class Modern Themes (Ryoku Crimson, Cyberpunk Neon, One Dark, Catppuccin Mocha, Kanagawa Wave, Nord Frost, Night Owl, Synthwave '84, Dracula, Oxocarbon, Vesper, Ayu Mirage, Material Ocean, Aura Dark, Rose Pine Moon, Monokai Pro, Solarized Dark, Tokyo Storm) |
 | `Super + Ctrl + Space` | **Next Wallpaper** | Cycles wallpaper within active theme |
 | `Super + Shift + Space` | **Toggle Top Bar** | Shows / hides Waybar |
 | `Super + Ctrl + Shift + B` | **Restart Top Bar** | Restarts Waybar and reloads CSS styles |

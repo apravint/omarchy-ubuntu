@@ -1,33 +1,296 @@
 #!/usr/bin/env python3
 """
-Generate Curated Modern Theme Suite for IRAM OS / Omarchy:
-- Cyberpunk Neon
-- Dracula
-- Oxocarbon
-- Vesper
-- Material Ocean
-- Aura Dark
-- Rose Pine Moon
-- Monokai Pro
+Generate Curated Modern Theme Suite (18 Themes) for IRAM OS / Omarchy:
+Incorporates top worldwide favorites & best aesthetic assets from Ryoku (ryoku-dev/ryoku).
 
-Generates:
-1. colors.toml (with full palette and hyprland_active_border)
-2. icons.theme (Papirus-Dark)
-3. chromium.theme (accent hex)
-4. vscode.json
-5. neovim.lua
-6. backgrounds/1-wallpaper.webp (3840x2160 ultra-HD aesthetic wallpaper)
-7. preview.png (1800x1012 visual card with frosted glass palette preview)
-8. preview-unlock.png & unlock.png
+Themes:
+1. Ryoku Crimson (ryoku-crimson) - Flagship Ryoku Distro Sumi Ink & Blood Crimson
+2. Cyberpunk Neon (cyberpunk-neon)
+3. Dracula (dracula)
+4. One Dark Pro (one-dark) - World #1 Atom / VSCode
+5. Catppuccin Mocha (catppuccin-mocha) - World #1 Community Aesthetic
+6. Nord Frost (nord-frost) - Arctic Ice Studio Polar Night
+7. Kanagawa Wave (kanagawa-wave) - Katsushika Hokusai Great Wave
+8. Night Owl (night-owl) - Sarah Drasner's Nocturnal Twilight
+9. Synthwave '84 (synthwave-84) - Robb Owen's Retro 80s Cyber Sunset
+10. Oxocarbon (oxocarbon) - IBM Monolith Design
+11. Vesper (vesper) - Rauno Freiberg Minimal Pitch Black & Amber
+12. Ayu Mirage (ayu-mirage) - Modern Slate & Sunlight Amber
+13. Material Ocean (material-ocean) - Deep Oceanic Abyss
+14. Aura Dark (aura-dark) - Deep Violet & Mint Green
+15. Rose Pine Moon (rose-pine-moon) - Soft Slate & Rosé Pine
+16. Monokai Pro (monokai-pro) - Charcoal & Iconic Syntax Spectrum
+17. Solarized Dark (solarized-dark) - Precision Scientific Contrast
+18. Tokyo Night Storm (tokyo-storm) - Downtown Tokyo Midnight Rain
 """
 
 import os
+import sys
 import math
 import shutil
+import urllib.request
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 THEMES = {
+    "ryoku-crimson": {
+        "title": "Ryoku Crimson",
+        "tagline": "力と美のために · Japanese Sumi Ink & Blood Crimson",
+        "colors": {
+            "mode": "dark",
+            "accent": "#e2342a",
+            "selection": "#2a1512",
+            "muted": "#54322c",
+            "background": "#140b0a",
+            "dark_background": "#0f0706",
+            "darker_background": "#080403",
+            "lighter_background": "#221412",
+            "foreground": "#f5e6ca",
+            "dark_foreground": "#8c756c",
+            "light_foreground": "#fdf6e7",
+            "bright_foreground": "#ffffff",
+            "red": "#e2342a",
+            "yellow": "#f6b26b",
+            "orange": "#ff5349",
+            "green": "#85dfcf",
+            "cyan": "#65dac4",
+            "blue": "#8dcdff",
+            "magenta": "#ff7597",
+            "brown": "#965d34",
+            "bright_red": "#ff4d43",
+            "bright_yellow": "#ffd494",
+            "bright_green": "#a4f0e2",
+            "bright_cyan": "#85dfcf",
+            "bright_blue": "#a8dcff",
+            "bright_magenta": "#ffa3b8",
+            "hyprland_active_border": "rgb(e2342a) rgb(ff5349) 45deg"
+        },
+        "vscode": {"name": "Ryoku Crimson", "extension": "ryoku.ryoku-theme"},
+        "neovim": "tokyonight-night",
+        "wallpaper_url": "https://raw.githubusercontent.com/ryoku-dev/ryoku/main/ryoku/assets/wallpapers/cornelius-dammrich-2003-mainshot-crop-hd-04.jpg",
+        "style": "ryoku"
+    },
+    "one-dark": {
+        "title": "One Dark Pro",
+        "tagline": "World's Most Popular Developer Slate & Iconic Syntax",
+        "colors": {
+            "mode": "dark",
+            "accent": "#61afef",
+            "selection": "#3e4451",
+            "muted": "#5c6370",
+            "background": "#282c34",
+            "dark_background": "#21252b",
+            "darker_background": "#1b1d23",
+            "lighter_background": "#2c313a",
+            "foreground": "#abb2bf",
+            "dark_foreground": "#5c6370",
+            "light_foreground": "#abb2bf",
+            "bright_foreground": "#ffffff",
+            "red": "#e06c75",
+            "yellow": "#e5c07b",
+            "orange": "#d19a66",
+            "green": "#98c379",
+            "cyan": "#56b6c2",
+            "blue": "#61afef",
+            "magenta": "#c678dd",
+            "brown": "#be5046",
+            "bright_red": "#f07b84",
+            "bright_yellow": "#f0cf8a",
+            "bright_green": "#a7d288",
+            "bright_cyan": "#65c5d1",
+            "bright_blue": "#70beff",
+            "bright_magenta": "#d587ec",
+            "hyprland_active_border": "rgb(61afef) rgb(c678dd) 45deg"
+        },
+        "vscode": {"name": "One Dark Pro", "extension": "zhuangtongfa.material-theme"},
+        "neovim": "onedark",
+        "style": "one_dark"
+    },
+    "catppuccin-mocha": {
+        "title": "Catppuccin Mocha",
+        "tagline": "Global Community #1 Soothing Dark Pastel Sanctuary",
+        "colors": {
+            "mode": "dark",
+            "accent": "#b4befe",
+            "selection": "#313244",
+            "muted": "#585b70",
+            "background": "#1e1e2e",
+            "dark_background": "#181825",
+            "darker_background": "#11111b",
+            "lighter_background": "#313244",
+            "foreground": "#cdd6f4",
+            "dark_foreground": "#6c7086",
+            "light_foreground": "#bac2de",
+            "bright_foreground": "#ffffff",
+            "red": "#f38ba8",
+            "yellow": "#f9e2af",
+            "orange": "#fab387",
+            "green": "#a6e3a1",
+            "cyan": "#94e2d5",
+            "blue": "#89b4fa",
+            "magenta": "#cba6f7",
+            "brown": "#eba0ac",
+            "bright_red": "#f38ba8",
+            "bright_yellow": "#f9e2af",
+            "bright_green": "#a6e3a1",
+            "bright_cyan": "#89dceb",
+            "bright_blue": "#b4befe",
+            "bright_magenta": "#f5c2e7",
+            "hyprland_active_border": "rgb(b4befe) rgb(cba6f7) 45deg"
+        },
+        "vscode": {"name": "Catppuccin Mocha", "extension": "catppuccin.catppuccin-vsc"},
+        "neovim": "catppuccin-mocha",
+        "wallpaper_url": "https://raw.githubusercontent.com/ryoku-dev/ryoku/main/ryoku/assets/wallpapers/wallhaven-qrop2l.jpg",
+        "style": "catppuccin"
+    },
+    "kanagawa-wave": {
+        "title": "Kanagawa Wave",
+        "tagline": "Hokusai Great Wave Woodblock, Sumi Ink & Fuji White",
+        "colors": {
+            "mode": "dark",
+            "accent": "#7e9cd8",
+            "selection": "#2d4f67",
+            "muted": "#54546d",
+            "background": "#1f1f28",
+            "dark_background": "#16161d",
+            "darker_background": "#0f0f14",
+            "lighter_background": "#2a2a37",
+            "foreground": "#dcd7ba",
+            "dark_foreground": "#727169",
+            "light_foreground": "#e6c384",
+            "bright_foreground": "#ffffff",
+            "red": "#e82424",
+            "yellow": "#dca561",
+            "orange": "#ffa066",
+            "green": "#76946a",
+            "cyan": "#7aa89f",
+            "blue": "#7e9cd8",
+            "magenta": "#957fb8",
+            "brown": "#938aa9",
+            "bright_red": "#ff5d62",
+            "bright_yellow": "#e6c384",
+            "bright_green": "#98bb6c",
+            "bright_cyan": "#8ba4b0",
+            "bright_blue": "#957fb8",
+            "bright_magenta": "#c34043",
+            "hyprland_active_border": "rgb(7e9cd8) rgb(957fb8) 45deg"
+        },
+        "vscode": {"name": "Kanagawa", "extension": "qufiwefefwoyn.kanagawa"},
+        "neovim": "kanagawa-wave",
+        "wallpaper_url": "https://raw.githubusercontent.com/ryoku-dev/ryoku/main/ryoku/assets/wallpapers/wallhaven-jedx95.jpg",
+        "style": "kanagawa"
+    },
+    "nord-frost": {
+        "title": "Nord Frost",
+        "tagline": "Arctic Ice Studio's North-Bluish Polar Night",
+        "colors": {
+            "mode": "dark",
+            "accent": "#88c0d0",
+            "selection": "#3b4252",
+            "muted": "#4c566a",
+            "background": "#2e3440",
+            "dark_background": "#242933",
+            "darker_background": "#1e222a",
+            "lighter_background": "#3b4252",
+            "foreground": "#eceff4",
+            "dark_foreground": "#4c566a",
+            "light_foreground": "#e5e9f0",
+            "bright_foreground": "#8fbcbb",
+            "red": "#bf616a",
+            "yellow": "#ebcb8b",
+            "orange": "#d08770",
+            "green": "#a3be8c",
+            "cyan": "#88c0d0",
+            "blue": "#81a1c1",
+            "magenta": "#b48ead",
+            "brown": "#5e81ac",
+            "bright_red": "#d06f79",
+            "bright_yellow": "#f5d99b",
+            "bright_green": "#b5d09e",
+            "bright_cyan": "#8fbcbb",
+            "bright_blue": "#88c0d0",
+            "bright_magenta": "#c59ebe",
+            "hyprland_active_border": "rgb(88c0d0) rgb(81a1c1) 45deg"
+        },
+        "vscode": {"name": "Nord", "extension": "arcticicestudio.nord-visual-studio-code"},
+        "neovim": "nord",
+        "wallpaper_url": "https://raw.githubusercontent.com/ryoku-dev/ryoku/main/ryoku/assets/wallpapers/wallhaven-ex.png",
+        "style": "nord"
+    },
+    "night-owl": {
+        "title": "Night Owl",
+        "tagline": "Sarah Drasner's Nocturnal Twilight & Vivid Glow",
+        "colors": {
+            "mode": "dark",
+            "accent": "#7fdbca",
+            "selection": "#1b3a4b",
+            "muted": "#4b6479",
+            "background": "#011627",
+            "dark_background": "#01111d",
+            "darker_background": "#000a12",
+            "lighter_background": "#0b2942",
+            "foreground": "#d6deeb",
+            "dark_foreground": "#5f7e97",
+            "light_foreground": "#ffffff",
+            "bright_foreground": "#ffffff",
+            "red": "#ef5350",
+            "yellow": "#ecc48d",
+            "orange": "#f78c6c",
+            "green": "#22da6e",
+            "cyan": "#7fdbca",
+            "blue": "#82aaff",
+            "magenta": "#c792ea",
+            "brown": "#ff5874",
+            "bright_red": "#ff6360",
+            "bright_yellow": "#f5d39d",
+            "bright_green": "#38ea7e",
+            "bright_cyan": "#95ede0",
+            "bright_blue": "#99bdff",
+            "bright_magenta": "#d4a4f5",
+            "hyprland_active_border": "rgb(7fdbca) rgb(ecc48d) 45deg"
+        },
+        "vscode": {"name": "Night Owl", "extension": "sdras.night-owl"},
+        "neovim": "night-owl",
+        "wallpaper_url": "https://raw.githubusercontent.com/ryoku-dev/ryoku/main/ryoku/assets/wallpapers/wallhaven-oglzx7.jpg",
+        "style": "night_owl"
+    },
+    "synthwave-84": {
+        "title": "Synthwave '84",
+        "tagline": "Robb Owen's Retro 80s Cyber Neon Sunset",
+        "colors": {
+            "mode": "dark",
+            "accent": "#ff7edb",
+            "selection": "#372d4b",
+            "muted": "#614d79",
+            "background": "#262335",
+            "dark_background": "#1f1b2b",
+            "darker_background": "#171421",
+            "lighter_background": "#342e47",
+            "foreground": "#f0eff1",
+            "dark_foreground": "#847896",
+            "light_foreground": "#ffffff",
+            "bright_foreground": "#ffffff",
+            "red": "#fe4450",
+            "yellow": "#fede5d",
+            "orange": "#f97e72",
+            "green": "#72f1b8",
+            "cyan": "#36f9f6",
+            "blue": "#03edf9",
+            "magenta": "#ff7edb",
+            "brown": "#b84dff",
+            "bright_red": "#ff5964",
+            "bright_yellow": "#ffea75",
+            "bright_green": "#8affc8",
+            "bright_cyan": "#5efffb",
+            "bright_blue": "#36f9f6",
+            "bright_magenta": "#ff94e4",
+            "hyprland_active_border": "rgb(ff7edb) rgb(36f9f6) 45deg"
+        },
+        "vscode": {"name": "SynthWave '84", "extension": "robbowen.synthwave-vscode"},
+        "neovim": "synthwave84",
+        "wallpaper_url": "https://raw.githubusercontent.com/ryoku-dev/ryoku/main/ryoku/assets/wallpapers/wallhaven-6l21lx.png",
+        "style": "synthwave"
+    },
     "cyberpunk-neon": {
         "title": "Cyberpunk Neon",
         "tagline": "Electric Obsidian & High-Voltage Neon",
@@ -172,6 +435,42 @@ THEMES = {
         "neovim": "vesper",
         "style": "vesper"
     },
+    "ayu-mirage": {
+        "title": "Ayu Mirage",
+        "tagline": "Modern Balanced Slate, Sunlight Amber & Sky",
+        "colors": {
+            "mode": "dark",
+            "accent": "#ff9940",
+            "selection": "#273042",
+            "muted": "#5c6773",
+            "background": "#1f2430",
+            "dark_background": "#171b24",
+            "darker_background": "#11141b",
+            "lighter_background": "#272d3b",
+            "foreground": "#cbccc6",
+            "dark_foreground": "#707a8c",
+            "light_foreground": "#d9d7ce",
+            "bright_foreground": "#ffffff",
+            "red": "#f28779",
+            "yellow": "#ffcc66",
+            "orange": "#ff9940",
+            "green": "#bae67e",
+            "cyan": "#73d0ff",
+            "blue": "#5ccfe6",
+            "magenta": "#d4bfff",
+            "brown": "#e6b673",
+            "bright_red": "#ff9688",
+            "bright_yellow": "#ffd77d",
+            "bright_green": "#c8f28d",
+            "bright_cyan": "#8ae0ff",
+            "bright_blue": "#70dcf2",
+            "bright_magenta": "#e0ceff",
+            "hyprland_active_border": "rgb(ff9940) rgb(73d0ff) 45deg"
+        },
+        "vscode": {"name": "Ayu Mirage", "extension": "teabyii.ayu"},
+        "neovim": "ayu-mirage",
+        "style": "ayu_mirage"
+    },
     "material-ocean": {
         "title": "Material Ocean",
         "tagline": "Bioluminescent Deep Oceanic Abyss",
@@ -315,6 +614,78 @@ THEMES = {
         "vscode": {"name": "Monokai Pro", "extension": "monokai.theme-monokai-pro-vscode"},
         "neovim": "monokai-pro",
         "style": "monokai_pro"
+    },
+    "solarized-dark": {
+        "title": "Solarized Dark",
+        "tagline": "Ethan Schoonover's Precision Low-Contrast Science",
+        "colors": {
+            "mode": "dark",
+            "accent": "#2aa198",
+            "selection": "#073642",
+            "muted": "#586e75",
+            "background": "#002b36",
+            "dark_background": "#00212b",
+            "darker_background": "#00171f",
+            "lighter_background": "#073642",
+            "foreground": "#839496",
+            "dark_foreground": "#657b83",
+            "light_foreground": "#93a1a1",
+            "bright_foreground": "#fdf6e3",
+            "red": "#dc322f",
+            "yellow": "#b58900",
+            "orange": "#cb4b16",
+            "green": "#859900",
+            "cyan": "#2aa198",
+            "blue": "#268bd2",
+            "magenta": "#d33682",
+            "brown": "#6c71c4",
+            "bright_red": "#ef4441",
+            "bright_yellow": "#c79a00",
+            "bright_green": "#97ac00",
+            "bright_cyan": "#3ec2b8",
+            "bright_blue": "#3ea0e6",
+            "bright_magenta": "#e24995",
+            "hyprland_active_border": "rgb(2aa198) rgb(268bd2) 45deg"
+        },
+        "vscode": {"name": "Solarized Dark", "extension": "ryanolsonx.solarized"},
+        "neovim": "solarized",
+        "style": "solarized"
+    },
+    "tokyo-storm": {
+        "title": "Tokyo Night Storm",
+        "tagline": "Folke's Rainy Midnight Tokyo Neon Storm",
+        "colors": {
+            "mode": "dark",
+            "accent": "#7aa2f7",
+            "selection": "#2e3c64",
+            "muted": "#444b6a",
+            "background": "#24283b",
+            "dark_background": "#1f2335",
+            "darker_background": "#191c2b",
+            "lighter_background": "#292e42",
+            "foreground": "#c0caf5",
+            "dark_foreground": "#565f89",
+            "light_foreground": "#a9b1d6",
+            "bright_foreground": "#ffffff",
+            "red": "#f7768e",
+            "yellow": "#e0af68",
+            "orange": "#ff9e64",
+            "green": "#9ece6a",
+            "cyan": "#7dcfff",
+            "blue": "#7aa2f7",
+            "magenta": "#bb9af7",
+            "brown": "#db4b4b",
+            "bright_red": "#ff7a93",
+            "bright_yellow": "#ffb070",
+            "bright_green": "#b9f27c",
+            "bright_cyan": "#8ee2ff",
+            "bright_blue": "#8bb1ff",
+            "bright_magenta": "#c9abff",
+            "hyprland_active_border": "rgb(7aa2f7) rgb(bb9af7) 45deg"
+        },
+        "vscode": {"name": "Tokyo Night", "extension": "enkia.tokyo-night"},
+        "neovim": "tokyonight-storm",
+        "style": "tokyo_storm"
     }
 }
 
@@ -324,315 +695,189 @@ def hex_to_rgb(hex_code):
     return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
 
 
-def generate_wallpaper(theme_id, data, width=3840, height=2160):
-    """Generate high-resolution aesthetic wallpapers tailored to each theme."""
+def get_wallpaper_for_theme(theme_id, data, width=3840, height=2160):
+    """Retrieve or generate 3840x2160 aesthetic wallpaper."""
+    url = data.get("wallpaper_url")
+    if url:
+        cache_fn = f"/tmp/{os.path.basename(url)}"
+        if not os.path.exists(cache_fn):
+            try:
+                urllib.request.urlretrieve(url, cache_fn)
+            except Exception as e:
+                print(f"    [!] Failed to download {url}: {e}, falling back to generator")
+                cache_fn = None
+        if cache_fn and os.path.exists(cache_fn):
+            try:
+                with Image.open(cache_fn) as img:
+                    img = img.convert("RGB")
+                    # Crop & scale to 3840x2160
+                    iw, ih = img.size
+                    target_ratio = width / height
+                    current_ratio = iw / ih
+                    if current_ratio > target_ratio:
+                        new_w = int(ih * target_ratio)
+                        offset = (iw - new_w) // 2
+                        img = img.crop((offset, 0, offset + new_w, ih))
+                    else:
+                        new_h = int(iw / target_ratio)
+                        offset = (ih - new_h) // 2
+                        img = img.crop((0, offset, iw, offset + new_h))
+                    return img.resize((width, height), Image.Resampling.LANCZOS)
+            except Exception as e:
+                print(f"    [!] Error processing image {cache_fn}: {e}")
+
+    # Procedural generation fallback/custom style
+    return generate_procedural_wallpaper(theme_id, data, width, height)
+
+
+def generate_procedural_wallpaper(theme_id, data, width=3840, height=2160):
     colors = data["colors"]
     bg_rgb = hex_to_rgb(colors["dark_background"])
     darker_rgb = hex_to_rgb(colors["darker_background"])
     acc_rgb = hex_to_rgb(colors["accent"])
-    cyan_rgb = hex_to_rgb(colors["cyan"])
-    red_rgb = hex_to_rgb(colors["red"])
+    cyan_rgb = hex_to_rgb(colors.get("cyan", colors["accent"]))
+    red_rgb = hex_to_rgb(colors.get("red", colors["accent"]))
     mag_rgb = hex_to_rgb(colors.get("magenta", colors["accent"]))
     green_rgb = hex_to_rgb(colors.get("green", colors["accent"]))
     yel_rgb = hex_to_rgb(colors.get("yellow", colors["accent"]))
 
-    # Base gradient array
     y_coords = np.linspace(0, 1, height)[:, None]
     x_coords = np.linspace(0, 1, width)[None, :]
-    
-    # Smooth diagonal gradient base
     diag = (x_coords * 0.4 + y_coords * 0.6)
     base_r = (darker_rgb[0] * (1 - diag) + bg_rgb[0] * diag).astype(np.uint8)
     base_g = (darker_rgb[1] * (1 - diag) + bg_rgb[1] * diag).astype(np.uint8)
     base_b = (darker_rgb[2] * (1 - diag) + bg_rgb[2] * diag).astype(np.uint8)
 
     img = Image.fromarray(np.stack([base_r, base_g, base_b], axis=-1), mode="RGB")
-    draw = ImageDraw.Draw(img, "RGBA")
-    style = data["style"]
+    style = data.get("style", "generic")
+
+    glow_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    gdraw = ImageDraw.Draw(glow_layer)
 
     if style == "cyberpunk":
-        # Perspective synthwave grid + radiant glowing sun
         horizon_y = int(height * 0.58)
-        
-        # Sun with neon gradient
         sun_radius = 420
         sun_center = (width // 2, horizon_y - 80)
-        sun_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        sun_draw = ImageDraw.Draw(sun_layer)
         for r in range(sun_radius, 0, -2):
             prog = r / sun_radius
-            # Pink to yellow-red
-            r_val = int(mag_rgb[0] * prog + yel_rgb[0] * (1 - prog))
-            g_val = int(mag_rgb[1] * prog + yel_rgb[1] * (1 - prog))
-            b_val = int(mag_rgb[2] * prog + yel_rgb[2] * (1 - prog))
-            sun_draw.ellipse(
+            gdraw.ellipse(
                 [sun_center[0] - r, sun_center[1] - r, sun_center[0] + r, sun_center[1] + r],
-                fill=(r_val, g_val, b_val, 160)
+                fill=(int(mag_rgb[0]*prog + yel_rgb[0]*(1-prog)),
+                      int(mag_rgb[1]*prog + yel_rgb[1]*(1-prog)),
+                      int(mag_rgb[2]*prog + yel_rgb[2]*(1-prog)), 160)
             )
-        # Scanline cuts through the sun
         for sy in range(sun_center[1] - 40, horizon_y, 24):
             bar_h = int(4 + (sy - (sun_center[1] - 40)) * 0.15)
-            sun_draw.rectangle([0, sy, width, sy + bar_h], fill=(bg_rgb[0], bg_rgb[1], bg_rgb[2], 255))
-        img = Image.alpha_composite(img.convert("RGBA"), sun_layer).convert("RGB")
-        draw = ImageDraw.Draw(img, "RGBA")
-
-        # Ground perspective grid
+            gdraw.rectangle([0, sy, width, sy + bar_h], fill=(bg_rgb[0], bg_rgb[1], bg_rgb[2], 255))
+        img = Image.alpha_composite(img.convert("RGBA"), glow_layer).convert("RGB")
         grid_lines = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        gdraw = ImageDraw.Draw(grid_lines)
+        gdraw2 = ImageDraw.Draw(grid_lines)
         vanishing_pt = (width // 2, horizon_y)
-
-        # Perspective rays
         for x in range(-width // 2, width + width // 2, 120):
-            gdraw.line([vanishing_pt, (x, height)], fill=(cyan_rgb[0], cyan_rgb[1], cyan_rgb[2], 75), width=2)
-        # Horizontal lines with exponential spacing
+            gdraw2.line([vanishing_pt, (x, height)], fill=(cyan_rgb[0], cyan_rgb[1], cyan_rgb[2], 75), width=2)
         for i in range(1, 28):
             py = horizon_y + int((height - horizon_y) * (math.pow(i / 27, 2.2)))
-            alpha = int(30 + 180 * (i / 27))
-            gdraw.line([(0, py), (width, py)], fill=(mag_rgb[0], mag_rgb[1], mag_rgb[2], alpha), width=2)
+            gdraw2.line([(0, py), (width, py)], fill=(mag_rgb[0], mag_rgb[1], mag_rgb[2], int(30 + 180*(i/27))), width=2)
+        return Image.alpha_composite(img.convert("RGBA"), grid_lines).convert("RGB")
 
-        # Bloom glow on horizon
-        gdraw.rectangle([0, horizon_y - 2, width, horizon_y + 2], fill=(cyan_rgb[0], cyan_rgb[1], cyan_rgb[2], 220))
-        grid_lines = grid_lines.filter(ImageFilter.GaussianBlur(1))
-        img = Image.alpha_composite(img.convert("RGBA"), grid_lines).convert("RGB")
-
-    elif style == "dracula":
-        # Ethereal floating geometric portals & dual soft radiant blooms
-        bloom_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        bdraw = ImageDraw.Draw(bloom_layer)
-        # Purple bloom
-        bdraw.ellipse([width * 0.25 - 500, height * 0.4 - 500, width * 0.25 + 500, height * 0.4 + 500],
-                      fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 90))
-        # Pink bloom
-        bdraw.ellipse([width * 0.75 - 500, height * 0.6 - 500, width * 0.75 + 500, height * 0.6 + 500],
-                      fill=(mag_rgb[0], mag_rgb[1], mag_rgb[2], 75))
-        # Green subtle accent
-        bdraw.ellipse([width * 0.5 - 300, height * 0.2 - 300, width * 0.5 + 300, height * 0.2 + 300],
-                      fill=(green_rgb[0], green_rgb[1], green_rgb[2], 40))
-        bloom_layer = bloom_layer.filter(ImageFilter.GaussianBlur(140))
-        img = Image.alpha_composite(img.convert("RGBA"), bloom_layer)
-
-        # Floating isometric rings & diamond runes
-        geo_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        gdraw = ImageDraw.Draw(geo_layer)
-        cx, cy = width // 2, height // 2
-        for r, w, col in [(380, 3, acc_rgb), (520, 2, mag_rgb), (680, 1, cyan_rgb)]:
-            gdraw.ellipse([cx - r, cy - int(r * 0.55), cx + r, cy + int(r * 0.55)],
-                          outline=(col[0], col[1], col[2], 140), width=w)
-        # Diamond center
-        dsize = 140
-        gdraw.polygon([(cx, cy - dsize), (cx + dsize, cy), (cx, cy + dsize), (cx - dsize, cy)],
-                      outline=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 220), width=4)
-        img = Image.alpha_composite(img, geo_layer).convert("RGB")
-
-    elif style == "oxocarbon":
-        # Monolithic angled architecture, minimalist razor-sharp planes
-        plane_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        pdraw = ImageDraw.Draw(plane_layer)
-        
-        # Diagonal razor blade shards
-        coords = [
-            [(width * 0.1, 0), (width * 0.45, 0), (width * 0.25, height), (0, height)],
-            [(width * 0.4, 0), (width * 0.8, 0), (width * 0.6, height), (width * 0.2, height)],
-            [(width * 0.75, 0), (width, 0), (width, height * 0.7), (width * 0.55, height)]
-        ]
-        shades = [
-            (bg_rgb[0] + 10, bg_rgb[1] + 10, bg_rgb[2] + 10, 160),
-            (bg_rgb[0] + 20, bg_rgb[1] + 20, bg_rgb[2] + 20, 180),
-            (bg_rgb[0] + 14, bg_rgb[1] + 14, bg_rgb[2] + 14, 150)
-        ]
-        for poly, sh in zip(coords, shades):
-            pdraw.polygon(poly, fill=sh)
-
-        # High-tech accent laser edges
-        pdraw.line([(width * 0.45, 0), (width * 0.25, height)], fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 230), width=4)
-        pdraw.line([(width * 0.8, 0), (width * 0.6, height)], fill=(cyan_rgb[0], cyan_rgb[1], cyan_rgb[2], 230), width=3)
-        pdraw.line([(width * 0.75, 0), (width * 0.55, height)], fill=(mag_rgb[0], mag_rgb[1], mag_rgb[2], 160), width=2)
-        
-        # Fine grid pattern
-        for x in range(0, width, 80):
-            pdraw.line([(x, 0), (x, height)], fill=(255, 255, 255, 6), width=1)
-        for y in range(0, height, 80):
-            pdraw.line([(0, y), (width, y)], fill=(255, 255, 255, 6), width=1)
-
-        img = Image.alpha_composite(img.convert("RGBA"), plane_layer).convert("RGB")
-
-    elif style == "vesper":
-        # Pure pitch dark obsidian with warm golden amber celestial eclipse & glow
-        glow_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        gdraw = ImageDraw.Draw(glow_layer)
-        cx, cy = int(width * 0.5), int(height * 0.48)
-        
-        # Deep amber atmospheric glow
-        gdraw.ellipse([cx - 700, cy - 700, cx + 700, cy + 700], fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 85))
-        gdraw.ellipse([cx - 450, cy - 450, cx + 450, cy + 450], fill=(yel_rgb[0], yel_rgb[1], yel_rgb[2], 110))
-        glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(120))
+    elif style == "one_dark":
+        # Atom / One Dark Pro geometric matrix & deep cyan-purple aura
+        gdraw.ellipse([width*0.3 - 600, height*0.4 - 600, width*0.3 + 600, height*0.4 + 600],
+                      fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 95))
+        gdraw.ellipse([width*0.7 - 600, height*0.6 - 600, width*0.7 + 600, height*0.6 + 600],
+                      fill=(mag_rgb[0], mag_rgb[1], mag_rgb[2], 90))
+        glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(140))
         img = Image.alpha_composite(img.convert("RGBA"), glow_layer)
-
-        # Eclipse ring
-        ring_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        rdraw = ImageDraw.Draw(ring_layer)
-        r = 340
-        # Dark body blocking
-        rdraw.ellipse([cx - r + 8, cy - r + 8, cx + r + 8, cy + r + 8], fill=(darker_rgb[0], darker_rgb[1], darker_rgb[2], 255))
-        # Radiant gold rim
-        rdraw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 240), width=5)
-        # Inner fine ring
-        rdraw.ellipse([cx - r - 40, cy - r - 40, cx + r + 40, cy + r + 40], outline=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 80), width=1)
-        img = Image.alpha_composite(img, ring_layer).convert("RGB")
-
-    elif style == "material_ocean":
-        # Flowing bioluminescent oceanic topographic waves
-        wave_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        wdraw = ImageDraw.Draw(wave_layer)
-        
-        # Ambient abyssal glows
-        wdraw.ellipse([width * 0.2 - 600, height * 0.3 - 600, width * 0.2 + 600, height * 0.3 + 600],
-                      fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 70))
-        wdraw.ellipse([width * 0.8 - 600, height * 0.7 - 600, width * 0.8 + 600, height * 0.7 + 600],
-                      fill=(cyan_rgb[0], cyan_rgb[1], cyan_rgb[2], 80))
-        wave_layer = wave_layer.filter(ImageFilter.GaussianBlur(150))
-        img = Image.alpha_composite(img.convert("RGBA"), wave_layer)
-
-        # Multi-layered organic sine contour ribbons
-        contour_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        cdraw = ImageDraw.Draw(contour_layer)
-        
-        for k in range(12):
-            pts = []
-            base_y = int(height * 0.35 + k * 110)
-            alpha = int(40 + k * 14)
-            color = acc_rgb if k % 2 == 0 else cyan_rgb
-            for x in range(0, width + 50, 40):
-                y = int(base_y + math.sin(x * 0.002 + k * 0.5) * 120 + math.cos(x * 0.001 - k * 0.3) * 60)
-                pts.append((x, y))
-            cdraw.line(pts, fill=(color[0], color[1], color[2], alpha), width=3)
-
-        img = Image.alpha_composite(img, contour_layer).convert("RGB")
-
-    elif style == "aura_dark":
-        # Cosmic aura spheres blending neon purple and mint green
-        aura_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        adraw = ImageDraw.Draw(aura_layer)
-
-        # Orb 1: Violet/Purple
-        adraw.ellipse([width * 0.35 - 550, height * 0.45 - 550, width * 0.35 + 550, height * 0.45 + 550],
-                      fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 120))
-        # Orb 2: Neon Mint Green
-        adraw.ellipse([width * 0.65 - 500, height * 0.55 - 500, width * 0.65 + 500, height * 0.55 + 500],
-                      fill=(green_rgb[0], green_rgb[1], green_rgb[2], 100))
-        # Orb 3: Coral/Pink
-        adraw.ellipse([width * 0.5 - 400, height * 0.25 - 400, width * 0.5 + 400, height * 0.25 + 400],
-                      fill=(mag_rgb[0], mag_rgb[1], mag_rgb[2], 80))
-
-        aura_layer = aura_layer.filter(ImageFilter.GaussianBlur(160))
-        img = Image.alpha_composite(img.convert("RGBA"), aura_layer)
-
-        # Modern orbital wireframes
-        wire_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        wdraw = ImageDraw.Draw(wire_layer)
+        # Hexagonal / isometric wireframes
+        wire = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        wdraw = ImageDraw.Draw(wire)
         cx, cy = width // 2, height // 2
-        wdraw.ellipse([cx - 480, cy - 480, cx + 480, cy + 480],
-                      outline=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 90), width=2)
-        wdraw.ellipse([cx - 620, cy - 320, cx + 620, cy + 320],
-                      outline=(green_rgb[0], green_rgb[1], green_rgb[2], 80), width=2)
-        img = Image.alpha_composite(img, wire_layer).convert("RGB")
+        for r in [350, 520, 720]:
+            pts = [(cx + r * math.cos(math.radians(a)), cy + r * 0.6 * math.sin(math.radians(a))) for a in range(0, 360, 60)]
+            wdraw.polygon(pts, outline=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 120), width=2)
+        return Image.alpha_composite(img, wire).convert("RGB")
 
-    elif style == "rose_pine_moon":
-        # Serene twilight slate, gentle crescent moon & starry constellation
-        sky_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        sdraw = ImageDraw.Draw(sky_layer)
+    elif style == "ayu_mirage":
+        # Amber sun horizon with dusk twilight
+        gdraw.ellipse([width*0.5 - 650, height*0.55 - 650, width*0.5 + 650, height*0.55 + 650],
+                      fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 110))
+        gdraw.ellipse([width*0.5 - 350, height*0.55 - 350, width*0.5 + 350, height*0.55 + 350],
+                      fill=(yel_rgb[0], yel_rgb[1], yel_rgb[2], 130))
+        glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(130))
+        img = Image.alpha_composite(img.convert("RGBA"), glow_layer)
+        wire = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        wdraw = ImageDraw.Draw(wire)
+        wdraw.line([(0, height * 0.55), (width, height * 0.55)], fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 180), width=3)
+        return Image.alpha_composite(img, wire).convert("RGB")
 
-        # Soft rose-pine ambient glows
-        sdraw.ellipse([width * 0.7 - 500, height * 0.35 - 500, width * 0.7 + 500, height * 0.35 + 500],
-                      fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 90))
-        sdraw.ellipse([width * 0.3 - 500, height * 0.65 - 500, width * 0.3 + 500, height * 0.65 + 500],
-                      fill=(cyan_rgb[0], cyan_rgb[1], cyan_rgb[2], 75))
-        sky_layer = sky_layer.filter(ImageFilter.GaussianBlur(140))
-        img = Image.alpha_composite(img.convert("RGBA"), sky_layer)
+    elif style == "solarized":
+        # Precision coordinate grids & solar cyan eclipse
+        gdraw.ellipse([width*0.5 - 550, height*0.5 - 550, width*0.5 + 550, height*0.5 + 550],
+                      fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 95))
+        glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(130))
+        img = Image.alpha_composite(img.convert("RGBA"), glow_layer)
+        grid = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        gdraw2 = ImageDraw.Draw(grid)
+        for x in range(0, width, 120):
+            gdraw2.line([(x, 0), (x, height)], fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 25), width=1)
+        for y in range(0, height, 120):
+            gdraw2.line([(0, y), (width, y)], fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 25), width=1)
+        return Image.alpha_composite(img, grid).convert("RGB")
 
-        # Crescent Moon
-        moon_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        mdraw = ImageDraw.Draw(moon_layer)
-        mx, my, mr = int(width * 0.72), int(height * 0.36), 200
-        # Main glow
-        mdraw.ellipse([mx - mr, my - mr, mx + mr, my + mr], fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 230))
-        # Shadow overlay to create crescent
-        mdraw.ellipse([mx - mr + 65, my - mr - 30, mx + mr + 65, my + mr - 30],
-                      fill=(bg_rgb[0], bg_rgb[1], bg_rgb[2], 255))
-        
-        # Subtle constellation stars
-        np.random.seed(42)
-        star_x = np.random.randint(50, width - 50, 180)
-        star_y = np.random.randint(50, height - 50, 180)
-        for sx, sy in zip(star_x, star_y):
-            salpha = np.random.randint(80, 220)
-            mdraw.ellipse([sx - 2, sy - 2, sx + 2, sy + 2],
-                          fill=(224, 222, 244, salpha))
-        img = Image.alpha_composite(img, moon_layer).convert("RGB")
+    elif style == "tokyo_storm":
+        # Midnight storm clouds & glowing electric neon rain
+        gdraw.ellipse([width*0.4 - 600, height*0.35 - 600, width*0.4 + 600, height*0.35 + 600],
+                      fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 100))
+        gdraw.ellipse([width*0.7 - 600, height*0.65 - 600, width*0.7 + 600, height*0.65 + 600],
+                      fill=(mag_rgb[0], mag_rgb[1], mag_rgb[2], 85))
+        glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(150))
+        img = Image.alpha_composite(img.convert("RGBA"), glow_layer)
+        rain = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        rdraw = ImageDraw.Draw(rain)
+        np.random.seed(99)
+        for _ in range(250):
+            rx = np.random.randint(0, width)
+            ry = np.random.randint(0, height)
+            rlen = np.random.randint(30, 90)
+            rdraw.line([(rx, ry), (rx - 20, ry + rlen)], fill=(cyan_rgb[0], cyan_rgb[1], cyan_rgb[2], 80), width=2)
+        return Image.alpha_composite(img, rain).convert("RGB")
 
-    elif style == "monokai_pro":
-        # Modern diagonal geometric spectrum prisms
-        prism_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        pdraw = ImageDraw.Draw(prism_layer)
-
-        # Diagonal color ribbons
-        spectrum = [
-            (yel_rgb, 0.25),
-            (red_rgb, 0.38),
-            (mag_rgb, 0.50),
-            (cyan_rgb, 0.62),
-            (green_rgb, 0.75),
-        ]
-        slant = width * 0.35
-        for col, pos in spectrum:
-            cx_top = int(width * pos)
-            cx_bot = int(cx_top - slant)
-            poly = [(cx_top - 60, 0), (cx_top + 60, 0), (cx_bot + 60, height), (cx_bot - 60, height)]
-            pdraw.polygon(poly, fill=(col[0], col[1], col[2], 55))
-            pdraw.line([(cx_top, 0), (cx_bot, height)], fill=(col[0], col[1], col[2], 210), width=4)
-
-        # Sleek dark overlay in center to give depth
-        pdraw.rectangle([0, height // 3, width, int(height * 0.66)], fill=(bg_rgb[0], bg_rgb[1], bg_rgb[2], 120))
-        img = Image.alpha_composite(img.convert("RGBA"), prism_layer).convert("RGB")
-
-    return img
+    # Generic atmospheric radiant blooms
+    gdraw.ellipse([width*0.3 - 600, height*0.4 - 600, width*0.3 + 600, height*0.4 + 600],
+                  fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 90))
+    gdraw.ellipse([width*0.7 - 600, height*0.6 - 600, width*0.7 + 600, height*0.6 + 600],
+                  fill=(mag_rgb[0], mag_rgb[1], mag_rgb[2], 85))
+    glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(140))
+    return Image.alpha_composite(img.convert("RGBA"), glow_layer).convert("RGB")
 
 
 def generate_preview_card(theme_id, data, wallpaper_img):
     """Generate high-impact 1800x1012 card for the theme switcher preview."""
     target_w, target_h = 1800, 1012
-    # Resize wallpaper to fill
     card = wallpaper_img.copy().resize((target_w, target_h), Image.Resampling.LANCZOS)
-    
-    # Soft vignette / dark glass overlay
-    dark_overlay = Image.new("RGBA", (target_w, target_h), (0, 0, 0, 70))
+    dark_overlay = Image.new("RGBA", (target_w, target_h), (0, 0, 0, 75))
     card = Image.alpha_composite(card.convert("RGBA"), dark_overlay)
 
-    # Frosted acrylic glass card at the bottom center
-    glass_w, glass_h = 1380, 260
+    glass_w, glass_h = 1420, 260
     glass_x = (target_w - glass_w) // 2
-    glass_y = target_h - glass_h - 70
+    glass_y = target_h - glass_h - 60
 
     glass_layer = Image.new("RGBA", (target_w, target_h), (0, 0, 0, 0))
     gdraw = ImageDraw.Draw(glass_layer)
 
-    # Glass container background + border
     bg_rgb = hex_to_rgb(data["colors"]["dark_background"])
     acc_rgb = hex_to_rgb(data["colors"]["accent"])
 
     gdraw.rectangle([glass_x, glass_y, glass_x + glass_w, glass_y + glass_h],
-                    fill=(bg_rgb[0], bg_rgb[1], bg_rgb[2], 215),
+                    fill=(bg_rgb[0], bg_rgb[1], bg_rgb[2], 225),
                     outline=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 180),
                     width=3)
-
-    # Accent top highlight line
     gdraw.line([(glass_x, glass_y), (glass_x + glass_w, glass_y)],
-               fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 255), width=4)
+               fill=(acc_rgb[0], acc_rgb[1], acc_rgb[2], 255), width=5)
 
     card = Image.alpha_composite(card, glass_layer).convert("RGB")
     draw = ImageDraw.Draw(card)
 
-    # Load system font
     font_title = None
     font_sub = None
     font_tag = None
@@ -643,8 +888,8 @@ def generate_preview_card(theme_id, data, wallpaper_img):
     ]:
         if os.path.exists(fn):
             try:
-                font_title = ImageFont.truetype(fn, 54)
-                font_sub = ImageFont.truetype(fn.replace("-Bold", "-Regular").replace("-B", "-R"), 24)
+                font_title = ImageFont.truetype(fn, 50)
+                font_sub = ImageFont.truetype(fn.replace("-Bold", "-Regular").replace("-B", "-R"), 23)
                 font_tag = ImageFont.truetype(fn, 20)
                 break
             except Exception:
@@ -654,13 +899,11 @@ def generate_preview_card(theme_id, data, wallpaper_img):
         font_sub = font_title
         font_tag = font_title
 
-    # Draw Title & Tagline
-    draw.text((glass_x + 50, glass_y + 40), data["title"], font=font_title, fill=(255, 255, 255))
-    draw.text((glass_x + 52, glass_y + 115), data["tagline"], font=font_sub,
+    draw.text((glass_x + 50, glass_y + 35), data["title"], font=font_title, fill=(255, 255, 255))
+    draw.text((glass_x + 52, glass_y + 110), data["tagline"], font=font_sub,
               fill=hex_to_rgb(data["colors"]["light_foreground"]))
-    draw.text((glass_x + 52, glass_y + 155), "IRAM OS NEXT-GEN THEME SUITE", font=font_tag, fill=acc_rgb)
+    draw.text((glass_x + 52, glass_y + 152), "IRAM OS · GLOBAL ELITE SUITE", font=font_tag, fill=acc_rgb)
 
-    # Color Swatch Palette Row on the right
     colors_to_show = [
         ("ACC", data["colors"]["accent"]),
         ("BG", data["colors"]["background"]),
@@ -672,8 +915,8 @@ def generate_preview_card(theme_id, data, wallpaper_img):
         ("CYN", data["colors"]["cyan"]),
     ]
     swatch_x_start = glass_x + glass_w - 580
-    swatch_y = glass_y + 60
-    swatch_size = 54
+    swatch_y = glass_y + 55
+    swatch_size = 52
     swatch_spacing = 68
 
     for idx, (label, hex_val) in enumerate(colors_to_show):
@@ -716,24 +959,6 @@ def build_colors_toml(data):
     return "\n".join(lines) + "\n"
 
 
-def build_vscode_json(data):
-    v = data["vscode"]
-    return f'{{\n  "name": "{v["name"]}",\n  "extension": "{v["extension"]}"\n}}\n'
-
-
-def build_neovim_lua(data):
-    nv = data["neovim"]
-    return f"""return {{
-  {{
-    "LazyVim/LazyVim",
-    opts = {{
-      colorscheme = "{nv}",
-    }},
-  }},
-}}
-"""
-
-
 def main():
     dest_dirs = [
         os.path.expanduser("~/.config/omarchy/themes"),
@@ -743,33 +968,29 @@ def main():
     for d in dest_dirs:
         os.makedirs(d, exist_ok=True)
 
-    print("🎨 Generating 8 Modern Curated Themes...")
+    print(f"🎨 Generating {len(THEMES)} Modern Curated Themes (incorporating Ryoku & World Favorites)...")
     for theme_id, data in THEMES.items():
         print(f"\n✨ Building: {data['title']} ({theme_id})")
 
-        # 1. Render Wallpaper (3840x2160)
-        print("  -> Rendering Ultra-HD 4K Wallpaper (3840x2160)...")
-        wall_img = generate_wallpaper(theme_id, data, width=3840, height=2160)
+        # 1. Acquire / Render Wallpaper (3840x2160)
+        wall_img = get_wallpaper_for_theme(theme_id, data, width=3840, height=2160)
 
         # 2. Render Preview Card (1800x1012)
-        print("  -> Rendering Acrylic Preview Card (1800x1012)...")
         prev_img = generate_preview_card(theme_id, data, wall_img)
 
-        # Temporary local save
+        # Temporary local staging
         tmp_dir = f"/tmp/iram_theme_{theme_id}"
         os.makedirs(os.path.join(tmp_dir, "backgrounds"), exist_ok=True)
 
         wall_path = os.path.join(tmp_dir, "backgrounds", "1-wallpaper.webp")
-        wall_img.save(wall_path, "WEBP", quality=92)
+        wall_img.save(wall_path, "WEBP", quality=90)
 
         prev_path = os.path.join(tmp_dir, "preview.png")
         prev_img.save(prev_path, "PNG", optimize=True)
 
-        # Unlock preview copies
         shutil.copyfile(prev_path, os.path.join(tmp_dir, "preview-unlock.png"))
         shutil.copyfile(prev_path, os.path.join(tmp_dir, "unlock.png"))
 
-        # Metadata files
         with open(os.path.join(tmp_dir, "colors.toml"), "w") as f:
             f.write(build_colors_toml(data))
         with open(os.path.join(tmp_dir, "icons.theme"), "w") as f:
@@ -777,11 +998,13 @@ def main():
         with open(os.path.join(tmp_dir, "chromium.theme"), "w") as f:
             f.write(f'{data["colors"]["accent"]}\n')
         with open(os.path.join(tmp_dir, "vscode.json"), "w") as f:
-            f.write(build_vscode_json(data))
+            v = data.get("vscode", {"name": data["title"], "extension": "theme"})
+            f.write(f'{{\n  "name": "{v["name"]}",\n  "extension": "{v["extension"]}"\n}}\n')
         with open(os.path.join(tmp_dir, "neovim.lua"), "w") as f:
-            f.write(build_neovim_lua(data))
+            nv = data.get("neovim", "default")
+            f.write(f'return {{\n  {{\n    "LazyVim/LazyVim",\n    opts = {{\n      colorscheme = "{nv}",\n    }},\n  }},\n}}\n')
 
-        # Copy to destination directories
+        # Install to all destination dirs
         for base_dest in dest_dirs:
             target_theme_dir = os.path.join(base_dest, theme_id)
             if os.path.islink(target_theme_dir):
@@ -793,7 +1016,7 @@ def main():
 
         shutil.rmtree(tmp_dir)
 
-    print("\n✅ All 8 modern themes successfully generated and installed!")
+    print(f"\n✅ All {len(THEMES)} modern themes successfully generated and installed!")
 
 
 if __name__ == "__main__":

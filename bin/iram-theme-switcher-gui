@@ -14,14 +14,24 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 
 MODERN_THEME_IDS = [
+    "ryoku-crimson",
     "cyberpunk-neon",
     "dracula",
+    "one-dark",
+    "catppuccin-mocha",
+    "kanagawa-wave",
+    "nord-frost",
+    "night-owl",
+    "synthwave-84",
     "oxocarbon",
     "vesper",
+    "ayu-mirage",
     "material-ocean",
     "aura-dark",
     "rose-pine-moon",
-    "monokai-pro"
+    "monokai-pro",
+    "solarized-dark",
+    "tokyo-storm"
 ]
 
 THEMES_DIRS = [
@@ -323,7 +333,7 @@ class ThemeSwitcherApp(Gtk.Window):
 
         # Category Filter Pills
         cat_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-        self.btn_modern = Gtk.Button(label="✨ Modern Suite (8)")
+        self.btn_modern = Gtk.Button(label="✨ Modern Suite (18)")
         self.btn_modern.get_style_context().add_class("cat-btn")
         self.btn_modern.get_style_context().add_class("cat-btn-active")
         self.btn_modern.connect("clicked", lambda b: self.set_category_filter("modern"))
