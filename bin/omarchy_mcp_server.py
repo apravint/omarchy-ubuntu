@@ -1,1 +1,0 @@
-/home/apravint/omarchy-ubuntu/bin/omarchy-mcp-server
