@@ -11,7 +11,8 @@
 window#waybar {
     background-color: rgba(18, 18, 28, 0.95);
     color: @fg;
-    border-bottom: 2px solid @border;
+    border: 1px solid @border;
+    border-radius: 0;
     box-shadow: none;
 }
 
