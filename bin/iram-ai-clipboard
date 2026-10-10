@@ -2,7 +2,7 @@
 """
 Iram AI Smart Clipboard & Code Assistant (iram-ai-clipboard)
 Provides 1-click AI transformations on copied text: Summarize, Refactor Code, Translate, Extract Actions.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

@@ -2,7 +2,7 @@
 """
 Iram AI Workspace & Downloads Curator (iram-ai-organizer)
 Auto-categorizes Downloads/Desktop files into organized subfolders and renames cryptic filenames.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import os

@@ -2,7 +2,7 @@
 """
 Iram Stock Market News & Ticker GUI Menu (iram-stock-news)
 Fetches live financial headlines, market movers, and index updates.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

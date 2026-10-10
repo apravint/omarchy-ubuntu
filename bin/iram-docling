@@ -3,7 +3,7 @@
 Iram Docling Document Converter & Parser (iram-docling)
 Converts PDFs, Office documents, presentations, and spreadsheets into structured Markdown.
 Optionally indexes converted documents directly into embedded Qdrant vector memory.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

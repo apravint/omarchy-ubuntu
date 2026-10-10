@@ -2,7 +2,7 @@
 # ==============================================================================
 # Iram for Ubuntu - Automated Installer
 # Experience authentic Iram (Hyprland + Themes + Waybar) on Ubuntu
-# https://github.com/apravint/iram-ubuntu
+# https://github.com/apravint/iram-os
 # ==============================================================================
 set -euo pipefail
 trap 'echo -e "\033[0;31m[ERROR] Iram installation failed at line $LINENO. Exiting gracefully.\033[0m"; exit 1' ERR

@@ -15,17 +15,17 @@ Use the details below to submit **Iram for Ubuntu** to the global Linux registry
 * **Current Status**: Active
 * **Release Model**: Fixed LTS Base with Rolling Compositor / Theme Updates
 * **Initial Release Date**: 2026-10-03
-* **Official Homepage**: `https://github.com/apravint/iram-ubuntu`
-* **Documentation URL**: `https://github.com/apravint/iram-ubuntu#readme`
-* **Bug Tracker URL**: `https://github.com/apravint/iram-ubuntu/issues`
+* **Official Homepage**: `https://github.com/apravint/iram-os`
+* **Documentation URL**: `https://github.com/apravint/iram-os#readme`
+* **Bug Tracker URL**: `https://github.com/apravint/iram-os/issues`
 
 ---
 
 ### 📦 Download & Verification Links
 
-* **Latest Release Page**: `https://github.com/apravint/iram-ubuntu/releases/tag/v26.04.0`
-* **Direct ISO Download**: `https://github.com/apravint/iram-ubuntu/releases/download/v26.04.0/iram-ubuntu-24.04-amd64.iso`
-* **SHA256 Checksum URL**: `https://github.com/apravint/iram-ubuntu/releases/download/v26.04.0/sha256sum.txt`
+* **Latest Release Page**: `https://github.com/apravint/iram-os/releases/tag/v26.04.0`
+* **Direct ISO Download**: `https://github.com/apravint/iram-os/releases/download/v26.04.0/iram-os-24.04-amd64.iso`
+* **SHA256 Checksum URL**: `https://github.com/apravint/iram-os/releases/download/v26.04.0/sha256sum.txt`
 * **Live Session Credentials**:
   - **Username**: `iram`
   - **Password**: `iram` *(Passwordless sudo enabled)*
@@ -56,5 +56,5 @@ Use the details below to submit **Iram for Ubuntu** to the global Linux registry
 ### 👤 Maintainer Contact Information
 
 * **Maintainer / Founder**: `apravint`
-* **Project Repository**: `https://github.com/apravint/iram-ubuntu`
+* **Project Repository**: `https://github.com/apravint/iram-os`
 * **License**: MIT Open Source License

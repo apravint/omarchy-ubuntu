@@ -3,7 +3,7 @@
 Iram Code-as-Action Agent (iram-code-agent)
 Executes autonomous desktop actions and complex workflows by writing and executing Python code.
 Powered by HuggingFace smolagents architecture.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

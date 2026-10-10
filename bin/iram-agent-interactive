@@ -3,7 +3,7 @@
 Iram Interactive Agent Sidecar (iram-agent-interactive)
 Real-time, streaming conversational AI terminal interface powered by Google Gemini (Cloud · 0% CPU)
 with automatic Local Ollama offline fallback, Internet Web Search, and Desktop System Control.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

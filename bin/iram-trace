@@ -3,7 +3,7 @@
 Iram Observability & Phoenix Telemetry Layer (iram-trace)
 Captures execution traces, spans, and error post-mortems for AI agents and OS tools.
 Provides real-time Waybar HUD telemetry and launches local Phoenix UI.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

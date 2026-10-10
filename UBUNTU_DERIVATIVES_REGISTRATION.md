@@ -14,8 +14,8 @@ Submit this entry to the official **Ubuntu Derivatives Team** wiki at:
  * '''Description''': Turnkey Hyprland Wayland desktop operating system featuring automated dual-display management, studio-grade PipeWire audio routing, systemd user daemons, and a curated 22-theme suite with zero-restart live reload. Ships as a hybrid UEFI/BIOS bootable Live ISO.
  * '''Default Desktop''': Hyprland (Wayland)
  * '''Architecture''': x86_64
- * '''Website''': https://github.com/apravint/iram-ubuntu
- * '''Download''': https://github.com/apravint/iram-ubuntu/releases
+ * '''Website''': https://github.com/apravint/iram-os
+ * '''Download''': https://github.com/apravint/iram-os/releases
  * '''Lead Developer / Maintainer''': apravint
  * '''License''': MIT
 ```
@@ -43,9 +43,9 @@ Key Features:
 - Complete live boot environment with direct installer to disk
 
 Links:
-- Repository: https://github.com/apravint/iram-ubuntu
-- Latest Release & Live ISO: https://github.com/apravint/iram-ubuntu/releases/tag/v26.04.0
-- Issue Tracker: https://github.com/apravint/iram-ubuntu/issues
+- Repository: https://github.com/apravint/iram-os
+- Latest Release & Live ISO: https://github.com/apravint/iram-os/releases/tag/v26.04.0
+- Issue Tracker: https://github.com/apravint/iram-os/issues
 
 We look forward to collaborating with the broader Ubuntu community.
 

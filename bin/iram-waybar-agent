@@ -2,7 +2,7 @@
 """
 Iram Waybar AI Agent Telemetry Provider (iram-waybar-agent)
 Provides real-time agent status, Phoenix traces, Qdrant memory stats, and interactive click actions for Waybar.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 import os
 import sys

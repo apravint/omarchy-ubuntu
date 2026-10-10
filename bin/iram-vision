@@ -3,7 +3,7 @@
 Iram Visual AI Analyst & OCR Extractor (iram-vision)
 Captures screen regions and uses multimodal Vision AI (Google Gemini / Qwen2-VL / LLaVA)
 to analyze code errors, tables, and UI layouts, or extract text directly to clipboard (--ocr).
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

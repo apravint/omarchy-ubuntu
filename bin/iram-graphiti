@@ -2,7 +2,7 @@
 """
 Iram Project Knowledge Graph Engine (iram-graphiti)
 Temporal entity-relationship knowledge graph tracking system state, decisions, and codebase facts over time.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

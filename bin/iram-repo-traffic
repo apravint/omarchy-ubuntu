@@ -2,7 +2,7 @@
 # ==============================================================================
 # Iram GitHub Repository Traffic & Clone Monitor
 # Displays real-time clone counts, unique cloners, and view statistics.
-# https://github.com/apravint/iram-ubuntu
+# https://github.com/apravint/iram-os
 # ==============================================================================
 set -euo pipefail
 

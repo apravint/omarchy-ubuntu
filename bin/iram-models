@@ -3,7 +3,7 @@
 Iram AI Model Manager GUI (iram-models)
 Allows users to switch active Gemini Cloud models, toggle local Ollama offline mode,
 or pull local GGUF models via Wofi.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

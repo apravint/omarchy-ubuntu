@@ -3,7 +3,7 @@
 Iram FastMCP Desktop & AI Architecture Server (iram-mcp-server)
 Model Context Protocol (MCP) server providing high-performance OS control,
 embedded Qdrant retrieval, Graphiti knowledge, and Crawl4AI web tools.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import os

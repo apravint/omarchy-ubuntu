@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Iram for Ubuntu - Uninstaller
-# https://github.com/apravint/iram-ubuntu
+# https://github.com/apravint/iram-os
 # ==============================================================================
 set -e
 

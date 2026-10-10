@@ -2,7 +2,7 @@
 """
 Iram AI Dynamic Ambient Wallpaper & Theme Palette Generator (iram-ai-wallpaper)
 Dynamically switches wallpapers and auto-extracts color palettes to re-tint Hyprland, Waybar & Wofi.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

@@ -2,7 +2,7 @@
 """
 Iram LangGraph Stateful Autonomous Coding Loop (iram-workflow)
 Cyclic stateful execution graph for long coding jobs with self-healing, verification, and SQLite checkpoints.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

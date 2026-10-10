@@ -56,7 +56,7 @@ def save_to_hyprland_conf(monitors_data):
     # Safety Guard: If cleaned_lines is corrupted or truncated (< 25 lines), recover from base template
     if len(cleaned_lines) < 25:
         fallback_templates = [
-            os.path.expanduser('~/iram-ubuntu/config/hypr/hyprland.conf'),
+            os.path.expanduser('~/iram-os/config/hypr/hyprland.conf'),
             '/usr/share/iram/config/hypr/hyprland.conf'
         ]
         for fb in fallback_templates:

@@ -2,7 +2,7 @@
 """
 Iram Embedded Qdrant Vector Retrieval Engine (iram-qdrant)
 High-performance local vector search for codebase chunks and episodic system memory.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

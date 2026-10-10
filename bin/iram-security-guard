@@ -2,7 +2,7 @@
 """
 Iram AI Security Guard & Firewall Monitor (iram-security-guard)
 Audits listening ports, SSH/sudo login attempts, firewall status, and anomalous network traffic.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

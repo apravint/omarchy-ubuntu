@@ -20,7 +20,7 @@ Traditionally, if you want to run Hyprland with fluid animations and modern tili
 **Iram for Ubuntu** solves this by providing a complete, bootable Linux operating system distribution:
 
 ### ✨ What’s Inside:
-* **True Standalone OS**: Ships as a hybrid **UEFI/BIOS bootable Live ISO** (`iram-ubuntu-*.iso`) built using an automated in-house compiler.
+* **True Standalone OS**: Ships as a hybrid **UEFI/BIOS bootable Live ISO** (`iram-os-*.iso`) built using an automated in-house compiler.
 * **Intelligent Multi-Display**: Automatically prevents monitor overlapping at `0x0` coordinates and includes a native GUI monitor manager (`iram-displays-gui`).
 * **Studio-Grade PipeWire Audio**: Instant sink toggling (`Super + Shift + A`) with ALSA stereo fallback to prevent HDMI TV converter stalls.
 * **Persistent Daemon Architecture**: Status bar (`Waybar`) and wallpaper engine (`Swaybg`) run as managed `systemd` user units with monitor readiness polling loops (no fragile terminal scripts).
@@ -28,10 +28,10 @@ Traditionally, if you want to run Hyprland with fluid animations and modern tili
 * **Turnkey Live Environment**: Direct autologin into the live Hyprland session with passwordless sudo (`iram:iram`) and installer to disk.
 
 ### 📦 Download & Source Code:
-* **GitHub Repository**: https://github.com/apravint/iram-ubuntu
-* **Latest ISO Download**: https://github.com/apravint/iram-ubuntu/releases/tag/v26.04.0
+* **GitHub Repository**: https://github.com/apravint/iram-os
+* **Latest ISO Download**: https://github.com/apravint/iram-os/releases/tag/v26.04.0
 * **One-line Upgrade for existing Ubuntu users**:
-  `curl -fsSL https://raw.githubusercontent.com/apravint/iram-ubuntu/main/install.sh | bash`
+  `curl -fsSL https://raw.githubusercontent.com/apravint/iram-os/main/install.sh | bash`
 
 I would love to get your feedback, bug reports, and hardware compatibility test results!
 ```
@@ -49,8 +49,8 @@ Hi Hacker News,
 
 I built Iram for Ubuntu, a standalone Linux distribution that brings the fluid dynamics of the Hyprland Wayland compositor to the rock-solid base of Ubuntu LTS.
 
-GitHub: https://github.com/apravint/iram-ubuntu
-Latest ISO & Release: https://github.com/apravint/iram-ubuntu/releases/tag/v26.04.0
+GitHub: https://github.com/apravint/iram-os
+Latest ISO & Release: https://github.com/apravint/iram-os/releases/tag/v26.04.0
 
 Why I built it:
 Many developers love the keyboard-driven ergonomics, workspace grouping, and fluid animations of Hyprland, but don't want the rolling-release friction of Arch or NixOS for their daily driver workstations (especially when using Docker, CUDA, proprietary VPNs, or enterprise toolchains). Meanwhile, stock Ubuntu GNOME can feel heavy and lacks dynamic tiling.

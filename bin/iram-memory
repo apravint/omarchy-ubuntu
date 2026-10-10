@@ -3,7 +3,7 @@
 Iram Episodic Vector Memory Layer (iram-memory)
 Indexes user document notes, terminal history, and project code for semantic AI memory search.
 Powered by Local Embedded Qdrant Vectors + Graphiti Knowledge Graph.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

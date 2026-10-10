@@ -6,7 +6,7 @@ A preconfigured Hyprland desktop environment for Ubuntu LTS featuring sharp geom
 
 <div align="center">
 
-[![GitHub Release](https://img.shields.io/github/v/release/apravint/iram-ubuntu?color=7aa2f7&logo=github&label=Release)](https://github.com/apravint/iram-ubuntu/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/apravint/iram-os?color=7aa2f7&logo=github&label=Release)](https://github.com/apravint/iram-os/releases)
 [![Compositor: Hyprland](https://img.shields.io/badge/Compositor-Hyprland%20Wayland-00c853.svg?logo=wayland&logoColor=white)](https://hyprland.org)
 [![Base: Ubuntu LTS](https://img.shields.io/badge/Base-Ubuntu%20LTS-E95420.svg?logo=ubuntu&logoColor=white)](https://ubuntu.com)
 [![Audio: PipeWire](https://img.shields.io/badge/Audio-PipeWire%20%2B%20WirePlumber-brightgreen.svg)](https://pipewire.org)
@@ -57,8 +57,8 @@ Run the automated installer on an existing Ubuntu 24.04+ (or Debian-based) syste
 
 ```bash
 # Clone the repository
-git clone https://github.com/apravint/iram-ubuntu.git
-cd iram-ubuntu
+git clone https://github.com/apravint/iram-os.git
+cd iram-os
 
 # Run installer
 chmod +x install.sh
@@ -68,7 +68,7 @@ chmod +x install.sh
 Or install directly via curl:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/apravint/iram-ubuntu/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/apravint/iram-os/main/install.sh | bash
 ```
 
 #### After Installation:
@@ -82,10 +82,10 @@ curl -fsSL https://raw.githubusercontent.com/apravint/iram-ubuntu/main/install.s
 
 For bare-metal deployment, a bootable ISO image is available:
 
-1. Download the latest `.iso` from [GitHub Releases](https://github.com/apravint/iram-ubuntu/releases).
+1. Download the latest `.iso` from [GitHub Releases](https://github.com/apravint/iram-os/releases).
 2. Write to a USB drive with [Ventoy](https://www.ventoy.net/), [BalenaEtcher](https://etcher.balena.io/), or `dd`:
    ```bash
-   sudo dd if=iram-ubuntu-24.04-amd64.iso of=/dev/sdX bs=4M status=progress oflag=sync
+   sudo dd if=iram-os-24.04-amd64.iso of=/dev/sdX bs=4M status=progress oflag=sync
    ```
 3. Boot the USB drive and select **Start Iram for Ubuntu Live**.
    - Default user: `iram`
@@ -213,8 +213,8 @@ To compile the bootable Live ISO from source:
 
 ```bash
 # Clone the repository
-git clone https://github.com/apravint/iram-ubuntu.git
-cd iram-ubuntu
+git clone https://github.com/apravint/iram-os.git
+cd iram-os
 
 # Run ISO build engine (requires root)
 sudo bash build/build-iso.sh
@@ -229,7 +229,7 @@ Outputs the final ISO and SHA-256 checksum in `out/`.
 To restore original configurations and remove installed scripts:
 
 ```bash
-cd iram-ubuntu
+cd iram-os
 ./uninstall.sh
 ```
 

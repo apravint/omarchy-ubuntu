@@ -2,7 +2,7 @@
 # ==============================================================================
 # Iram AI Voice Assistant (iram-voice)
 # Records voice input, transcribes speech, executes agent instructions, and speaks response.
-# https://github.com/apravint/iram-ubuntu
+# https://github.com/apravint/iram-os
 # ==============================================================================
 
 set -euo pipefail

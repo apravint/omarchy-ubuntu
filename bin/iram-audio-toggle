@@ -7,7 +7,7 @@ Dynamically cycles through all available audio outputs:
 - Sony TV (HDMI)
 - All Displays (Combined)
 Moves all active audio streams and notifies the user.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import subprocess

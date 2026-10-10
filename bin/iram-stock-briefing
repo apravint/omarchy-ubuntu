@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Iram Stock Market Daily Briefing & Alert Notification
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import urllib.request

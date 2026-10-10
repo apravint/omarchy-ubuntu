@@ -3,7 +3,7 @@
 Iram Natural Language Shell Copilot (iram-ai-cmd / ?? / ai)
 Translates plain English requests into executable Linux commands using Google Gemini & Local Ollama.
 Includes smart error fixing ('ai fix') and git commit generation ('ai commit').
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 import sys
 import os

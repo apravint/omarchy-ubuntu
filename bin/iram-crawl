@@ -2,7 +2,7 @@
 """
 Iram Crawl4AI Documentation Scraper (iram-crawl)
 Scrapes live documentation and web articles into clean, LLM-ready markdown.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

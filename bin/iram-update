@@ -9,8 +9,8 @@ if [ -d "/usr/share/iram/.git" ]; then
 fi
 
 echo -e "\033[1;34m==> Updating Iram Ubuntu Port...\033[0m"
-if [ -d "$HOME/iram-ubuntu/.git" ]; then
-  git -C "$HOME/iram-ubuntu" pull --ff-only 2>/dev/null || true
+if [ -d "$HOME/iram-os/.git" ]; then
+  git -C "$HOME/iram-os" pull --ff-only 2>/dev/null || true
 fi
 
 echo -e "\033[1;34m==> Updating system packages with APT...\033[0m"

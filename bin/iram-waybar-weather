@@ -2,7 +2,7 @@
 """
 Iram Resilient Waybar Weather Provider
 Provides cached, rate-limit immune weather status for Waybar with zero flicker.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 import os
 import sys

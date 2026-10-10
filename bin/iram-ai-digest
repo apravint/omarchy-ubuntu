@@ -2,7 +2,7 @@
 """
 Iram AI Daily System & Intelligence Digest (iram-ai-digest)
 Synthesizes system health, security posture, git activity, and financial news into an executive briefing.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 import sys
 import os
@@ -23,7 +23,7 @@ def generate_digest():
     failed_services = run_cmd("systemctl --failed --no-legend") or "None"
     free_mem = run_cmd("free -h | grep Mem | awk '{print $3 \" used of \" $2}'")
     uptime = run_cmd("uptime -p")
-    git_recent = run_cmd("cd /home/apravint/iram-ubuntu && git log -n 3 --oneline")
+    git_recent = run_cmd("cd /home/apravint/iram-os && git log -n 3 --oneline")
     market_head = run_cmd("~/.local/bin/iram-stock-briefing | tail -n 2")
     
     context = (
@@ -55,7 +55,7 @@ def generate_digest():
             data = json.loads(resp.read().decode("utf-8"))
             briefing = data.get("response", "").strip()
     except Exception as e:
-        briefing = f"• System healthy ({free_mem})\n• All systemd units active\n• 3 recent commits pushed to iram-ubuntu"
+        briefing = f"• System healthy ({free_mem})\n• All systemd units active\n• 3 recent commits pushed to iram-os"
         
     print("\n" + "="*60)
     print("      📊 IRAM AGENTIC OS EXECUTIVE BRIEFING        ")

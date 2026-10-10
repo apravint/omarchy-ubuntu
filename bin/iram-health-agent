@@ -3,7 +3,7 @@
 Iram Self-Healing OS Agent (iram-health-agent)
 Powered by Antigravity AI Engine logic & systemd integration.
 Diagnoses Linux system failures, failed services, audio sinks, and auto-restarts broken components.
-https://github.com/apravint/iram-ubuntu
+https://github.com/apravint/iram-os
 """
 
 import sys

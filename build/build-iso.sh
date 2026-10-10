@@ -8,7 +8,7 @@ set -euo pipefail
 # Target Ubuntu version: defaults to 26.04 (Resolute) or respects environment override
 CODENAME="${UBUNTU_CODENAME:-resolute}"
 DISTRO_VERSION="${DISTRO_VERSION:-26.04}"
-DISTRO_NAME="iram-ubuntu"
+DISTRO_NAME="iram-os"
 ARCH="amd64"
 ROOTFS_DIR="/tmp/iram-rootfs"
 ISO_DIR="/tmp/iram-iso"
@@ -321,14 +321,14 @@ fi
 cat << EOF > "${ROOTFS_DIR}/etc/os-release"
 NAME="Iram for Ubuntu"
 VERSION="${DISTRO_VERSION} LTS (${CODENAME})"
-ID=iram-ubuntu
+ID=iram-os
 ID_LIKE="ubuntu debian"
 PRETTY_NAME="Iram for Ubuntu ${DISTRO_VERSION} LTS (${CODENAME})"
 VERSION_ID="${DISTRO_VERSION}"
-HOME_URL="https://github.com/apravint/iram-ubuntu"
-SUPPORT_URL="https://github.com/apravint/iram-ubuntu/issues"
-BUG_REPORT_URL="https://github.com/apravint/iram-ubuntu/issues"
-PRIVACY_POLICY_URL="https://github.com/apravint/iram-ubuntu"
+HOME_URL="https://github.com/apravint/iram-os"
+SUPPORT_URL="https://github.com/apravint/iram-os/issues"
+BUG_REPORT_URL="https://github.com/apravint/iram-os/issues"
+PRIVACY_POLICY_URL="https://github.com/apravint/iram-os"
 UBUNTU_CODENAME=${CODENAME}
 EOF
 
