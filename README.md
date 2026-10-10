@@ -4,7 +4,7 @@
 
 ### The Autonomous Agentic Desktop Operating System
 
-A high-performance Wayland operating system powered by Hyprland, featuring sharp geometric tiling, zero-restart live theme switching, studio-grade PipeWire audio routing, automated multi-display intelligence, and a deeply integrated autonomous AI toolchain.
+A high-performance Linux operating system powered by Hyprland, featuring sharp geometric tiling, zero-restart live theme switching, studio-grade PipeWire audio routing, automated multi-display intelligence, and a deeply integrated autonomous AI toolchain.
 
 [![GitHub Release](https://img.shields.io/github/v/release/apravint/iram-os?color=7aa2f7&logo=github&label=Release)](https://github.com/apravint/iram-os/releases)
 [![Compositor: Hyprland](https://img.shields.io/badge/Compositor-Hyprland%20Wayland-00c853.svg?logo=wayland&logoColor=white)](https://hyprland.org)
@@ -20,80 +20,131 @@ A high-performance Wayland operating system powered by Hyprland, featuring sharp
 
 ---
 
-## Overview
+## 📖 About IRAM OS
 
-**IRAM OS** provides an out-of-the-box, turnkey Wayland desktop experience engineered for speed, aesthetics, and autonomous developer workflows. It packages Hyprland dynamic tiling, a flush edge-to-edge status bar, studio-grade PipeWire audio routing, automated multi-monitor geometry management, and 22 switchable color schemes into a cohesive operating system.
+### What is IRAM OS?
+**IRAM OS** is an independent, turnkey 64-bit Linux operating system distribution engineered from the ground up for modern developers, power users, and AI practitioners. It bridges the gap between ultra-fluid Wayland dynamic tiling and autonomous desktop computing, providing a cohesive environment where the user interface, system hardware, and local/cloud AI agents collaborate seamlessly.
 
-### Key Components
+### The Vision: The Interface Becomes the API
+Traditional operating systems treat artificial intelligence as a passive side-panel chatbot. IRAM OS fundamentally rethinks the desktop by making the system itself agent-controllable:
+- **Agents can observe and query**: Window hierarchy, active workspaces, audio routing topology, system telemetry, and clipboard history.
+- **Agents can act**: Dispatch windows, switch themes, execute sandboxed code-as-action snippets, and diagnose failed services without human friction.
+- **Zero Configuration Headaches**: Multi-monitor overlaps, audio sink stalls, and manual daemon configuration are solved out of the box with intelligent automation.
 
-- **Compositor**: [Hyprland](https://hyprland.org) with sharp rectangular geometry (`rounding = 0`), compact 2px inner window gaps, and fluid dwindle tiling.
-- **Status Bar**: [Waybar](https://github.com/Alexays/Waybar) configured edge-to-edge with workspace tabs, CPU/RAM telemetry, active audio sink indicators, weather, and power controls.
-- **Application Launcher**: [Wofi](https://hg.sr.ht/~scoopta/wofi) with matching rectangular styling and fuzzy application search.
-- **Audio Routing**: [PipeWire](https://pipewire.org) + [WirePlumber](https://gitlab.freedesktop.org/pipewire/wireplumber) policies with 1-click output cycling (`iram-audio-toggle`) across HDMI monitors, TVs, analog jacks, and Bluetooth.
-- **Display Manager GUI**: Native `iram-displays-gui` utility to auto-detect displays, prevent coordinate overlap, set refresh rates, and persist geometry.
-- **Theme Suite**: 22 synchronized color schemes (Tokyo Night, Catppuccin Mocha, Nord, Gruvbox, etc.) switchable on the fly without session restarts.
-- **Productivity & Utilities**: Integrated clipboard history (`cliphist`), screen snip/recorder, OCR text extractor (`tesseract`), terminal copilot (`??`), and automated system health diagnosis.
-
-### Agentic AI Architecture
-
-IRAM OS integrates dedicated system layers for autonomous intelligence, providing tools, memory, semantic retrieval, document ingestion, and execution traces out of the box:
-
-- **Desktop Tool Server (FastMCP)**: `iram-mcp-server` exposes native Hyprland window management, audio controls, display topology, theme switching, and self-healing over the Model Context Protocol (MCP).
-- **Dense Vector Retrieval (Qdrant)**: `iram-qdrant` runs an embedded on-disk Qdrant database at `~/.local/state/iram/qdrant_db`, providing semantic code search and session memory without background daemon overhead.
-- **Temporal Knowledge Graph (Graphiti)**: `iram-graphiti` maintains persistent project memory, tracking entities, dependencies, and architectural decisions over time.
-- **Web Documentation Scraper (Crawl4AI)**: `iram-crawl` extracts web documentation and API references into clean, token-efficient Markdown.
-- **Document Ingestion (Docling)**: `iram-docling` converts PDFs, Office documents, and presentation slides into structured Markdown tables and text.
-- **Code-as-Action Engine (smolagents)**: `iram-code-agent` synthesizes and executes atomic Python snippets inside an AST sandbox to perform multi-step desktop tasks in fewer LLM round-trips.
-- **Stateful Long Coding Loops (LangGraph)**: `iram-workflow` provides cyclic graphs (Plan → Execute → Verify → Self-Heal) with SQLite checkpointing to run long-running refactors safely.
-- **Observability & Traces (Arize Phoenix)**: `iram-trace` logs spans, execution latencies, and error post-mortems, feeding real-time status to the Waybar telemetry HUD.
+### Project Heritage & Evolution
+IRAM OS was originally inspired by the desktop concept of **Omarchy** authored by David Heinemeier Hansson (DHH). Recognizing the demand for a turnkey, production-grade operating system with native dual-monitor resilience, systemd service supervision, and a full-stack autonomous AI runtime, the project was completely re-architected into an independent distribution:
+1. **Desktop Engine**: Engineered sharp 90° geometry (`rounding = 0`), a flush edge-to-edge status bar, and custom dual-display collision avoidance (`iram-displays-gui`).
+2. **Audio Stack**: Built studio-grade PipeWire/WirePlumber priority rules with instant 1-key output cycling across analog lines, HDMI converters, and Bluetooth.
+3. **Agentic Layer**: Integrated embedded vector memory (Qdrant), temporal knowledge graphs (Graphiti), web scrapers (Crawl4AI), document parsers (Docling), code executors (smolagents), and long-running cyclic loops (LangGraph).
+4. **Distribution Pipeline**: Built a hybrid UEFI/BIOS bootable Live ISO compiler that produces flashable, autologin media with bare-metal installer capability.
 
 ---
 
-## Installation
+## 🏛️ Core Architecture
 
-### Method 1: Automated Installation (Recommended)
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                               IRAM OS                                  │
+├────────────────────────────────────────────────────────────────────────┤
+│  AUTONOMOUS AGENTIC RUNTIME                                            │
+│  FastMCP ── Qdrant ── Graphiti ── Crawl4AI ── Docling ── LangGraph    │
+├────────────────────────────────────────────────────────────────────────┤
+│  WAYLAND DESKTOP ENVIRONMENT                                          │
+│  Hyprland (0px Sharp) ── Waybar (Flush) ── Wofi ── Mako ── Swaybg      │
+├────────────────────────────────────────────────────────────────────────┤
+│  SYSTEM SERVICES & ROUTING                                             │
+│  PipeWire/WirePlumber ── iram-displays-gui ── 22-Theme Sync Engine    │
+├────────────────────────────────────────────────────────────────────────┤
+│  LINUX KERNEL & HARDWARE ABSTRACTION                                  │
+│  Debian/GNU Core ── systemd Daemons ── Multi-Monitor GPU Pipeline      │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### 1. Compositor & Window Mechanics
+- **Compositor**: [Hyprland](https://hyprland.org) with strict rectangular geometry (`rounding = 0`), compact 2px inner window gaps, 4px outer margins, and fluid dwindle layouts.
+- **Status Bar**: [Waybar](https://github.com/Alexays/Waybar) designed edge-to-edge with workspace tabs, CPU/RAM telemetry, active audio sink indicators, weather, and power controls.
+- **Application Launcher**: [Wofi](https://hg.sr.ht/~scoopta/wofi) styled to match active color schemes with fuzzy keyboard navigation.
+
+### 2. Multi-Display Intelligence
+- Automatically detects connected monitors, television displays, and auxiliary screens.
+- Eliminates common `0x0` geometry overlapping bugs by calculating offsets dynamically.
+- Ships with a native GTK display management panel (`iram-displays-gui`) to set refresh rates, orientations, and custom resolutions persistently.
+
+### 3. Studio-Grade Audio Subsystem
+- Powered by [PipeWire](https://pipewire.org) and [WirePlumber](https://gitlab.freedesktop.org/pipewire/wireplumber).
+- Automatic HDMI audio converter priority rules to prevent display sleeping stalls.
+- Instant 1-touch output toggle shortcut (`Super + Shift + A`) that switches streams live across Motherboard 3.5mm jacks, HDMI TV outputs, USB interfaces, and Bluetooth headsets.
+
+### 4. Zero-Restart Theming Engine
+- 22 hand-curated color palettes: Tokyo Night, Catppuccin Mocha, Nord, Gruvbox, Everforest, Rosé Pine, Dracula, Solarized, Cyberpunk, and more.
+- Switching themes (`Super + Ctrl + Shift + Space`) instantly updates Hyprland borders, Waybar pills, Wofi menus, Alacritty terminal colors, and Mako notifications simultaneously with **zero session restarts**.
+
+---
+
+## 🤖 The Agentic AI Toolchain
+
+IRAM OS is the first desktop operating system to embed a complete, production-grade autonomous agentic stack directly into the system shell:
+
+| Subsystem | Binary | Description |
+| :--- | :--- | :--- |
+| **Model Context Protocol** | `iram-mcp-server` | FastMCP desktop server exposing Hyprland window actions, audio sinks, display geometry, theme switcher, and memory tools over stdio MCP |
+| **Dense Vector Retrieval** | `iram-qdrant` | Embedded local Qdrant vector database (`~/.local/state/iram/qdrant_db`) for fast semantic codebase indexing and conversation memory without background daemon overhead |
+| **Temporal Knowledge Graph** | `iram-graphiti` | Persistent knowledge graph tracking project entities, chronological decisions, facts, and dependency relationships |
+| **Web Documentation Scraper**| `iram-crawl` | Token-efficient web documentation extractor powered by Crawl4AI converting web pages to clean Markdown |
+| **Document Ingestion** | `iram-docling` | Multimodal document parser converting PDFs, Office documents, and presentation slides into structured tables and text |
+| **Code-as-Action Engine** | `iram-code-agent` | AST sandbox executor powered by smolagents synthesizing atomic Python snippets to accomplish desktop workflows in fewer LLM turns |
+| **Stateful Cyclic Loops** | `iram-workflow` | Stateful coding graph powered by LangGraph with Plan → Execute → Verify → Self-Heal stages and SQLite checkpoints |
+| **Telemetry & Observability**| `iram-trace` | Span and trace instrumentation powered by Arize Phoenix feeding latency and error metrics to the Waybar telemetry HUD |
+| **Repository Bundler** | `repomix` | Bundles entire repositories into clean, single-file prompt contexts for LLM analysis |
+| **Shell Copilot** | `?? "<prompt>"` | Real-time CLI copilot converting natural language requests into modern, optimal bash commands |
+
+---
+
+## 🚀 Installation
+
+### Method 1: Automated Script (Recommended)
 
 Run the automated installer on an existing Linux installation:
 
 ```bash
-# Clone the repository
+# Clone repository
 git clone https://github.com/apravint/iram-os.git
 cd iram-os
 
-# Run the installer
+# Launch installer
 chmod +x install.sh
 ./install.sh
 ```
 
-Or install directly via curl:
+Or run directly via curl:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/apravint/iram-os/main/install.sh | bash
 ```
 
-#### Starting the Session:
-1. Log out of your current desktop session.
+#### Launching the Desktop:
+1. Log out of your current session.
 2. At the display manager login screen (GDM, SDDM, or LightDM), select **IRAM OS** (or **Hyprland**).
-3. Log in to launch the desktop.
+3. Log in to start the session.
 
 ---
 
 ### Method 2: Bootable Live ISO
 
-For bare-metal deployment, a bootable ISO image is available:
+A bootable hybrid UEFI/BIOS ISO is available for bare-metal deployment and testing:
 
-1. Download the latest `.iso` from [GitHub Releases](https://github.com/apravint/iram-os/releases).
-2. Write to a USB drive using [Ventoy](https://www.ventoy.net/), [BalenaEtcher](https://etcher.balena.io/), or `dd`:
+1. Download the latest `.iso` image from [GitHub Releases](https://github.com/apravint/iram-os/releases).
+2. Flash to a USB drive using [Ventoy](https://www.ventoy.net/), [BalenaEtcher](https://etcher.balena.io/), or `dd`:
    ```bash
    sudo dd if=iram-os-26.04-amd64.iso of=/dev/sdX bs=4M status=progress oflag=sync
    ```
 3. Boot the USB drive and select **Start IRAM OS Live**.
-   - **Default user**: `iram`
+   - **Username**: `iram`
    - **Password**: `iram` *(Passwordless sudo enabled)*
 
 ---
 
-## Keyboard Shortcuts
+## ⌨️ Keyboard Shortcuts
 
 ### General & Applications
 
@@ -151,9 +202,9 @@ For bare-metal deployment, a bootable ISO image is available:
 
 ---
 
-## Included CLI Utilities
+## 🛠️ CLI Utilities Reference
 
-All tools are located in `bin/` and automatically symlinked to `~/.local/bin/` and `/usr/local/bin/`:
+All tools are located in `bin/` and automatically installed to `~/.local/bin/` and `/usr/local/bin/`:
 
 ### Desktop & Display Management
 | Command | Description |
@@ -188,7 +239,7 @@ All tools are located in `bin/` and automatically symlinked to `~/.local/bin/` a
 | `iram-graphiti` | Temporal knowledge graph tracking project decisions, facts, and entity relations |
 | `iram-crawl` | Documentation scraper powered by Crawl4AI converting web pages to clean markdown |
 | `iram-docling` | Document parser powered by Docling converting PDFs and Office files to markdown |
-| `iram-code-agent` | Code-as-action autonomous agent running atomic Python scripts via smolagents |
+| `iram-code-agent` | Code-as-action autonomous agent running atomic Python snippets via smolagents |
 | `iram-workflow` | Stateful coding graph with verification and self-healing loops via LangGraph |
 | `iram-trace` | Observability and execution traces layer powered by Arize Phoenix |
 | `repomix` | Single-file AI context bundler for repositories |
@@ -204,9 +255,9 @@ All tools are located in `bin/` and automatically symlinked to `~/.local/bin/` a
 
 ---
 
-## Configuration Paths
+## ⚙️ Configuration Paths
 
-Configurations are standard dotfiles located in `~/.config/`:
+All configuration files adhere to standard XDG specifications in `~/.config/`:
 
 ```
 ~/.config/
@@ -228,7 +279,7 @@ Configurations are standard dotfiles located in `~/.config/`:
 
 ---
 
-## Building the ISO from Source
+## 🏗️ Building the ISO from Source
 
 To compile the bootable Live ISO from source:
 
@@ -241,13 +292,13 @@ cd iram-os
 sudo bash build/build-iso.sh
 ```
 
-Outputs the final ISO and SHA-256 checksum in `out/`.
+The build engine outputs the final ISO and SHA-256 checksum in `out/`.
 
 ---
 
-## Uninstallation
+## 🧹 Uninstallation
 
-To restore original configurations and remove installed scripts:
+To restore your original configurations and remove installed scripts:
 
 ```bash
 cd iram-os
@@ -256,15 +307,31 @@ cd iram-os
 
 ---
 
-## ⚖️ License & Attributions
+## ⚖️ License & Trademarks
 
-This project is licensed under the **[MIT License](LICENSE)**.
+This project is open-source software licensed under the **[MIT License](LICENSE)**.
 
-### Upstream Projects & Attributions
-- **Upstream Project**: Derived from [Omarchy](https://github.com/omacom/omarchy) by [David Heinemeier Hansson](https://github.com/dhh) under the MIT License.
-- **Compositor**: [Hyprland](https://hyprland.org) by Vaxry and contributors (BSD-3-Clause).
-- **Status Bar**: [Waybar](https://github.com/Alexays/Waybar) by Alexays and contributors (MIT).
-- **Audio Routing**: [PipeWire](https://pipewire.org) & [WirePlumber](https://gitlab.freedesktop.org/pipewire/wireplumber) (MIT / LGPL).
+### Legal & Trademark Notices
+- **IRAM OS**: IRAM OS is an independent open-source desktop operating system project maintained by Ayyappa Pravin.
+- **Third-Party Trademarks**: All other trademarks, service marks, trade names, product names, and logos appearing in this repository are the property of their respective owners. Use of these names, logos, and brands is for identification purposes only and does not imply endorsement or affiliation.
 
-### Trademarks
-All other product names, logos, and brands mentioned or displayed in this repository are the property of their respective owners. Their inclusion does not imply affiliation or endorsement.
+---
+
+## ❤️ Acknowledgments & Special Thanks
+
+IRAM OS stands on the shoulders of brilliant open-source pioneers, communities, and projects:
+
+- **David Heinemeier Hansson (DHH)** & the **Omarchy Community**: For the foundational desktop concept and aesthetic inspiration that sparked the initial journey.
+- **Vaxry and the Hyprland Team**: For engineering the fluid, dynamic Wayland compositor that powers this desktop.
+- **Alexays and the Waybar Contributors**: For building the modular, flexible status bar framework.
+- **Wim Taymans, George Kiagiadakis, and the PipeWire / WirePlumber Teams**: For creating studio-grade, glitch-free audio routing on Linux.
+- **The Model Context Protocol (FastMCP) Team**: For creating the universal protocol bridging AI models and desktop environments.
+- **The Qdrant Team**: For their embedded, vector search engine.
+- **The Zep / Graphiti Team**: For temporal knowledge graphs that give AI persistent project memory.
+- **The Crawl4AI Team**: For high-speed, LLM-friendly web scraping and content extraction.
+- **The Docling Team**: For document parsing capabilities across PDFs and office documents.
+- **The Hugging Face / smolagents Team**: For code-as-action AST sandboxing.
+- **Harrison Chase & the LangGraph Team**: For resilient, stateful cyclical agent workflows.
+- **The Arize Phoenix Team**: For telemetry, traces, and AI observability.
+- **The Designers of the 22 Palettes**: The artists and creators of Tokyo Night, Catppuccin, Nord, Gruvbox, Everforest, Rosé Pine, Dracula, and Kanagawa.
+- **Every Community Supporter & Tester**: To all early testers, stargazers, and contributors who tested ISO builds, reported bugs, and helped refine IRAM OS into what it is today.
