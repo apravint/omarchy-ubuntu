@@ -80,6 +80,7 @@ jobs:
 
       - name: Attach ISO to GitHub Release
         if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        continue-on-error: true
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.release.tag_name || github.event.inputs.version || github.ref_name }}

@@ -219,6 +219,7 @@ pip3 install --break-system-packages openclaw edge-tts ddgs || pip3 install open
 # Install official Iram core themes & suite into /usr/share/iram
 if [ ! -d "/usr/share/iram" ]; then
     git clone --depth 1 --branch quattro https://github.com/omacom/omarchy.git /usr/share/iram || true
+    rm -rf /usr/share/iram/.git
 fi
 git config --system --add safe.directory /usr/share/iram || true
 
@@ -246,10 +247,10 @@ systemctl enable NetworkManager.service 2>/dev/null || true
 systemctl enable bluetooth.service 2>/dev/null || true
 systemctl enable sddm.service 2>/dev/null || true
 
-# Clean apt cache
-apt-get autoremove -y
+# Clean apt cache and docs to ensure ISO size stays well under GitHub 2GB release limit
+apt-get autoremove -y --purge
 apt-get clean
-rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/* /usr/share/doc/* /usr/share/man/* /usr/share/info/*
 CHROOT_EOF
 
 # ------------------------------------------------------------------------------
@@ -365,7 +366,7 @@ umount -lf "${ROOTFS_DIR}/proc" 2>/dev/null || true
 umount -lf "${ROOTFS_DIR}/sys" 2>/dev/null || true
 
 mksquashfs "${ROOTFS_DIR}" "${ISO_DIR}/casper/filesystem.squashfs" \
-    -comp xz -b 1048576 -Xbcj x86
+    -comp xz -b 1048576 -Xbcj x86 -processors 4
 
 # ------------------------------------------------------------------------------
 # 7. Configure GRUB Bootloader for BIOS & UEFI Hybrid Boot
