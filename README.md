@@ -32,6 +32,19 @@ A preconfigured Hyprland desktop environment for Ubuntu LTS featuring sharp geom
 - **Theme Suite**: 22 synchronized color schemes (Tokyo Night, Catppuccin Mocha, Nord, Gruvbox, etc.) switchable on the fly without session restart.
 - **Productivity & Utilities**: Integrated clipboard history (`cliphist`), screen snip/recorder, OCR text extractor (`tesseract`), terminal copilot (`??`), and system health checker.
 
+### Agentic OS Architecture
+
+Omarchy implements dedicated system layers for autonomous intelligence, separating tools, memory, retrieval, documents, and execution traces:
+
+- **Tool Server (FastMCP)**: `omarchy-mcp-server` exposes native Hyprland window management, audio controls, display topology, theme switching, and system self-healing over stdio MCP.
+- **Dense Vector Retrieval (Qdrant)**: `omarchy-qdrant` runs an embedded on-disk Qdrant database at `~/.local/state/omarchy/qdrant_db`, providing semantic search over repositories and session history without background daemon overhead.
+- **Temporal Knowledge Graph (Graphiti)**: `omarchy-graphiti` maintains persistent project knowledge, tracking entities, dependencies, and architectural decisions over time.
+- **Live Documentation Scraper (Crawl4AI)**: `omarchy-crawl` extracts web documentation and API references into clean, token-efficient Markdown.
+- **Document Ingestion (Docling)**: `omarchy-docling` converts PDFs, Office documents, and presentation slides into structured Markdown tables and text.
+- **Code-as-Action Engine (smolagents)**: `omarchy-code-agent` synthesizes and executes atomic Python snippets inside an AST sandbox to perform multi-step desktop tasks in fewer LLM round-trips.
+- **Stateful Long Coding Loops (LangGraph)**: `omarchy-workflow` provides cyclic graphs (Plan → Execute → Verify → Self-Heal) with SQLite checkpointing to run long-running refactors and configuration changes safely.
+- **Telemetry & Traces (Arize Phoenix)**: `omarchy-trace` logs spans, execution latencies, and error post-mortems, feeding real-time status to the Waybar telemetry HUD.
+
 ---
 
 ## Installation
@@ -155,6 +168,15 @@ All tools are located in `bin/` and automatically installed to `~/.local/bin/` a
 | `omarchy-emoji-picker` | Wofi-based searchable emoji selector |
 | `omarchy-power-menu` | Fast session power menu (lock, sleep, reboot, shutdown) |
 | `omarchy-repo-traffic` | Real-time clone and traffic analytics for GitHub repositories |
+| `omarchy-mcp-server` | FastMCP desktop server exposing Hyprland, audio, themes, and memory over stdio MCP |
+| `omarchy-qdrant` | Embedded local Qdrant vector retrieval engine for codebase chunks and memory |
+| `omarchy-graphiti` | Temporal knowledge graph tracking project decisions, facts, and entity relations |
+| `omarchy-crawl` | Documentation scraper powered by Crawl4AI converting web pages to clean markdown |
+| `omarchy-docling` | Document parser powered by Docling converting PDFs and Office files to markdown |
+| `omarchy-code-agent` | Code-as-action autonomous agent running atomic Python scripts via smolagents |
+| `omarchy-workflow` | Stateful coding graph with verification and self-healing loops via LangGraph |
+| `omarchy-trace` | Observability and execution traces layer powered by Arize Phoenix |
+| `repomix` | Single-file AI context bundler for repositories |
 | `?? <query>` | Shell copilot translating plain English queries to bash commands |
 
 ---

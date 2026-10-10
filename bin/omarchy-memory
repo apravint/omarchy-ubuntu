@@ -2,111 +2,56 @@
 """
 Omarchy Episodic Vector Memory Layer (omarchy-memory)
 Indexes user document notes, terminal history, and project code for semantic AI memory search.
-Powered by Local Ollama Embeddings + Cosine Similarity with NumPy.
+Powered by Local Embedded Qdrant Vectors + Graphiti Knowledge Graph.
 https://github.com/apravint/omarchy-ubuntu
 """
 
 import sys
 import os
-import sqlite3
 import json
-import urllib.request
-import numpy as np
+import subprocess
+from typing import List, Tuple
 
-DB_PATH = os.path.expanduser("~/.local/state/omarchy/memory.db")
-OLLAMA_URL = "http://localhost:11434/api/embeddings"
-MODEL = "qwen2.5:1.5b"
-
-def get_embedding(text):
+def add_memory(category: str, content: str):
+    """
+    Save memory into both Qdrant vector memory and Graphiti knowledge graph.
+    """
     try:
-        data = json.dumps({"model": MODEL, "prompt": text}).encode("utf-8")
-        req = urllib.request.Request(OLLAMA_URL, data=data, headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            res = json.loads(resp.read().decode("utf-8"))
-            return res.get("embedding", [])
-    except Exception:
-        return []
+        # 1. Qdrant
+        subprocess.run(["omarchy-qdrant", "add-memory", content, "--category", category], check=True)
+        # 2. Graphiti
+        subprocess.run(["omarchy-graphiti", "fact", content, "--tags", category], check=True)
+    except Exception as e:
+        print(f"Error persisting memory: {e}")
 
-def init_db():
-    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS memory (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            category TEXT,
-            content TEXT,
-            embedding TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-    cur.execute("PRAGMA table_info(memory)")
-    columns = [col[1] for col in cur.fetchall()]
-    if "embedding" not in columns:
-        cur.execute("ALTER TABLE memory ADD COLUMN embedding TEXT")
-    conn.commit()
-    conn.close()
+def search_memory(query: str, top_k: int = 5):
+    """
+    Query Qdrant memory collection.
+    """
+    try:
+        res = subprocess.run(["omarchy-qdrant", "search-memory", query, "--limit", str(top_k)], capture_output=True, text=True)
+        return res.stdout.strip()
+    except Exception as e:
+        return f"Search error: {e}"
 
-def add_memory(category, content):
-    init_db()
-    emb = get_embedding(content)
-    emb_json = json.dumps(emb) if emb else ""
-    
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
-    cur.execute("INSERT INTO memory (category, content, embedding) VALUES (?, ?, ?)", (category, content, emb_json))
-    conn.commit()
-    conn.close()
-    print(f"✓ Saved memory [{category}]: \"{content}\" (Embedded: {len(emb)} dimensions)")
-
-def cosine_similarity(a, b):
-    norm_a = np.linalg.norm(a)
-    norm_b = np.linalg.norm(b)
-    if norm_a == 0 or norm_b == 0:
-        return 0.0
-    return float(np.dot(a, b) / (norm_a * norm_b))
-
-def search_memory(query, top_k=5):
-    init_db()
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
-    
-    q_emb = get_embedding(query)
-    
-    if q_emb:
-        # True semantic dense vector search
-        cur.execute("SELECT category, content, embedding, timestamp FROM memory WHERE embedding != ''")
-        rows = cur.fetchall()
-        scored = []
-        for cat, content, emb_str, ts in rows:
-            try:
-                emb = json.loads(emb_str)
-                sim = cosine_similarity(q_emb, emb)
-                scored.append((sim, cat, content, ts))
-            except Exception:
-                continue
-                
-        scored.sort(key=lambda x: x[0], reverse=True)
-        conn.close()
-        return [(cat, content, ts, sim) for sim, cat, content, ts in scored[:top_k]]
-    else:
-        # Fallback keyword search
-        cur.execute("SELECT category, content, timestamp FROM memory WHERE content LIKE ? ORDER BY timestamp DESC LIMIT ?", (f"%{query}%", top_k))
-        results = [(cat, content, ts, 1.0) for cat, content, ts in cur.fetchall()]
-        conn.close()
-        return results
-
-if __name__ == "__main__":
+def main():
     if len(sys.argv) > 2 and sys.argv[1] == "add":
-        add_memory("general", sys.argv[2])
+        cat = "general"
+        content = " ".join(sys.argv[2:])
+        add_memory(cat, content)
+    elif len(sys.argv) > 1 and sys.argv[1] in ["--help", "-h"]:
+        print("Usage:")
+        print("  omarchy-memory add '<content>'        Add memory fact")
+        print("  omarchy-memory '<search_query>'       Semantic memory search")
+        print("  omarchy-memory status                 Show memory & vector statistics")
+    elif len(sys.argv) > 1 and sys.argv[1] == "status":
+        subprocess.run(["omarchy-qdrant", "status"])
+        subprocess.run(["omarchy-graphiti", "search", ""])
     elif len(sys.argv) > 1:
         query = " ".join(sys.argv[1:])
-        print(f"🔍 Searching Semantic Episodic Memory for: \"{query}\"...\n")
-        res = search_memory(query)
-        if res:
-            for cat, content, ts, score in res:
-                print(f"[{ts}] ({cat} • Score: {score:.2f}) ► {content}")
-        else:
-            print("No matching memories found.")
+        print(search_memory(query))
     else:
         print("Usage: omarchy-memory <search_query> OR omarchy-memory add 'content'")
+
+if __name__ == "__main__":
+    main()

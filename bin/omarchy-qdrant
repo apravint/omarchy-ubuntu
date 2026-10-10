@@ -1,0 +1,256 @@
+#!/usr/bin/env python3
+"""
+Omarchy Embedded Qdrant Vector Retrieval Engine (omarchy-qdrant)
+High-performance local vector search for codebase chunks and episodic system memory.
+https://github.com/apravint/omarchy-ubuntu
+"""
+
+import sys
+import os
+import re
+import json
+import hashlib
+import argparse
+import urllib.request
+import numpy as np
+from qdrant_client import QdrantClient
+from qdrant_client.models import Distance, VectorParams, PointStruct
+
+DB_DIR = os.path.expanduser("~/.local/state/omarchy/qdrant_db")
+CODE_COLLECTION = "omarchy_code"
+MEMORY_COLLECTION = "omarchy_memory"
+VECTOR_DIM = 128  # Fast semantic vector embedding size
+OLLAMA_URL = "http://localhost:11434/api/embeddings"
+OLLAMA_MODEL = os.environ.get("OLLAMA_EMBED_MODEL", "qwen2.5:1.5b")
+
+def get_fast_embedding(text: str, dim: int = VECTOR_DIM) -> list:
+    """
+    Generate normalized semantic embedding vector.
+    Tries Ollama first; if unavailable, uses high-entropy character-word n-gram hashing.
+    """
+    # 1. Try Ollama embeddings if running
+    try:
+        data = json.dumps({"model": OLLAMA_MODEL, "prompt": text[:2000]}).encode("utf-8")
+        req = urllib.request.Request(OLLAMA_URL, data=data, headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=1.5) as resp:
+            res = json.loads(resp.read().decode("utf-8"))
+            emb = res.get("embedding", [])
+            if emb:
+                # Interpolate / project to dim
+                arr = np.array(emb, dtype=np.float32)
+                if len(arr) != dim:
+                    step = len(arr) / dim
+                    projected = np.array([arr[int(i * step)] for i in range(dim)], dtype=np.float32)
+                else:
+                    projected = arr
+                norm = np.linalg.norm(projected)
+                return (projected / (norm if norm > 0 else 1.0)).tolist()
+    except Exception:
+        pass
+
+    # 2. Fast local deterministic semantic n-gram hash vector
+    vec = np.zeros(dim, dtype=np.float32)
+    clean_text = text.lower().strip()
+    words = re.findall(r"\w+", clean_text)
+    
+    # Word unigrams and bigrams
+    for i, word in enumerate(words):
+        h = int(hashlib.md5(word.encode("utf-8")).hexdigest(), 16)
+        vec[h % dim] += 1.0
+        if i < len(words) - 1:
+            bi = f"{word}_{words[i+1]}"
+            hb = int(hashlib.md5(bi.encode("utf-8")).hexdigest(), 16)
+            vec[hb % dim] += 1.5
+
+    # 3-char character shingles for typos and code tokens
+    for i in range(len(clean_text) - 2):
+        shingle = clean_text[i:i+3]
+        hs = int(hashlib.md5(shingle.encode("utf-8")).hexdigest(), 16)
+        vec[hs % dim] += 0.5
+
+    norm = np.linalg.norm(vec)
+    if norm > 0:
+        vec /= norm
+    return vec.tolist()
+
+def get_client() -> QdrantClient:
+    os.makedirs(DB_DIR, exist_ok=True)
+    client = QdrantClient(path=DB_DIR)
+    for col in [CODE_COLLECTION, MEMORY_COLLECTION]:
+        if not client.collection_exists(col):
+            client.create_collection(
+                collection_name=col,
+                vectors_config=VectorParams(size=VECTOR_DIM, distance=Distance.COSINE)
+            )
+    return client
+
+def chunk_file(filepath: str, chunk_lines: int = 50, overlap: int = 10):
+    try:
+        with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+            lines = f.readlines()
+    except Exception:
+        return []
+
+    chunks = []
+    i = 0
+    total = len(lines)
+    while i < total:
+        end = min(i + chunk_lines, total)
+        chunk_content = "".join(lines[i:end])
+        if chunk_content.strip():
+            chunks.append({
+                "filepath": filepath,
+                "start_line": i + 1,
+                "end_line": end,
+                "content": chunk_content
+            })
+        if end >= total:
+            break
+        i += (chunk_lines - overlap)
+    return chunks
+
+def index_path(client: QdrantClient, target_path: str):
+    target_path = os.path.abspath(os.path.expanduser(target_path))
+    files_to_index = []
+    
+    ignore_dirs = {".git", "node_modules", ".venv", "venv", "__pycache__", "build", "dist", ".cache"}
+    valid_exts = {".py", ".sh", ".json", ".jsonc", ".css", ".md", ".toml", ".yaml", ".yml", ".c", ".h", ".rs", ".js", ".ts", ".conf", ".ini", ".service"}
+
+    if os.path.isfile(target_path):
+        files_to_index.append(target_path)
+    elif os.path.isdir(target_path):
+        for root, dirs, files in os.walk(target_path):
+            dirs[:] = [d for d in dirs if d not in ignore_dirs]
+            for file in files:
+                ext = os.path.splitext(file)[1].lower()
+                if ext in valid_exts or not ext:
+                    files_to_index.append(os.path.join(root, file))
+
+    print(f"📦 Indexing {len(files_to_index)} files into Qdrant collection '{CODE_COLLECTION}'...")
+    total_chunks = 0
+    points = []
+    
+    for fpath in files_to_index:
+        chunks = chunk_file(fpath)
+        for chunk in chunks:
+            text = chunk["content"]
+            emb = get_fast_embedding(text)
+            # Deterministic integer ID
+            chunk_id = int(hashlib.sha256(f"{fpath}:{chunk['start_line']}".encode("utf-8")).hexdigest()[:15], 16)
+            points.append(PointStruct(
+                id=chunk_id,
+                vector=emb,
+                payload={
+                    "filepath": fpath,
+                    "start_line": chunk["start_line"],
+                    "end_line": chunk["end_line"],
+                    "content": text[:1500]
+                }
+            ))
+            total_chunks += 1
+            if len(points) >= 100:
+                client.upsert(collection_name=CODE_COLLECTION, points=points)
+                points = []
+
+    if points:
+        client.upsert(collection_name=CODE_COLLECTION, points=points)
+
+    print(f"✓ Successfully indexed {total_chunks} chunks into local Qdrant database ({DB_DIR})")
+
+def search_code(client: QdrantClient, query: str, limit: int = 5):
+    emb = get_fast_embedding(query)
+    results = client.query_points(
+        collection_name=CODE_COLLECTION,
+        query=emb,
+        limit=limit
+    )
+    return results.points
+
+def add_memory(client: QdrantClient, text: str, category: str = "general"):
+    emb = get_fast_embedding(text)
+    mem_id = int(hashlib.sha256(f"{category}:{text}".encode("utf-8")).hexdigest()[:15], 16)
+    client.upsert(
+        collection_name=MEMORY_COLLECTION,
+        points=[
+            PointStruct(
+                id=mem_id,
+                vector=emb,
+                payload={
+                    "category": category,
+                    "text": text,
+                    "timestamp": os.path.getmtime(__file__)
+                }
+            )
+        ]
+    )
+    print(f"✓ Saved memory [{category}]: \"{text}\"")
+
+def search_memory(client: QdrantClient, query: str, limit: int = 5):
+    emb = get_fast_embedding(query)
+    results = client.query_points(
+        collection_name=MEMORY_COLLECTION,
+        query=emb,
+        limit=limit
+    )
+    return results.points
+
+def show_status(client: QdrantClient):
+    print("=== Omarchy Embedded Qdrant Status ===")
+    print(f"Database Directory: {DB_DIR}")
+    collections = client.get_collections().collections
+    for col in collections:
+        info = client.get_collection(col.name)
+        print(f"- Collection: {col.name:18} | Points: {info.points_count}")
+
+def main():
+    parser = argparse.ArgumentParser(description="Omarchy Embedded Qdrant Vector Retrieval Engine")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # index
+    p_index = subparsers.add_parser("index", help="Index code files into Qdrant")
+    p_index.add_argument("path", help="File or directory path to index")
+
+    # search
+    p_search = subparsers.add_parser("search", help="Semantic vector search across indexed code")
+    p_search.add_argument("query", help="Search query string")
+    p_search.add_argument("-n", "--limit", type=int, default=5, help="Number of results")
+
+    # add-memory
+    p_add_mem = subparsers.add_parser("add-memory", help="Save episodic memory into Qdrant")
+    p_add_mem.add_argument("text", help="Memory content to store")
+    p_add_mem.add_argument("-c", "--category", default="general", help="Category tag")
+
+    # search-memory
+    p_search_mem = subparsers.add_parser("search-memory", help="Search episodic memory")
+    p_search_mem.add_argument("query", help="Memory search query")
+    p_search_mem.add_argument("-n", "--limit", type=int, default=5, help="Number of results")
+
+    # status
+    subparsers.add_parser("status", help="Show Qdrant storage and vector statistics")
+
+    args = parser.parse_args()
+    client = get_client()
+
+    if args.command == "index":
+        index_path(client, args.path)
+    elif args.command == "search":
+        points = search_code(client, args.query, limit=args.limit)
+        print(f"🔍 Top {len(points)} Qdrant results for: '{args.query}'\n")
+        for i, pt in enumerate(points, 1):
+            p = pt.payload
+            print(f"[{i}] Score: {pt.score:.4f} | {p['filepath']} (Lines {p['start_line']}-{p['end_line']})")
+            preview = "\n".join(p['content'].splitlines()[:4])
+            print(f"    {preview}\n")
+    elif args.command == "add-memory":
+        add_memory(client, args.text, category=args.category)
+    elif args.command == "search-memory":
+        points = search_memory(client, args.query, limit=args.limit)
+        print(f"🧠 Top {len(points)} Memory matches for: '{args.query}'\n")
+        for i, pt in enumerate(points, 1):
+            p = pt.payload
+            print(f"[{i}] Score: {pt.score:.4f} [{p.get('category', 'general')}]: {p['text']}")
+    elif args.command == "status":
+        show_status(client)
+
+if __name__ == "__main__":
+    main()

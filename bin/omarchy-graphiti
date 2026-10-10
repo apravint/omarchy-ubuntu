@@ -1,0 +1,210 @@
+#!/usr/bin/env python3
+"""
+Omarchy Project Knowledge Graph Engine (omarchy-graphiti)
+Temporal entity-relationship knowledge graph tracking system state, decisions, and codebase facts over time.
+https://github.com/apravint/omarchy-ubuntu
+"""
+
+import sys
+import os
+import json
+import time
+import argparse
+from typing import Dict, List, Any
+
+GRAPH_FILE = os.path.expanduser("~/.local/state/omarchy/knowledge_graph.json")
+
+class KnowledgeGraph:
+    def __init__(self, filepath: str = GRAPH_FILE):
+        self.filepath = filepath
+        self.data = self._load()
+
+    def _load(self) -> Dict[str, Any]:
+        os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
+        if os.path.exists(self.filepath):
+            try:
+                with open(self.filepath, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                pass
+        return {
+            "entities": {},
+            "edges": [],
+            "facts": []
+        }
+
+    def _save(self):
+        with open(self.filepath, "w", encoding="utf-8") as f:
+            json.dump(self.data, f, indent=2)
+
+    def add_entity(self, name: str, entity_type: str = "concept", metadata: Dict = None):
+        key = name.lower().strip()
+        if key not in self.data["entities"]:
+            self.data["entities"][key] = {
+                "name": name,
+                "type": entity_type,
+                "metadata": metadata or {},
+                "created_at": time.time(),
+                "updated_at": time.time()
+            }
+        else:
+            self.data["entities"][key]["updated_at"] = time.time()
+            if metadata:
+                self.data["entities"][key]["metadata"].update(metadata)
+        self._save()
+        return key
+
+    def add_edge(self, source: str, relation: str, target: str, context: str = ""):
+        s_key = self.add_entity(source)
+        t_key = self.add_entity(target)
+        
+        # Check if edge exists
+        for edge in self.data["edges"]:
+            if edge["source"] == s_key and edge["relation"] == relation and edge["target"] == t_key:
+                edge["updated_at"] = time.time()
+                edge["context"] = context or edge.get("context", "")
+                self._save()
+                return edge
+
+        edge = {
+            "source": s_key,
+            "relation": relation,
+            "target": t_key,
+            "context": context,
+            "timestamp": time.time(),
+            "updated_at": time.time()
+        }
+        self.data["edges"].append(edge)
+        self._save()
+        return edge
+
+    def record_fact(self, text: str, tags: List[str] = None):
+        fact = {
+            "id": len(self.data["facts"]) + 1,
+            "text": text,
+            "tags": tags or [],
+            "timestamp": time.time()
+        }
+        self.data["facts"].append(fact)
+        self._save()
+        return fact
+
+    def query_entity(self, name: str):
+        key = name.lower().strip()
+        entity = self.data["entities"].get(key)
+        if not entity:
+            # Substring match
+            matches = [k for k in self.data["entities"] if key in k]
+            if matches:
+                key = matches[0]
+                entity = self.data["entities"][key]
+            else:
+                return None
+
+        out_edges = [e for e in self.data["edges"] if e["source"] == key]
+        in_edges = [e for e in self.data["edges"] if e["target"] == key]
+        return {
+            "entity": entity,
+            "out_relations": out_edges,
+            "in_relations": in_edges
+        }
+
+    def search(self, query: str) -> Dict[str, Any]:
+        q = query.lower().strip()
+        matched_entities = {k: v for k, v in self.data["entities"].items() if q in k or q in v.get("name", "").lower()}
+        matched_edges = [e for e in self.data["edges"] if q in e["relation"].lower() or q in e["source"] or q in e["target"] or q in e.get("context", "").lower()]
+        matched_facts = [f for f in self.data["facts"] if q in f["text"].lower()]
+        return {
+            "entities": matched_entities,
+            "edges": matched_edges,
+            "facts": matched_facts
+        }
+
+def bootstrap_system_knowledge(kg: KnowledgeGraph):
+    """
+    Populate foundational knowledge graph of the Omarchy Ubuntu system.
+    """
+    kg.add_edge("Waybar", "configured_with", "Sharp Edges 0px border-radius", "Geometric flush layout")
+    kg.add_edge("Waybar", "has_gap_to_apps", "4px vertical margin", "Precision y-coordinate alignment")
+    kg.add_edge("Hyprland", "configured_gaps_in", "2px", "Compact inner window gap")
+    kg.add_edge("Hyprland", "configured_gaps_out", "4px", "Matches waybar margin horizontal bounds")
+    kg.add_edge("Hyprland", "configured_rounding", "0px", "Strict sharp corners")
+    kg.add_edge("Audio", "primary_sink", "Motherboard Analog Line Out", "Priority 500 via wireplumber")
+    kg.add_edge("Audio", "secondary_sink", "Sony TV HDMI Audio", "Dual monitor toggleable")
+    kg.add_edge("License", "attributed_to", "David Heinemeier Hansson (omacom)", "Upstream copyright notice")
+    kg.add_edge("License", "disclaims_trademark", "Canonical Ltd. (Ubuntu)", "Nominative fair-use disclaimer")
+    kg.record_fact("Waybar flush layout updated with 4px gap and sharp rectangular tabs.", tags=["waybar", "style"])
+    kg.record_fact("Embedded Qdrant, Crawl4AI, FastMCP, Smolagents, Graphiti integrated into Omarchy Agentic OS.", tags=["ai", "architecture"])
+
+def main():
+    parser = argparse.ArgumentParser(description="Omarchy Project Knowledge Graph (omarchy-graphiti)")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # add-fact
+    p_fact = subparsers.add_parser("fact", help="Record a temporal project fact")
+    p_fact.add_argument("text", help="Fact statement to record")
+    p_fact.add_argument("-t", "--tags", nargs="*", default=[], help="Tags for fact")
+
+    # add-relation
+    p_rel = subparsers.add_parser("rel", help="Add a relationship edge between entities")
+    p_rel.add_argument("source", help="Source entity name")
+    p_rel.add_argument("relation", help="Relation predicate (e.g. depends_on, has_style, manages)")
+    p_rel.add_argument("target", help="Target entity name")
+    p_rel.add_argument("-c", "--context", default="", help="Contextual description")
+
+    # entity
+    p_ent = subparsers.add_parser("entity", help="Inspect an entity and its relations")
+    p_ent.add_argument("name", help="Entity name")
+
+    # search
+    p_search = subparsers.add_parser("search", help="Search the knowledge graph")
+    p_search.add_argument("query", help="Search query")
+
+    # init
+    subparsers.add_parser("init", help="Bootstrap foundational system knowledge graph")
+
+    # dump
+    subparsers.add_parser("dump", help="Print entire knowledge graph in JSON")
+
+    args = parser.parse_args()
+    kg = KnowledgeGraph()
+
+    if args.command == "init":
+        bootstrap_system_knowledge(kg)
+        print(f"✓ Initialized Omarchy knowledge graph with {len(kg.data['entities'])} entities and {len(kg.data['edges'])} edges at {kg.filepath}")
+    elif args.command == "fact":
+        f = kg.record_fact(args.text, tags=args.tags)
+        print(f"✓ Recorded Fact #{f['id']}: \"{f['text']}\"")
+    elif args.command == "rel":
+        e = kg.add_edge(args.source, args.relation, args.target, context=args.context)
+        print(f"✓ Added Edge: ({args.source}) --[{args.relation}]--> ({args.target})")
+    elif args.command == "entity":
+        res = kg.query_entity(args.name)
+        if not res:
+            print(f"❌ Entity '{args.name}' not found in knowledge graph.")
+            sys.exit(1)
+        ent = res["entity"]
+        print(f"=== Entity: {ent['name']} ({ent['type']}) ===")
+        if res["out_relations"]:
+            print("\nOutgoing Relations:")
+            for e in res["out_relations"]:
+                print(f"  --[{e['relation']}]--> {e['target']} (context: {e.get('context', 'none')})")
+        if res["in_relations"]:
+            print("\nIncoming Relations:")
+            for e in res["in_relations"]:
+                print(f"  <--[{e['relation']}]-- {e['source']} (context: {e.get('context', 'none')})")
+    elif args.command == "search":
+        res = kg.search(args.query)
+        print(f"🔍 Knowledge Graph matches for '{args.query}':")
+        print(f"  Entities ({len(res['entities'])}): {', '.join(res['entities'].keys()) if res['entities'] else 'None'}")
+        print(f"  Edges ({len(res['edges'])}):")
+        for e in res["edges"][:5]:
+            print(f"    ({e['source']}) -[{e['relation']}]-> ({e['target']})")
+        print(f"  Facts ({len(res['facts'])}):")
+        for f in res["facts"][:5]:
+            print(f"    - #{f['id']}: {f['text']}")
+    elif args.command == "dump":
+        print(json.dumps(kg.data, indent=2))
+
+if __name__ == "__main__":
+    main()

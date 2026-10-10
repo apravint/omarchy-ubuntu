@@ -1,142 +1,231 @@
 #!/usr/bin/env python3
 """
-Omarchy System & Hyprland MCP Server (omarchy-mcp-server)
-Model Context Protocol (MCP) server providing native Linux OS & Hyprland control over stdio JSON-RPC.
+Omarchy FastMCP Desktop & AI Architecture Server (omarchy-mcp-server)
+Model Context Protocol (MCP) server providing high-performance OS control,
+embedded Qdrant retrieval, Graphiti knowledge, and Crawl4AI web tools.
 https://github.com/apravint/omarchy-ubuntu
 """
 
+import os
 import sys
 import json
+import shutil
 import subprocess
 import urllib.request
-import xml.etree.ElementTree as ET
+import urllib.parse
+from fastmcp import FastMCP
 
-def send_response(response):
-    sys.stdout.write(json.dumps(response) + "\n")
-    sys.stdout.flush()
+# Initialize FastMCP Server
+mcp = FastMCP(
+    name="omarchy-desktop",
+    instructions="Native Linux OS, Hyprland window manager, embedded Qdrant retrieval, and Graphiti knowledge control server."
+)
 
-def handle_list_tools():
-    return {
-        "tools": [
-            {
-                "name": "get_hyprland_windows",
-                "description": "Get all active windows, workspaces, and window classes in Hyprland",
-                "inputSchema": {"type": "object", "properties": {}}
-            },
-            {
-                "name": "dispatch_hyprland",
-                "description": "Execute a Hyprland window manager dispatch command (e.g., workspace 2, focuswindow Alacritty)",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "dispatcher": {"type": "string", "description": "Dispatcher name (e.g. workspace, focuswindow, killactive)"},
-                        "args": {"type": "string", "description": "Dispatcher argument"}
-                    },
-                    "required": ["dispatcher"]
-                }
-            },
-            {
-                "name": "set_omarchy_theme",
-                "description": "Switch the Omarchy desktop visual color theme (e.g. Tokyo Night, Catppuccin, Nord, Gruvbox)",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "theme_name": {"type": "string", "description": "Name of the Omarchy theme"}
-                    },
-                    "required": ["theme_name"]
-                }
-            },
-            {
-                "name": "get_system_health",
-                "description": "Diagnose failed systemd units, PipeWire audio state, and system memory health",
-                "inputSchema": {"type": "object", "properties": {}}
-            },
-            {
-                "name": "get_stock_news",
-                "description": "Fetch real-time stock market headlines and financial news",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "symbol": {"type": "string", "description": "Stock symbol or company name (optional)"}
-                    }
-                }
-            }
-        ]
-    }
+@mcp.tool()
+def get_windows() -> str:
+    """Get all active desktop windows, workspaces, geometry, and window classes in Hyprland."""
+    try:
+        out = subprocess.check_output(["hyprctl", "clients", "-j"], text=True)
+        clients = json.loads(out)
+        summary = []
+        for c in clients:
+            if c.get("mapped"):
+                summary.append({
+                    "address": c.get("address"),
+                    "title": c.get("title"),
+                    "class": c.get("class"),
+                    "workspace": c.get("workspace", {}).get("name"),
+                    "focusHistoryID": c.get("focusHistoryID")
+                })
+        return json.dumps(summary, indent=2)
+    except Exception as e:
+        return f"Error querying windows: {e}"
 
-def handle_call_tool(name, arguments):
-    if name == "get_hyprland_windows":
-        try:
-            out = subprocess.check_output(["hyprctl", "clients", "-j"], text=True)
-            return {"content": [{"type": "text", "text": out}]}
-        except Exception as e:
-            return {"content": [{"type": "text", "text": f"Error: {e}"}]}
+@mcp.tool()
+def focus_window(target: str) -> str:
+    """Focus a window by class name, title substring, or hex address (e.g. 'Alacritty', 'Chrome', '0x1234abcd')."""
+    try:
+        out = subprocess.check_output(["hyprctl", "clients", "-j"], text=True)
+        clients = json.loads(out)
+        target_lower = target.lower()
+        matched_addr = None
+        for c in clients:
+            if (c.get("address") == target or 
+                target_lower in c.get("class", "").lower() or 
+                target_lower in c.get("title", "").lower()):
+                matched_addr = c.get("address")
+                break
+        if matched_addr:
+            subprocess.run(["hyprctl", "dispatch", "focuswindow", f"address:{matched_addr}"], check=True)
+            return f"Focused window: {target} ({matched_addr})"
+        else:
+            return f"No active window matched '{target}'"
+    except Exception as e:
+        return f"Error focusing window: {e}"
 
-    elif name == "dispatch_hyprland":
-        dispatcher = arguments.get("dispatcher", "")
-        args = arguments.get("args", "")
+@mcp.tool()
+def dispatch_hyprland(dispatcher: str, args: str = "") -> str:
+    """Execute any Hyprland dispatch command (e.g. workspace 2, togglefloating, killactive, movetoworkspace)."""
+    try:
         cmd = ["hyprctl", "dispatch", dispatcher]
         if args:
             cmd.append(args)
         res = subprocess.run(cmd, capture_output=True, text=True)
-        return {"content": [{"type": "text", "text": f"Executed: {' '.join(cmd)} | Returncode: {res.returncode}"}]}
+        return f"Executed '{' '.join(cmd)}' | Output: {res.stdout.strip()} {res.stderr.strip()}"
+    except Exception as e:
+        return f"Dispatch error: {e}"
 
-    elif name == "set_omarchy_theme":
-        theme = arguments.get("theme_name", "Tokyo Night")
-        res = subprocess.run(["omarchy-theme-switch", theme], capture_output=True, text=True)
-        return {"content": [{"type": "text", "text": f"Theme set to {theme}"}]}
+@mcp.tool()
+def get_monitors() -> str:
+    """List connected display monitors, resolutions, refresh rates, and active focus."""
+    try:
+        out = subprocess.check_output(["hyprctl", "monitors", "-j"], text=True)
+        return out
+    except Exception as e:
+        return f"Error querying monitors: {e}"
 
-    elif name == "get_system_health":
+@mcp.tool()
+def get_system_health() -> str:
+    """Diagnose failed systemd units, PipeWire audio status, system memory, and CPU health."""
+    try:
         failed = subprocess.check_output(["systemctl", "--failed", "--no-legend"], text=True).strip()
-        free_mem = subprocess.check_output(["free", "-h"], text=True).strip()
-        status_text = f"Failed Services:\n{failed if failed else 'None'}\n\nMemory:\n{free_mem}"
-        return {"content": [{"type": "text", "text": status_text}]}
+        failed_user = subprocess.check_output(["systemctl", "--user", "--failed", "--no-legend"], text=True).strip()
+        mem = subprocess.check_output(["free", "-h"], text=True).strip()
+        return (
+            f"=== System Health ===\n"
+            f"Systemd System Failures:\n{failed or 'None'}\n\n"
+            f"Systemd User Failures:\n{failed_user or 'None'}\n\n"
+            f"Memory:\n{mem}\n"
+        )
+    except Exception as e:
+        return f"Health check error: {e}"
 
-    elif name == "get_stock_news":
-        symbol = arguments.get("symbol", "")
-        url = f"https://news.google.com/rss/search?q={urllib.parse.quote(symbol)}+stock" if symbol else "https://news.google.com/rss/headlines/section/topic/BUSINESS"
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        try:
-            with urllib.request.urlopen(req, timeout=5) as resp:
-                xml_data = resp.read()
-                root = ET.fromstring(xml_data)
-                headlines = [item.find('title').text for item in root.findall('.//item')[:5] if item.find('title') is not None]
-                return {"content": [{"type": "text", "text": "\n".join(headlines)}]}
-        except Exception as e:
-            return {"content": [{"type": "text", "text": f"Error fetching stock news: {e}"}]}
+@mcp.tool()
+def heal_system() -> str:
+    """Automatically heal failed user units, restart PipeWire audio if degraded, and verify notifications."""
+    actions = []
+    try:
+        # Check failed user services and restart
+        out = subprocess.run(["systemctl", "--user", "--failed", "--no-legend"], capture_output=True, text=True)
+        for line in out.stdout.splitlines():
+            parts = line.split()
+            if parts:
+                unit = parts[0]
+                subprocess.run(["systemctl", "--user", "reset-failed", unit])
+                subprocess.run(["systemctl", "--user", "restart", unit])
+                actions.append(f"Restarted failed unit: {unit}")
+        
+        # Audio check
+        audio_test = subprocess.run(["pactl", "info"], capture_output=True, text=True)
+        if audio_test.returncode != 0:
+            subprocess.run(["systemctl", "--user", "restart", "pipewire", "pipewire-pulse", "wireplumber"])
+            actions.append("Restarted PipeWire and WirePlumber stack")
+        
+        if not actions:
+            actions.append("System is fully healthy. No degraded services detected.")
+        return "\n".join(actions)
+    except Exception as e:
+        return f"Error healing system: {e}"
 
-    return {"content": [{"type": "text", "text": f"Unknown tool: {name}"}]}
+@mcp.tool()
+def set_omarchy_theme(theme_name: str) -> str:
+    """Switch the desktop color theme across Waybar, Alacritty, GTK, and Hyprland."""
+    try:
+        res = subprocess.run(["omarchy-theme-switch", theme_name], capture_output=True, text=True)
+        return f"Theme switch executed for '{theme_name}': {res.stdout.strip()}"
+    except Exception as e:
+        return f"Theme switch error: {e}"
+
+@mcp.tool()
+def get_audio_status() -> str:
+    """Get active default audio sink, volume level, and mute status."""
+    try:
+        sink = subprocess.check_output(["pactl", "get-default-sink"], text=True).strip()
+        vol = subprocess.check_output(["pactl", "get-sink-volume", "@DEFAULT_SINK@"], text=True).strip()
+        mute = subprocess.check_output(["pactl", "get-sink-mute", "@DEFAULT_SINK@"], text=True).strip()
+        return f"Default Sink: {sink}\nVolume: {vol}\nMute: {mute}"
+    except Exception as e:
+        return f"Audio error: {e}"
+
+@mcp.tool()
+def toggle_audio_sink() -> str:
+    """Toggle audio output between Motherboard Line Out and TV HDMI."""
+    try:
+        res = subprocess.run(["omarchy-audio-toggle"], capture_output=True, text=True)
+        return res.stdout.strip() or "Audio sink toggled"
+    except Exception as e:
+        return f"Error toggling audio: {e}"
+
+@mcp.tool()
+def qdrant_search_code(query: str, limit: int = 5) -> str:
+    """Semantic vector search across indexed codebase and desktop configurations using embedded Qdrant."""
+    try:
+        res = subprocess.run(
+            ["omarchy-qdrant", "search", query, "--limit", str(limit)],
+            capture_output=True,
+            text=True
+        )
+        return res.stdout.strip()
+    except Exception as e:
+        return f"Qdrant search error: {e}"
+
+@mcp.tool()
+def qdrant_index_path(path: str) -> str:
+    """Index a file or repository into local embedded Qdrant vector database."""
+    try:
+        res = subprocess.run(["omarchy-qdrant", "index", path], capture_output=True, text=True)
+        return res.stdout.strip()
+    except Exception as e:
+        return f"Qdrant indexing error: {e}"
+
+@mcp.tool()
+def graphiti_query_entity(entity_name: str) -> str:
+    """Query an entity and its relations from the Omarchy Knowledge Graph."""
+    try:
+        res = subprocess.run(["omarchy-graphiti", "entity", entity_name], capture_output=True, text=True)
+        return res.stdout.strip()
+    except Exception as e:
+        return f"Knowledge graph error: {e}"
+
+@mcp.tool()
+def graphiti_record_fact(fact_text: str) -> str:
+    """Record a persistent project or system fact in the temporal knowledge graph."""
+    try:
+        res = subprocess.run(["omarchy-graphiti", "fact", fact_text], capture_output=True, text=True)
+        return res.stdout.strip()
+    except Exception as e:
+        return f"Error recording fact: {e}"
+
+@mcp.tool()
+def crawl_web_markdown(url: str) -> str:
+    """Scrape live documentation or website into clean, token-efficient markdown using Crawl4AI."""
+    try:
+        res = subprocess.run(["omarchy-crawl", url], capture_output=True, text=True)
+        return res.stdout.strip()
+    except Exception as e:
+        return f"Crawl error: {e}"
+
+@mcp.tool()
+def pack_repository(repo_path: str = ".") -> str:
+    """Pack an entire repository into a single AI-friendly context bundle using Repomix."""
+    try:
+        target = os.path.abspath(os.path.expanduser(repo_path))
+        res = subprocess.run(["repomix", target, "--style", "markdown"], capture_output=True, text=True)
+        return f"Repomix packed {target}:\n{res.stdout.strip()}"
+    except Exception as e:
+        return f"Repomix error: {e}"
+
+@mcp.tool()
+def desktop_notify(title: str, message: str) -> str:
+    """Display a native desktop notification."""
+    try:
+        subprocess.run(["notify-send", "-a", "Omarchy AI", title, message])
+        return f"Notification sent: {title} - {message}"
+    except Exception as e:
+        return f"Notify error: {e}"
 
 def main():
-    while True:
-        line = sys.stdin.readline()
-        if not line:
-            break
-        try:
-            req = json.loads(line)
-            req_id = req.get("id")
-            method = req.get("method")
-
-            if method == "initialize":
-                send_response({
-                    "jsonrpc": "2.0",
-                    "id": req_id,
-                    "result": {
-                        "protocolVersion": "2024-11-05",
-                        "capabilities": {"tools": {}},
-                        "serverInfo": {"name": "omarchy-mcp-server", "version": "1.0.0"}
-                    }
-                })
-            elif method == "tools/list":
-                send_response({"jsonrpc": "2.0", "id": req_id, "result": handle_list_tools()})
-            elif method == "tools/call":
-                params = req.get("params", {})
-                name = params.get("name")
-                arguments = params.get("arguments", {})
-                result = handle_call_tool(name, arguments)
-                send_response({"jsonrpc": "2.0", "id": req_id, "result": result})
-        except Exception as e:
-            pass
+    mcp.run()
 
 if __name__ == "__main__":
     main()

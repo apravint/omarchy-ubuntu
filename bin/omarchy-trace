@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+"""
+Omarchy Observability & Phoenix Telemetry Layer (omarchy-trace)
+Captures execution traces, spans, and error post-mortems for AI agents and OS tools.
+Provides real-time Waybar HUD telemetry and launches local Phoenix UI.
+https://github.com/apravint/omarchy-ubuntu
+"""
+
+import sys
+import os
+import json
+import time
+import argparse
+import subprocess
+
+STATUS_FILE = os.path.expanduser("~/.local/state/omarchy/agent_status.json")
+TRACES_FILE = os.path.expanduser("~/.local/state/omarchy/agent_traces.jsonl")
+
+def update_status(state: str, details: str = "", model: str = "Local AI", error: str = ""):
+    """
+    Update live status file read by Waybar HUD widget.
+    state: idle | thinking | executing | success | error
+    """
+    os.makedirs(os.path.dirname(STATUS_FILE), exist_ok=True)
+    payload = {
+        "state": state,
+        "details": details,
+        "model": model,
+        "error": error,
+        "timestamp": time.time()
+    }
+    with open(STATUS_FILE, "w", encoding="utf-8") as f:
+        json.dump(payload, f)
+
+def log_trace(span_name: str, input_data: str, output_data: str, duration_ms: float, status: str = "OK", error: str = ""):
+    """
+    Append trace record to local JSONL for telemetry and Phoenix ingestion.
+    """
+    os.makedirs(os.path.dirname(TRACES_FILE), exist_ok=True)
+    record = {
+        "span": span_name,
+        "timestamp": time.time(),
+        "duration_ms": duration_ms,
+        "status": status,
+        "input": str(input_data)[:1000],
+        "output": str(output_data)[:1000],
+        "error": error
+    }
+    with open(TRACES_FILE, "a", encoding="utf-8") as f:
+        f.write(json.dumps(record) + "\n")
+
+def launch_phoenix_ui():
+    """
+    Launch Arize Phoenix local observability server.
+    """
+    print("🔭 Starting Arize Phoenix Observability Dashboard on http://127.0.0.1:6006...")
+    try:
+        import phoenix as px
+        session = px.launch_app(port=6006)
+        print(f"✓ Arize Phoenix UI active at: {session.url}")
+        print("Press Ctrl+C to stop.")
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\nStopping Phoenix server.")
+    except Exception as e:
+        print(f"Error launching Phoenix: {e}")
+
+def main():
+    parser = argparse.ArgumentParser(description="Omarchy Observability & Phoenix Telemetry (omarchy-trace)")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # status
+    p_stat = subparsers.add_parser("set-status", help="Set active agent status for Waybar HUD")
+    p_stat.add_argument("state", choices=["idle", "thinking", "executing", "success", "error"])
+    p_stat.add_argument("-d", "--details", default="", help="Detail message")
+    p_stat.add_argument("-m", "--model", default="Qwen 2.5", help="Model name")
+    p_stat.add_argument("-e", "--error", default="", help="Error message if failed")
+
+    # record
+    p_rec = subparsers.add_parser("record", help="Record an execution trace span")
+    p_rec.add_argument("name", help="Span name (e.g. tool:qdrant_search, llm:generate)")
+    p_rec.add_argument("-i", "--input", default="", help="Input prompt or arguments")
+    p_rec.add_argument("-o", "--output", default="", help="Output result")
+    p_rec.add_argument("-t", "--duration", type=float, default=0.0, help="Duration in ms")
+    p_rec.add_argument("-s", "--status", default="OK", choices=["OK", "ERROR"])
+    p_rec.add_argument("-e", "--error", default="")
+
+    # ui
+    subparsers.add_parser("ui", help="Launch Arize Phoenix web UI on port 6006")
+
+    # show
+    subparsers.add_parser("show", help="Display recent traces")
+
+    args = parser.parse_args()
+
+    if args.command == "set-status":
+        update_status(args.state, details=args.details, model=args.model, error=args.error)
+        print(f"✓ Agent status set to: {args.state} ({args.details})")
+    elif args.command == "record":
+        log_trace(args.name, args.input, args.output, args.duration, status=args.status, error=args.error)
+        print(f"✓ Recorded trace span '{args.name}'")
+    elif args.command == "ui":
+        launch_phoenix_ui()
+    elif args.command == "show":
+        if os.path.exists(TRACES_FILE):
+            with open(TRACES_FILE, "r") as f:
+                lines = f.readlines()[-10:]
+            print(f"=== Last {len(lines)} Spans from {TRACES_FILE} ===")
+            for line in lines:
+                data = json.loads(line)
+                print(f"[{data.get('status')}] {data.get('span')} ({data.get('duration_ms')}ms): {data.get('output', '')[:80]}")
+        else:
+            print("No traces logged yet.")
+
+if __name__ == "__main__":
+    main()
