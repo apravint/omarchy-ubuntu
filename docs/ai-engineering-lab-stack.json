@@ -1,0 +1,85 @@
+{
+  "title": "AI Engineering Lab: Synthetic Data & Fine-Tuned Specialist Fleet",
+  "description": "10 GitHub repositories to turn frontier models into an AI engineering lab generating data, fine-tuning specialists, and benchmarking performance.",
+  "philosophy": "One powerful model helping build an entire fleet of specialists. You don't need your most powerful model answering every question.",
+  "architecture_pipeline": "frontier model -> generate data -> curate -> fine tune -> benchmark -> compare -> deploy -> collect feedback -> repeat",
+  "categories": {
+    "prompt_optimization": [
+      {
+        "name": "DSPy",
+        "repo": "https://github.com/stanfordnlp/dspy",
+        "description": "Optimize prompts and AI pipelines programmatically"
+      }
+    ],
+    "generate_training_data": [
+      {
+        "name": "Distilabel",
+        "repo": "https://github.com/argilla-io/distilabel",
+        "description": "Generate and process synthetic datasets with LLMs"
+      },
+      {
+        "name": "DataDreamer",
+        "repo": "https://github.com/datadreamer-dev/DataDreamer",
+        "description": "Build reproducible synthetic data workflows"
+      },
+      {
+        "name": "Argilla",
+        "repo": "https://github.com/argilla-io/argilla",
+        "description": "Collect human feedback and curate datasets"
+      }
+    ],
+    "train_specialists": [
+      {
+        "name": "Unsloth",
+        "repo": "https://github.com/unslothai/unsloth",
+        "description": "Accelerate fine tuning with optimized training workflows"
+      },
+      {
+        "name": "LLaMA Factory",
+        "repo": "https://github.com/hiyouga/LLaMA-Factory",
+        "description": "Fine tune and evaluate open models"
+      },
+      {
+        "name": "Axolotl",
+        "repo": "https://github.com/axolotl-ai-cloud/axolotl",
+        "description": "Configure and run model training pipelines"
+      }
+    ],
+    "test_and_benchmark": [
+      {
+        "name": "lm-evaluation-harness",
+        "repo": "https://github.com/EleutherAI/lm-evaluation-harness",
+        "description": "Benchmark models across standardized tasks"
+      },
+      {
+        "name": "OpenCompass",
+        "repo": "https://github.com/open-compass/opencompass",
+        "description": "Evaluate model capabilities across multiple benchmarks"
+      }
+    ],
+    "deploy_winners": [
+      {
+        "name": "BentoML",
+        "repo": "https://github.com/bentoml/BentoML",
+        "description": "Package and serve models as production services"
+      }
+    ]
+  },
+  "recommended_builds": [
+    {
+      "name": "Coding Specialist",
+      "stack": ["DSPy", "Distilabel", "Unsloth", "lm-evaluation-harness"],
+      "use_case": "Train domain-specific fast coding models on verified synthetic syntax"
+    },
+    {
+      "name": "Research Specialist",
+      "stack": ["DataDreamer", "Argilla", "LLaMA Factory", "OpenCompass"],
+      "use_case": "Synthesize academic literature with human-in-the-loop preference curation"
+    },
+    {
+      "name": "Production Lab",
+      "stack": ["Distilabel", "Axolotl", "lm-evaluation-harness", "BentoML"],
+      "use_case": "Continuous automated fine-tuning, regression testing, and production serving"
+    }
+  ]
+}

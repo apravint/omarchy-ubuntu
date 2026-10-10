@@ -1,0 +1,84 @@
+{
+  "title": "Autonomous Web Application Stack (Open-Source 2026)",
+  "description": "10 GitHub repositories to turn foundation AI models into end-to-end full-stack web application builders and operators.",
+  "architecture_pipeline": "idea -> UI -> backend -> database -> workflows -> background jobs -> deployment -> production",
+  "categories": {
+    "interface": [
+      {
+        "name": "OpenUI",
+        "repo": "https://github.com/wandb/openui",
+        "description": "Generate UI components from natural language"
+      },
+      {
+        "name": "Bolt.diy",
+        "repo": "https://github.com/stackblitz-labs/bolt.diy",
+        "url": "http://bolt.diy",
+        "description": "Build full stack applications with AI"
+      },
+      {
+        "name": "Onlook",
+        "repo": "https://github.com/onlook-dev/onlook",
+        "description": "Visually edit React applications with AI assistance"
+      }
+    ],
+    "backend": [
+      {
+        "name": "Supabase",
+        "repo": "https://github.com/supabase/supabase",
+        "description": "Database, authentication, storage, and APIs"
+      },
+      {
+        "name": "Appwrite",
+        "repo": "https://github.com/appwrite/appwrite",
+        "description": "Backend infrastructure for modern applications"
+      },
+      {
+        "name": "Payload",
+        "repo": "https://github.com/payloadcms/payload",
+        "description": "TypeScript CMS and application backend"
+      }
+    ],
+    "workflows": [
+      {
+        "name": "Trigger.dev",
+        "repo": "https://github.com/triggerdotdev/trigger.dev",
+        "url": "http://trigger.dev",
+        "description": "Background jobs and long running tasks"
+      },
+      {
+        "name": "n8n",
+        "repo": "https://github.com/n8n-io/n8n",
+        "description": "Connect APIs and automate business workflows"
+      }
+    ],
+    "deployment": [
+      {
+        "name": "Coolify",
+        "repo": "https://github.com/coollabsio/coolify",
+        "description": "Self hosted application deployment"
+      },
+      {
+        "name": "Dokploy",
+        "repo": "https://github.com/Dokploy/dokploy",
+        "description": "Deploy and manage applications on your own infrastructure"
+      }
+    ]
+  },
+  "recommended_builds": [
+    {
+      "name": "AI SaaS",
+      "stack": ["Bolt.diy", "Supabase", "Trigger.dev", "Coolify"],
+      "use_case": "Full-scale multi-tenant AI products"
+    },
+    {
+      "name": "Internal Tools",
+      "stack": ["OpenUI", "Appwrite", "n8n", "Dokploy"],
+      "use_case": "Custom business workflows and dashboards"
+    },
+    {
+      "name": "Content Platform",
+      "stack": ["Onlook", "Payload", "Trigger.dev", "Coolify"],
+      "use_case": "Design-first publishing and editorial systems"
+    }
+  ]
+}

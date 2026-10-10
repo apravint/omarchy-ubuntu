@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Annnimate",
+    "url": "http://annnimate.com/animations",
+    "category": "Animations & Motion",
+    "description": "Pre-crafted CSS and Framer Motion animation presets, micro-interactions, and playful UI transitions."
+  },
+  {
+    "name": "UseLayouts",
+    "url": "http://uselayouts.com",
+    "category": "Page Layouts & Grids",
+    "description": "Production-ready page shells, sidebar navigation layouts, bento grids, and multi-pane responsive containers."
+  },
+  {
+    "name": "Arc UI",
+    "url": "http://uiarc.dev",
+    "category": "Modern Component System",
+    "description": "Dark-mode native, futuristic interface elements, HUDs, and sleek developer tooling components."
+  },
+  {
+    "name": "Kobra Systems",
+    "url": "http://kobra.systems",
+    "category": "Design Systems & Inputs",
+    "description": "High-precision interactive inputs (OTP fields, sliders, pins), brutalist technical controls."
+  },
+  {
+    "name": "Bencho",
+    "url": "http://bencho.dev",
+    "category": "Curated Benchmarks",
+    "description": "Performance-focused UI components, benchmark comparisons, and clean functional blocks."
+  },
+  {
+    "name": "HyperUIX",
+    "url": "http://vault.hyperiux.com",
+    "category": "Component Vault",
+    "description": "Vast collection of Tailwind CSS marketing blocks, headers, pricing tables, hero sections."
+  },
+  {
+    "name": "Libraries Dev",
+    "url": "http://libraries.dev",
+    "category": "Directory for AI & Devs",
+    "description": "High-crafted UI libraries curated specifically for AI agents, prompt generation, and developers."
+  },
+  {
+    "name": "BeUI",
+    "url": "http://beui.dev",
+    "category": "Accessible UI Primitives",
+    "description": "Clean, accessible, zero-friction components with accessible ARIA standards."
+  },
+  {
+    "name": "BeautifulUI",
+    "url": "http://beautifului.dev",
+    "category": "Aesthetic Polished Blocks",
+    "description": "Hand-crafted aesthetic components with subtle gradients, glassmorphism, and elegant typography."
+  },
+  {
+    "name": "UI Maxxing",
+    "url": "http://uimaxx.ing",
+    "category": "Next-Gen Visual Trends",
+    "description": "Maximalist UI building blocks, glow effects, hyper-modern tech startup aesthetics."
+  }
+]

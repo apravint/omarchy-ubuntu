@@ -1,0 +1,123 @@
+{
+  "title": "Design Engineering & Rapid Shipper Toolkit (2026)",
+  "total_tools": 23,
+  "design_engineer_tools": [
+    {
+      "name": "AffectUI",
+      "url": "http://affectui.com",
+      "description": "Beautiful UI components."
+    },
+    {
+      "name": "Inspora",
+      "url": "http://inspora.design",
+      "description": "A curated collection of inspiring designs."
+    },
+    {
+      "name": "21st.dev",
+      "url": "http://21st.dev",
+      "description": "Beautiful React components."
+    },
+    {
+      "name": "Best Free Fonts",
+      "url": "http://bestfreefonts.com",
+      "description": "High-quality free fonts."
+    },
+    {
+      "name": "Spline",
+      "url": "http://spline.design",
+      "description": "Create interactive 3D designs."
+    },
+    {
+      "name": "Unicorn Studio",
+      "url": "http://unicorn.studio",
+      "description": "Stunning interactive web effects."
+    },
+    {
+      "name": "Paper Design",
+      "url": "http://paper.design",
+      "description": "Design and build websites visually."
+    },
+    {
+      "name": "Theatre.js",
+      "url": "http://theatrejs.com",
+      "description": "Expressive web animations."
+    }
+  ],
+  "shipper_accelerators": [
+    {
+      "name": "Modulify Templates",
+      "url": "http://modulify.ai/templates",
+      "description": "Clone free builds"
+    },
+    {
+      "name": "Iconly",
+      "url": "http://iconly.design",
+      "description": "900+ top logos"
+    },
+    {
+      "name": "FontInLogo",
+      "url": "http://fontinlogo.com",
+      "description": "Find typefaces"
+    },
+    {
+      "name": "LogoToUse",
+      "url": "http://logotouse.com",
+      "description": "Free logos to feed AI"
+    },
+    {
+      "name": "Modulify LogoMaker",
+      "url": "http://logomaker.modulify.ai",
+      "description": "Create logos with AI"
+    },
+    {
+      "name": "Ikonik",
+      "url": "http://ikonik.modulify.ai",
+      "description": "Curated icon library"
+    },
+    {
+      "name": "WeDoFlow",
+      "url": "http://wedoflow.com",
+      "description": "1,300+ unique pages"
+    },
+    {
+      "name": "Landdding",
+      "url": "http://landdding.com",
+      "description": "Landing page inspiration"
+    },
+    {
+      "name": "MotionInDesign",
+      "url": "http://motionin.design",
+      "description": "Motion design references"
+    },
+    {
+      "name": "Wonderlist",
+      "url": "http://wonderlist.design",
+      "description": "127+ Figma designs"
+    },
+    {
+      "name": "Whipsaw",
+      "url": "http://whipsaw.com",
+      "description": "Product design inspiration"
+    },
+    {
+      "name": "CloseIt Fast",
+      "url": "http://closeit.fast",
+      "description": "Secure document signing"
+    },
+    {
+      "name": "Sent.dm",
+      "url": "http://sent.dm",
+      "description": "Grow your reach and sales"
+    },
+    {
+      "name": "Best AI Builder",
+      "url": "http://bestaibuilder.website",
+      "description": "AI website building"
+    },
+    {
+      "name": "Paper Animation AI",
+      "url": "http://paperanimation.ai",
+      "description": "Creative animation"
+    }
+  ]
+}
