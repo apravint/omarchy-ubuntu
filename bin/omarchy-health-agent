@@ -133,7 +133,7 @@ def diagnose_and_heal():
             if is_user:
                 run_cmd(f"systemctl --user restart {service}")
             else:
-                run_cmd(f"sudo systemctl restart {service}")
+                run_cmd(f"sudo -n systemctl restart {service}")
 
             # Verify if still failing
             current_failed = [s[0] for s in check_failed_services()]
@@ -160,7 +160,7 @@ def diagnose_and_heal():
     mem_pct = check_memory_usage()
     if mem_pct > 90.0:
         print(f"⚠️ High RAM usage detected ({mem_pct:.1f}%). Cleaning page caches...")
-        run_cmd("sudo sync; sudo sysctl -w vm.drop_caches=3 >/dev/null 2>&1 || true")
+        run_cmd("sudo -n sync; sudo -n sysctl -w vm.drop_caches=3 >/dev/null 2>&1 || true")
         new_mem = check_memory_usage()
         actions_taken.append(f"🧹 Reduced RAM usage from {mem_pct:.1f}% to {new_mem:.1f}%.")
 
@@ -168,7 +168,7 @@ def diagnose_and_heal():
     disk_pct = check_disk_usage()
     if disk_pct > 95.0:
         print(f"⚠️ High Disk usage detected ({disk_pct:.1f}%). Cleaning package cache...")
-        run_cmd("sudo apt-get clean >/dev/null 2>&1 || true")
+        run_cmd("sudo -n apt-get clean >/dev/null 2>&1 || true")
         actions_taken.append(f"💾 Cleaned package cache to recover disk space ({disk_pct:.1f}% full).")
 
     # 5. Summary & Desktop Notification

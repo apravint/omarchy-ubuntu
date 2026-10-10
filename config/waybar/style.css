@@ -10,7 +10,7 @@
 
 window#waybar {
     background: @bg;
-    border-radius: 12px;
+    border-radius: 0;
     color: @fg;
     border: 1px solid @border;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
@@ -19,7 +19,7 @@ window#waybar {
 #custom-menu {
     padding: 0 12px;
     margin: 3px 4px 3px 4px;
-    border-radius: 8px;
+    border-radius: 0;
     background: @accent_rgba;
     color: @accent;
     font-size: 15px;
@@ -35,7 +35,7 @@ window#waybar {
     padding: 0 10px;
     background: transparent;
     color: @muted;
-    border-radius: 6px;
+    border-radius: 0;
     margin: 3px 2px;
     transition: all 0.2s ease-in-out;
 }
@@ -61,7 +61,7 @@ window#waybar {
 #clock {
     padding: 0 12px;
     margin: 3px 2px;
-    border-radius: 6px;
+    border-radius: 0;
     background: @selection;
     font-weight: bold;
     color: @accent;
@@ -77,7 +77,7 @@ window#waybar {
 #custom-weather {
     padding: 0 10px;
     margin: 3px 2px;
-    border-radius: 6px;
+    border-radius: 0;
     background: @selection;
     color: @fg;
     transition: all 0.2s ease;
@@ -91,7 +91,7 @@ window#waybar {
 #mpris {
     padding: 0 10px;
     margin: 3px 2px;
-    border-radius: 6px;
+    border-radius: 0;
     background: @selection;
     color: @fg;
     transition: all 0.2s ease;
@@ -117,7 +117,7 @@ window#waybar {
 #custom-power {
     padding: 0 10px;
     margin: 3px 2px;
-    border-radius: 6px;
+    border-radius: 0;
     background: @selection;
     color: @fg;
     transition: all 0.2s ease;

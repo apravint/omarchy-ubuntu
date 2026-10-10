@@ -2,7 +2,7 @@
 window {
     margin: 0px;
     background-color: rgba(8, 9, 16, 0.92);
-    border-radius: 12px;
+    border-radius: 0;
     border: 2px solid rgba(130, 251, 156, 0.5);
     font-family: "JetBrainsMono Nerd Font", monospace;
     font-size: 13px;
@@ -11,7 +11,7 @@ window {
 
 #input {
     margin: 12px;
-    border-radius: 8px;
+    border-radius: 0;
     border: 1px solid rgba(130, 251, 156, 0.4);
     background-color: rgba(31, 37, 58, 0.85);
     color: #ddf7ff;
@@ -30,7 +30,7 @@ window {
 
 #entry {
     padding: 6px 10px;
-    border-radius: 6px;
+    border-radius: 0;
     margin: 2px 0px;
 }
 

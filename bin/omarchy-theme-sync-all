@@ -84,7 +84,7 @@ def main():
 window {{
     margin: 0px;
     background-color: rgba({r_bg}, {g_bg}, {b_bg}, 0.92);
-    border-radius: 12px;
+    border-radius: 0;
     border: 2px solid rgba({r_acc}, {g_acc}, {b_acc}, 0.5);
     font-family: "JetBrainsMono Nerd Font", monospace;
     font-size: 13px;
@@ -93,7 +93,7 @@ window {{
 
 #input {{
     margin: 12px;
-    border-radius: 8px;
+    border-radius: 0;
     border: 1px solid rgba({r_acc}, {g_acc}, {b_acc}, 0.4);
     background-color: rgba({r_sel}, {g_sel}, {b_sel}, 0.85);
     color: {fg};
@@ -112,7 +112,7 @@ window {{
 
 #entry {{
     padding: 6px 10px;
-    border-radius: 6px;
+    border-radius: 0;
     margin: 2px 0px;
 }}
 
@@ -151,7 +151,7 @@ background-color={bg}E6
 text-color={fg}
 border-color={accent}
 border-size=2
-border-radius=8
+border-radius=0
 padding=10,14
 default-timeout=4000
 width=360

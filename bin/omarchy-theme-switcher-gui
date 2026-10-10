@@ -160,7 +160,7 @@ class ThemeSwitcherApp(Gtk.Window):
             background-color: #313244;
             color: #cdd6f4;
             border: 1px solid #45475a;
-            border-radius: 8px;
+            border-radius: 0;
             padding: 8px 12px;
             font-size: 14px;
         }
@@ -177,7 +177,7 @@ class ThemeSwitcherApp(Gtk.Window):
         .theme-card {
             background-color: #181825;
             border: 2px solid #313244;
-            border-radius: 12px;
+            border-radius: 0;
             padding: 8px;
             transition: all 150ms ease;
         }
@@ -200,13 +200,13 @@ class ThemeSwitcherApp(Gtk.Window):
             font-size: 11px;
             font-weight: 800;
             padding: 2px 8px;
-            border-radius: 6px;
+            border-radius: 0;
         }
         button.suggested-action {
             background-color: #89b4fa;
             color: #11111b;
             font-weight: 800;
-            border-radius: 8px;
+            border-radius: 0;
             padding: 10px 24px;
             font-size: 14px;
         }
@@ -216,7 +216,7 @@ class ThemeSwitcherApp(Gtk.Window):
         button.cancel-btn {
             background-color: #313244;
             color: #cdd6f4;
-            border-radius: 8px;
+            border-radius: 0;
             padding: 10px 20px;
             font-size: 14px;
         }
