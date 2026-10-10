@@ -1,1 +1,1 @@
-/home/apravint/omarchy-ubuntu/bin/iram-mcp-server
+iram-mcp-server

@@ -260,7 +260,7 @@ log_step "Injecting Iram scripts, systemd units, and skeleton user configs..."
 # Copy Iram system-wide binaries & profile
 mkdir -p "${ROOTFS_DIR}/usr/local/bin" "${ROOTFS_DIR}/usr/share/wayland-sessions" "${ROOTFS_DIR}/etc/profile.d"
 cp -a --remove-destination "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/usr/local/bin/"
-chmod +x "${ROOTFS_DIR}/usr/local/bin/"*
+find "${ROOTFS_DIR}/usr/local/bin/" -type f -exec chmod +x {} + 2>/dev/null || true
 
 # Safely symlink any additional upstream iram binaries that were not overridden
 chroot "${ROOTFS_DIR}" /bin/bash << 'POST_CHROOT_EOF'

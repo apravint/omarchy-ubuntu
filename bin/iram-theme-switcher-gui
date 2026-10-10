@@ -14,7 +14,9 @@ from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 
 THEMES_DIRS = [
     os.path.expanduser('~/.config/iram/themes'),
-    '/usr/share/iram/themes'
+    os.path.expanduser('~/.config/omarchy/themes'),
+    '/usr/share/iram/themes',
+    '/usr/share/omarchy/themes'
 ]
 
 STATE_FILE = os.path.expanduser('~/.local/state/iram/current/theme.name')

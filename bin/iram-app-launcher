@@ -1,32 +1,20 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # IRAM OS High-Performance Application Launcher
-# Instant toggle, full desktop app discovery, and zero typing latency.
 # ==============================================================================
 
 # 1. Clean Toggle: If launcher is already open, close it instantly
 if pgrep -x wofi >/dev/null 2>&1; then
-    pkill -x wofi
+    pkill -9 -x wofi 2>/dev/null || true
     exit 0
 fi
 
 # 2. Comprehensive XDG Application Search Paths
-# Ensure user desktop files, Flatpaks, Snaps, and System apps are all discovered
 export XDG_DATA_DIRS="$HOME/.local/share:$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share:/var/lib/snapd/desktop"
 
 # 3. Multi-Desktop Compatibility
-# Allow GNOME, XFCE, Unity, and KDE applications to show up in Hyprland
 export XDG_CURRENT_DESKTOP="Hyprland:GNOME:Unity:XFCE:KDE"
+export TERMINAL="foot"
 
-# 4. Preferred Terminal for Terminal-based Desktop Entries
-export TERMINAL="${TERMINAL:-foot}"
-
-# 5. Execute Wofi with Optimized Flags
-exec wofi \
-    --show drun \
-    --conf "$HOME/.config/wofi/config" \
-    --style "$HOME/.config/wofi/style.css" \
-    --insensitive \
-    --allow-images \
-    --term "$TERMINAL" \
-    "$@"
+# 4. Execute Wofi cleanly
+exec wofi --show drun --height=450 --width=600
