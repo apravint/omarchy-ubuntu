@@ -209,8 +209,18 @@ cd omarchy-ubuntu
 ./uninstall.sh
 ```
 
----
+## ⚖️ License & Trademarks
 
-## License
+This project is licensed under the **[MIT License](LICENSE)**.
 
-Released under the [MIT License](LICENSE).
+### Attributions & Upstream Projects
+- **Base OS**: [Ubuntu LTS](https://ubuntu.com) by Canonical Ltd.
+- **Upstream Omarchy**: Originally created by [David Heinemeier Hansson](https://github.com/omacom/omarchy) under the MIT License.
+- **Compositor**: [Hyprland](https://hyprland.org) by Vaxry and contributors (BSD-3-Clause).
+- **Status Bar**: [Waybar](https://github.com/Alexays/Waybar) by Alexays and contributors (MIT).
+- **Audio Routing**: [PipeWire](https://pipewire.org) & [WirePlumber](https://gitlab.freedesktop.org/pipewire/wireplumber) (MIT / LGPL).
+
+### Legal & Trademark Disclaimers
+- **Ubuntu** is a registered trademark of **Canonical Ltd.** This project is an independent community project and is not affiliated with, sponsored by, or endorsed by Canonical Ltd. The name "Ubuntu" is used strictly in a nominative, descriptive sense to indicate operating system compatibility.
+- **Omarchy** is an independent project originally authored by David Heinemeier Hansson. This repository provides an adaptation for Ubuntu LTS and is not an official release of the upstream Omarchy project.
+- All other third-party trademarks, product names, logos, and brands mentioned or displayed in this repository are the property of their respective owners. Their inclusion does not imply affiliation or endorsement.
