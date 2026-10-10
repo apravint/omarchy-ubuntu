@@ -50,10 +50,10 @@ IRAM OS was originally inspired by the desktop concept of **Omarchy** authored b
 │  FastMCP ── Qdrant ── Graphiti ── Crawl4AI ── Docling ── LangGraph    │
 ├────────────────────────────────────────────────────────────────────────┤
 │  WAYLAND DESKTOP ENVIRONMENT                                          │
-│  Hyprland (0px Sharp) ── Waybar (Flush) ── Wofi ── Mako ── Swaybg      │
+│  Hyprland (0px Sharp) ── Waybar (Flush) ── Rofi/Wofi ── Mako ── Swaybg │
 ├────────────────────────────────────────────────────────────────────────┤
-│  SYSTEM SERVICES & ROUTING                                             │
-│  PipeWire/WirePlumber ── iram-displays-gui ── 22-Theme Sync Engine    │
+│  CREATIVE PRODUCTIVITY & SERVICES                                      │
+│  Storytold Craft Suite ── PipeWire ── 18-Theme Sync ── Wayland OCR     │
 ├────────────────────────────────────────────────────────────────────────┤
 │  LINUX KERNEL & HARDWARE ABSTRACTION                                  │
 │  Debian/GNU Core ── systemd Daemons ── Multi-Monitor GPU Pipeline      │
@@ -63,7 +63,7 @@ IRAM OS was originally inspired by the desktop concept of **Omarchy** authored b
 ### 1. Compositor & Window Mechanics
 - **Compositor**: [Hyprland](https://hyprland.org) with strict rectangular geometry (`rounding = 0`), compact 2px inner window gaps, 4px outer margins, and fluid dwindle layouts.
 - **Status Bar**: [Waybar](https://github.com/Alexays/Waybar) designed edge-to-edge with workspace tabs, CPU/RAM telemetry, active audio sink indicators, weather, and power controls.
-- **Application Launcher**: [Wofi](https://hg.sr.ht/~scoopta/wofi) styled to match active color schemes with fuzzy keyboard navigation.
+- **Application Launcher**: Enhanced launcher with single-instance instant toggle (`iram-app-launcher`) and fuzzy keyboard navigation.
 
 ### 2. Multi-Display Intelligence
 - Automatically detects connected monitors, television displays, and auxiliary screens.
@@ -75,9 +75,13 @@ IRAM OS was originally inspired by the desktop concept of **Omarchy** authored b
 - Automatic HDMI audio converter priority rules to prevent display sleeping stalls.
 - Instant 1-touch output toggle shortcut (`Super + Shift + A`) that switches streams live across Motherboard 3.5mm jacks, HDMI TV outputs, USB interfaces, and Bluetooth headsets.
 
-### 4. Zero-Restart Theming Engine
-- 22 hand-curated color palettes: Tokyo Night, Catppuccin Mocha, Nord, Gruvbox, Everforest, Rosé Pine, Dracula, Solarized, Cyberpunk, and more.
-- Switching themes (`Super + Ctrl + Shift + Space`) instantly updates Hyprland borders, Waybar pills, Wofi menus, Alacritty terminal colors, and Mako notifications simultaneously with **zero session restarts**.
+### 4. Zero-Restart Theming Engine (18 Modern Themes)
+- 18 hand-curated color palettes: Tokyo Storm, Catppuccin Mocha, Nord Frost, Gruvbox, Everforest, Rose Pine Moon, Dracula, Solarized Dark, Cyberpunk Neon, Oxocarbon, Monokai Pro, Synthwave '84, Kanagawa Wave, Vesper, Ayu Mirage, Material Ocean, Aura Dark, and One Dark.
+- Switching themes (`Super + Ctrl + Shift + Space` or `iram theme`) instantly updates Hyprland borders, Waybar styling, launcher palettes, terminal colors, and notifications simultaneously with **zero session restarts**.
+
+### 5. Storytold Craft Creative Suite
+- Integrated pure-Rust creative desktop applications replacing proprietary suites: **PhotoCraft** (Photoshop alternative), **VectorCraft** (Illustrator alternative), **FilmCraft** (Premiere alternative), **SoundCraft** (DAW alternative), **LightCraft** (Lightroom alternative), **CADCraft** (AutoCAD alternative), and **WordCraft** (Word alternative).
+- Launched via the unified command `iram craft [app]` or the `artcraft-launcher` hub.
 
 ---
 
@@ -207,17 +211,24 @@ A bootable hybrid UEFI/BIOS ISO is available for bare-metal deployment and testi
 
 All tools are located in `bin/` and automatically installed to `~/.local/bin/` and `/usr/local/bin/`:
 
+### 👑 Unified Command Center
+| Command | Description |
+| :--- | :--- |
+| `iram` | **Unified Command Center**: One command to control everything (`iram theme`, `iram craft`, `iram ocr`, `iram display`, `iram agent`, `iram clean`, `iram info`) |
+
 ### Desktop & Display Management
 | Command | Description |
 | :--- | :--- |
+| `iram-app-launcher` | Single-instance toggle for the Wayland application launcher |
 | `iram-displays-gui` | GTK GUI for configuring monitor positions, resolutions, and refresh rates |
 | `iram-restart-bar` | Cleanly reloads Waybar with display readiness check |
 | `iram-power-menu` | Fast session power menu (lock, sleep, reboot, shutdown) |
 | `iram-emoji-picker` | Wofi-based searchable emoji selector |
 
-### Audio & Media Tools
+### Audio, Media & Screen Tools
 | Command | Description |
 | :--- | :--- |
+| `iram-ocr` / `way-ocr` | Instant region screen OCR using Tesseract, copying text straight to Wayland clipboard |
 | `iram-monologue` | Dedicated lightweight developer screencast recorder (OBS alternative with zero bloat) |
 | `iram-audio-toggle` | Cycles active default audio sink and moves active playback streams |
 | `iram-audio-init` | Startup sound service ensuring HDMI/TV outputs are unmuted and persistent |
@@ -225,10 +236,17 @@ All tools are located in `bin/` and automatically installed to `~/.local/bin/` a
 | `iram-screenrecord` | Screen recorder writing MP4 output to `~/Videos` |
 | `iram-color-picker` | Eyedropper tool for copying hex color values |
 
+### Creative Productivity (Storytold Craft Suite)
+| Command | Description |
+| :--- | :--- |
+| `artcraft-launcher` | Central launch hub for the entire Storytold pure-Rust creative suite |
+| `craft-app-runner` | High-performance runner with automatic AppImage discovery and updates |
+| `photocraft` .. `wordcraft` | Direct CLI shortcuts for all 13 pure-Rust creative desktop apps |
+
 ### Theming Subsystem
 | Command | Description |
 | :--- | :--- |
-| `iram-theme-switch` | CLI theme selector supporting 22 themes |
+| `iram-theme-switch` | CLI theme selector supporting 18 modern curated themes |
 | `iram-theme-switcher-gui` | GTK GUI theme selector with visual color previews |
 | `iram-theme-sync-all` | Re-applies active theme palette across Hyprland, Waybar, Wofi, and Mako |
 | `iram-theme-bg-set` | Wallpaper changer with live compositor refresh |
@@ -284,6 +302,31 @@ All configuration files adhere to standard XDG specifications in `~/.config/`:
     └── wireplumber.conf.d/
         └── 50-hdmi-priority.conf # Audio hardware prioritization rules
 ```
+
+---
+
+## 🌐 Modular Ecosystem Repositories
+
+IRAM OS features modular, standalone open-source companion projects maintained under the same vision:
+
+| Repository | Focus & Role |
+| :--- | :--- |
+| **[iram-themes](https://github.com/apravint/iram-themes)** | 18 modern, high-fidelity Wayland themes and dynamic multi-app synchronization engine |
+| **[iram-agentic-desktop](https://github.com/apravint/iram-agentic-desktop)** | Autonomous AI Desktop Framework: terminal copilot, sidecar companion, and model router |
+| **[storytold-craft-linux](https://github.com/apravint/storytold-craft-linux)** | First-class Linux desktop packaging and runners for the Storytold pure-Rust creative suite |
+| **[ubuntu-hyprland-iso-builder](https://github.com/apravint/ubuntu-hyprland-iso-builder)** | Automated toolchain & GitHub Actions CI to compile bootable Ubuntu 26.04 + Hyprland ISOs |
+| **[way-ocr](https://github.com/apravint/way-ocr)** | Lightweight screen OCR and text extractor utility for Wayland and Hyprland |
+
+---
+
+## 📚 Developer Knowledge Bases & Blueprints
+
+Preloaded in `docs/` and `~/resources/` for both human developers and autonomous AI agents:
+
+- **[Autonomous Web Application Stack](docs/autonomous-web-app-stack.md)** ([JSON](docs/autonomous-web-app-stack.json)): 10 open-source repositories to build, deploy, and operate production web apps with foundation models.
+- **[AI Engineering Lab Stack](docs/ai-engineering-lab-stack.md)** ([JSON](docs/ai-engineering-lab-stack.json)): 10 open-source repositories for synthetic data generation, specialist fleet fine-tuning, standardized evaluation, and model serving.
+- **[Design Engineering Toolkit](docs/design-engineering-resources.md)** ([JSON](docs/design-engineering-resources.json)): 23 tools combining the Design Engineer Essential Toolkit (3D, canvas, motion) with 2026 rapid shipping accelerators.
+- **[UI Component Libraries](docs/ui-component-libraries.md)** ([JSON](docs/ui-components.json)): 10 premier web animation and modern React component systems.
 
 ---
 
@@ -343,5 +386,5 @@ IRAM OS stands on the shoulders of brilliant open-source pioneers, communities, 
 - **The Hugging Face / smolagents Team**: For code-as-action AST sandboxing.
 - **Harrison Chase & the LangGraph Team**: For resilient, stateful cyclical agent workflows.
 - **The Arize Phoenix Team**: For telemetry, traces, and AI observability.
-- **The Designers of the 22 Palettes**: The artists and creators of Tokyo Night, Catppuccin, Nord, Gruvbox, Everforest, Rosé Pine, Dracula, and Kanagawa.
+- **The Designers of the 18 Curated Themes**: The artists and creators of Tokyo Night, Catppuccin, Nord, Gruvbox, Everforest, Rosé Pine, Dracula, and Kanagawa.
 - **Every Community Supporter & Tester**: To all early testers, stargazers, and contributors who tested ISO builds, reported bugs, and helped refine IRAM OS into what it is today.
