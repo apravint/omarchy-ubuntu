@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=Iram
-Comment=Iram Hyprland Tiling Desktop
+Name=IRAM OS
+Comment=IRAM OS Hyprland Tiling Desktop
 Exec=start-hyprland
 Type=Application
 DesktopNames=Hyprland

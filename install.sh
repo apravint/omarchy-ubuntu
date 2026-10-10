@@ -7,7 +7,12 @@
 set -euo pipefail
 trap 'echo -e "\033[0;31m[ERROR] Iram installation failed at line $LINENO. Exiting gracefully.\033[0m"; exit 1' ERR
 
-REPO_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || pwd)"
+if [ ! -d "$REPO_DIR/bin" ] || [ ! -d "$REPO_DIR/system" ]; then
+    TMP_CLONE=$(mktemp -d)
+    git clone --depth 1 https://github.com/apravint/iram-os.git "$TMP_CLONE"
+    REPO_DIR="$TMP_CLONE"
+fi
 
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'

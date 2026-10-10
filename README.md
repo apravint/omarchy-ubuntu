@@ -1,20 +1,20 @@
+<div align="center">
+
 # IRAM OS 🌌
 
-> **IRAM OS (formerly Omarchy) – The agentic desktop environment.**
+### The Autonomous Agentic Desktop Operating System
 
-A preconfigured Hyprland desktop environment featuring sharp geometric tiling, compact window gaps, edge-to-edge Waybar, automated multi-display management, and integrated developer tools.
-
-<div align="center">
+A high-performance Wayland operating system powered by Hyprland, featuring sharp geometric tiling, zero-restart live theme switching, studio-grade PipeWire audio routing, automated multi-display intelligence, and a deeply integrated autonomous AI toolchain.
 
 [![GitHub Release](https://img.shields.io/github/v/release/apravint/iram-os?color=7aa2f7&logo=github&label=Release)](https://github.com/apravint/iram-os/releases)
 [![Compositor: Hyprland](https://img.shields.io/badge/Compositor-Hyprland%20Wayland-00c853.svg?logo=wayland&logoColor=white)](https://hyprland.org)
-[![Base: Linux](https://img.shields.io/badge/Base-Linux-FCC624.svg?logo=linux&logoColor=black)](https://kernel.org)
+[![Platform: Linux](https://img.shields.io/badge/Platform-Linux%2064--bit-FCC624.svg?logo=linux&logoColor=black)](https://kernel.org)
 [![Audio: PipeWire](https://img.shields.io/badge/Audio-PipeWire%20%2B%20WirePlumber-brightgreen.svg)](https://pipewire.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 <br/>
 
-<img src="assets/preview.png" alt="IRAM OS Desktop" width="100%" style="border-radius: 4px;" />
+<img src="assets/preview.png" alt="IRAM OS Desktop" width="100%" style="border-radius: 6px;" />
 
 </div>
 
@@ -22,30 +22,30 @@ A preconfigured Hyprland desktop environment featuring sharp geometric tiling, c
 
 ## Overview
 
-**IRAM OS** provides an out-of-the-box, fully configured Wayland desktop experience. It packages Hyprland dynamic tiling, a flush edge-to-edge status bar, PipeWire audio routing, automated multi-monitor setup, and 22 switchable color schemes into an easy-to-install setup.
+**IRAM OS** provides an out-of-the-box, turnkey Wayland desktop experience engineered for speed, aesthetics, and autonomous developer workflows. It packages Hyprland dynamic tiling, a flush edge-to-edge status bar, studio-grade PipeWire audio routing, automated multi-monitor geometry management, and 22 switchable color schemes into a cohesive operating system.
 
 ### Key Components
 
-- **Compositor**: [Hyprland](https://hyprland.org) with sharp 90° edges (`rounding = 0`), compact 2px inner window gaps, and fluid dwindle tiling.
+- **Compositor**: [Hyprland](https://hyprland.org) with sharp rectangular geometry (`rounding = 0`), compact 2px inner window gaps, and fluid dwindle tiling.
 - **Status Bar**: [Waybar](https://github.com/Alexays/Waybar) configured edge-to-edge with workspace tabs, CPU/RAM telemetry, active audio sink indicators, weather, and power controls.
-- **Application Launcher**: [Wofi](https://hg.sr.ht/~scoopta/wofi) with matching rectangular borders and fuzzy application search.
-- **Audio Routing**: [PipeWire](https://pipewire.org) + [WirePlumber](https://gitlab.freedesktop.org/pipewire/wireplumber) policies with 1-click output cycler (`iram-audio-toggle`) across HDMI monitors, TVs, analog jacks, and Bluetooth.
-- **Display Manager GUI**: `iram-displays-gui` utility to detect displays, prevent coordinate overlap, set refresh rates, and persist geometry.
-- **Theme Suite**: 22 synchronized color schemes (Tokyo Night, Catppuccin Mocha, Nord, Gruvbox, etc.) switchable on the fly without session restart.
-- **Productivity & Utilities**: Integrated clipboard history (`cliphist`), screen snip/recorder, OCR text extractor (`tesseract`), terminal copilot (`??`), and system health checker.
+- **Application Launcher**: [Wofi](https://hg.sr.ht/~scoopta/wofi) with matching rectangular styling and fuzzy application search.
+- **Audio Routing**: [PipeWire](https://pipewire.org) + [WirePlumber](https://gitlab.freedesktop.org/pipewire/wireplumber) policies with 1-click output cycling (`iram-audio-toggle`) across HDMI monitors, TVs, analog jacks, and Bluetooth.
+- **Display Manager GUI**: Native `iram-displays-gui` utility to auto-detect displays, prevent coordinate overlap, set refresh rates, and persist geometry.
+- **Theme Suite**: 22 synchronized color schemes (Tokyo Night, Catppuccin Mocha, Nord, Gruvbox, etc.) switchable on the fly without session restarts.
+- **Productivity & Utilities**: Integrated clipboard history (`cliphist`), screen snip/recorder, OCR text extractor (`tesseract`), terminal copilot (`??`), and automated system health diagnosis.
 
-### Agentic OS Architecture
+### Agentic AI Architecture
 
-Iram implements dedicated system layers for autonomous intelligence, separating tools, memory, retrieval, documents, and execution traces:
+IRAM OS integrates dedicated system layers for autonomous intelligence, providing tools, memory, semantic retrieval, document ingestion, and execution traces out of the box:
 
-- **Tool Server (FastMCP)**: `iram-mcp-server` exposes native Hyprland window management, audio controls, display topology, theme switching, and system self-healing over stdio MCP.
-- **Dense Vector Retrieval (Qdrant)**: `iram-qdrant` runs an embedded on-disk Qdrant database at `~/.local/state/iram/qdrant_db`, providing semantic search over repositories and session history without background daemon overhead.
-- **Temporal Knowledge Graph (Graphiti)**: `iram-graphiti` maintains persistent project knowledge, tracking entities, dependencies, and architectural decisions over time.
-- **Live Documentation Scraper (Crawl4AI)**: `iram-crawl` extracts web documentation and API references into clean, token-efficient Markdown.
+- **Desktop Tool Server (FastMCP)**: `iram-mcp-server` exposes native Hyprland window management, audio controls, display topology, theme switching, and self-healing over the Model Context Protocol (MCP).
+- **Dense Vector Retrieval (Qdrant)**: `iram-qdrant` runs an embedded on-disk Qdrant database at `~/.local/state/iram/qdrant_db`, providing semantic code search and session memory without background daemon overhead.
+- **Temporal Knowledge Graph (Graphiti)**: `iram-graphiti` maintains persistent project memory, tracking entities, dependencies, and architectural decisions over time.
+- **Web Documentation Scraper (Crawl4AI)**: `iram-crawl` extracts web documentation and API references into clean, token-efficient Markdown.
 - **Document Ingestion (Docling)**: `iram-docling` converts PDFs, Office documents, and presentation slides into structured Markdown tables and text.
 - **Code-as-Action Engine (smolagents)**: `iram-code-agent` synthesizes and executes atomic Python snippets inside an AST sandbox to perform multi-step desktop tasks in fewer LLM round-trips.
-- **Stateful Long Coding Loops (LangGraph)**: `iram-workflow` provides cyclic graphs (Plan → Execute → Verify → Self-Heal) with SQLite checkpointing to run long-running refactors and configuration changes safely.
-- **Telemetry & Traces (Arize Phoenix)**: `iram-trace` logs spans, execution latencies, and error post-mortems, feeding real-time status to the Waybar telemetry HUD.
+- **Stateful Long Coding Loops (LangGraph)**: `iram-workflow` provides cyclic graphs (Plan → Execute → Verify → Self-Heal) with SQLite checkpointing to run long-running refactors safely.
+- **Observability & Traces (Arize Phoenix)**: `iram-trace` logs spans, execution latencies, and error post-mortems, feeding real-time status to the Waybar telemetry HUD.
 
 ---
 
@@ -53,14 +53,14 @@ Iram implements dedicated system layers for autonomous intelligence, separating 
 
 ### Method 1: Automated Installation (Recommended)
 
-Run the automated installer on an existing Linux system:
+Run the automated installer on an existing Linux installation:
 
 ```bash
 # Clone the repository
 git clone https://github.com/apravint/iram-os.git
 cd iram-os
 
-# Run installer
+# Run the installer
 chmod +x install.sh
 ./install.sh
 ```
@@ -71,10 +71,10 @@ Or install directly via curl:
 curl -fsSL https://raw.githubusercontent.com/apravint/iram-os/main/install.sh | bash
 ```
 
-#### After Installation:
+#### Starting the Session:
 1. Log out of your current desktop session.
-2. At the display manager login screen (SDDM or GDM), select **Iram** (or **Hyprland**).
-3. Log in to start the session.
+2. At the display manager login screen (GDM, SDDM, or LightDM), select **IRAM OS** (or **Hyprland**).
+3. Log in to launch the desktop.
 
 ---
 
@@ -83,13 +83,13 @@ curl -fsSL https://raw.githubusercontent.com/apravint/iram-os/main/install.sh | 
 For bare-metal deployment, a bootable ISO image is available:
 
 1. Download the latest `.iso` from [GitHub Releases](https://github.com/apravint/iram-os/releases).
-2. Write to a USB drive with [Ventoy](https://www.ventoy.net/), [BalenaEtcher](https://etcher.balena.io/), or `dd`:
+2. Write to a USB drive using [Ventoy](https://www.ventoy.net/), [BalenaEtcher](https://etcher.balena.io/), or `dd`:
    ```bash
-   sudo dd if=iram-os-24.04-amd64.iso of=/dev/sdX bs=4M status=progress oflag=sync
+   sudo dd if=iram-os-26.04-amd64.iso of=/dev/sdX bs=4M status=progress oflag=sync
    ```
 3. Boot the USB drive and select **Start IRAM OS Live**.
-   - Default user: `iram`
-   - Password: `iram` (passwordless sudo enabled)
+   - **Default user**: `iram`
+   - **Password**: `iram` *(Passwordless sudo enabled)*
 
 ---
 
@@ -116,7 +116,7 @@ For bare-metal deployment, a bootable ISO image is available:
 | `Super + F` | **Fullscreen** | Toggles true fullscreen mode |
 | `Super + O` | **Pin / PiP** | Pins floating window across all workspaces (Picture-in-Picture) |
 | `Super + G` | **Toggle Tab Group** | Groups windows into tabbed containers |
-| `Super + S` or ``Super + ` `` | **Scratchpad** | Toggles drop-down scratchpad workspace |
+| `Super + S` or `Super + Grave` | **Scratchpad** | Toggles drop-down scratchpad workspace |
 | `Super + 1` .. `Super + 0` | **Switch Workspace** | Switch to Workspace 1 through 10 |
 | `Super + Shift + 1..0` | **Move Window** | Move focused window to Workspace 1 through 10 |
 | `Super + Mouse Drag` | **Move / Resize** | Left-click drag to move; Right-click drag to resize |
@@ -153,23 +153,36 @@ For bare-metal deployment, a bootable ISO image is available:
 
 ## Included CLI Utilities
 
-All tools are located in `bin/` and automatically installed to `~/.local/bin/` and `/usr/local/bin/`:
+All tools are located in `bin/` and automatically symlinked to `~/.local/bin/` and `/usr/local/bin/`:
 
+### Desktop & Display Management
 | Command | Description |
 | :--- | :--- |
 | `iram-displays-gui` | GTK GUI for configuring monitor positions, resolutions, and refresh rates |
+| `iram-restart-bar` | Cleanly reloads Waybar with display readiness check |
+| `iram-power-menu` | Fast session power menu (lock, sleep, reboot, shutdown) |
+| `iram-emoji-picker` | Wofi-based searchable emoji selector |
+
+### Audio & Media Tools
+| Command | Description |
+| :--- | :--- |
 | `iram-audio-toggle` | Cycles active default audio sink and moves active playback streams |
 | `iram-audio-init` | Startup sound service ensuring HDMI/TV outputs are unmuted and persistent |
+| `iram-screenshot` | Interactive region screenshot utility |
+| `iram-screenrecord` | Screen recorder writing MP4 output to `~/Videos` |
+| `iram-color-picker` | Eyedropper tool for copying hex color values |
+
+### Theming Subsystem
+| Command | Description |
+| :--- | :--- |
 | `iram-theme-switch` | CLI theme selector supporting 22 themes |
 | `iram-theme-switcher-gui` | GTK GUI theme selector with visual color previews |
 | `iram-theme-sync-all` | Re-applies active theme palette across Hyprland, Waybar, Wofi, and Mako |
-| `iram-restart-bar` | Cleanly reloads Waybar with display readiness check |
-| `iram-health-agent` | Diagnoses failed systemd services, recovers audio daemons, and frees RAM |
-| `iram-screenshot` | Interactive region screenshot utility |
-| `iram-screenrecord` | Screen recorder writing MP4 output to `~/Videos` |
-| `iram-emoji-picker` | Wofi-based searchable emoji selector |
-| `iram-power-menu` | Fast session power menu (lock, sleep, reboot, shutdown) |
-| `iram-repo-traffic` | Real-time clone and traffic analytics for GitHub repositories |
+| `iram-theme-bg-set` | Wallpaper changer with live compositor refresh |
+
+### Autonomous Agentic AI Toolchain
+| Command | Description |
+| :--- | :--- |
 | `iram-mcp-server` | FastMCP desktop server exposing Hyprland, audio, themes, and memory over stdio MCP |
 | `iram-qdrant` | Embedded local Qdrant vector retrieval engine for codebase chunks and memory |
 | `iram-graphiti` | Temporal knowledge graph tracking project decisions, facts, and entity relations |
@@ -179,7 +192,15 @@ All tools are located in `bin/` and automatically installed to `~/.local/bin/` a
 | `iram-workflow` | Stateful coding graph with verification and self-healing loops via LangGraph |
 | `iram-trace` | Observability and execution traces layer powered by Arize Phoenix |
 | `repomix` | Single-file AI context bundler for repositories |
-| `?? <query>` | Shell copilot translating plain English queries to bash commands |
+| `?? "<prompt>"` | Shell copilot translating plain English queries to bash commands |
+
+### System Health & Maintenance
+| Command | Description |
+| :--- | :--- |
+| `iram-health-agent` | Diagnoses failed systemd services, recovers audio daemons, and frees RAM |
+| `iram-crash-diagnose` | Captures system crash reports and triggers AI root-cause analysis |
+| `iram-update` | Synchronizes repositories and updates desktop components |
+| `iram-repo-traffic` | Real-time clone and traffic analytics for GitHub repositories |
 
 ---
 
@@ -190,16 +211,16 @@ Configurations are standard dotfiles located in `~/.config/`:
 ```
 ~/.config/
 ├── hypr/
-│   ├── hyprland.conf      # Compositor layout, gaps, keybindings, and window rules
-│   └── cursor.conf        # Active cursor theme and size
+│   ├── hyprland.conf          # Compositor layout, gaps, keybindings, and window rules
+│   └── cursor.conf            # Active cursor theme and size
 ├── waybar/
-│   ├── config.jsonc       # Bar modules, ordering, and exec hooks
-│   ├── style.css          # Waybar CSS layout and styling
-│   └── colors.css         # Active theme color variables
+│   ├── config.jsonc           # Bar modules, ordering, and exec hooks
+│   ├── style.css              # Waybar CSS layout and styling
+│   └── colors.css             # Active theme color variables
 ├── wofi/
-│   └── style.css          # Application launcher appearance
+│   └── style.css              # Application launcher appearance
 ├── mako/
-│   └── config             # Desktop notification styling
+│   └── config                 # Desktop notification styling
 └── wireplumber/
     └── wireplumber.conf.d/
         └── 50-hdmi-priority.conf # Audio hardware prioritization rules
@@ -233,16 +254,17 @@ cd iram-os
 ./uninstall.sh
 ```
 
-## ⚖️ License & Trademarks
+---
+
+## ⚖️ License & Attributions
 
 This project is licensed under the **[MIT License](LICENSE)**.
 
-### Attributions & Upstream Projects
-- **Upstream Omarchy**: Originally created by [David Heinemeier Hansson](https://github.com/omacom/omarchy) under the MIT License.
+### Upstream Projects & Attributions
+- **Upstream Project**: Derived from [Omarchy](https://github.com/omacom/omarchy) by [David Heinemeier Hansson](https://github.com/dhh) under the MIT License.
 - **Compositor**: [Hyprland](https://hyprland.org) by Vaxry and contributors (BSD-3-Clause).
 - **Status Bar**: [Waybar](https://github.com/Alexays/Waybar) by Alexays and contributors (MIT).
 - **Audio Routing**: [PipeWire](https://pipewire.org) & [WirePlumber](https://gitlab.freedesktop.org/pipewire/wireplumber) (MIT / LGPL).
 
-### Legal & Trademark Disclaimers
-- **Omarchy / IRAM**: "Omarchy" was originally authored by David Heinemeier Hansson (omacom/omarchy). IRAM OS is an independent community adaptation and desktop environment, and is not an official release of the upstream Omarchy project.
-- All other third-party trademarks, product names, logos, and brands mentioned or displayed in this repository are the property of their respective owners. Their inclusion does not imply affiliation or endorsement.
+### Trademarks
+All other product names, logos, and brands mentioned or displayed in this repository are the property of their respective owners. Their inclusion does not imply affiliation or endorsement.
