@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# IRAM OS - Instant Screen OCR & Text Extraction
+# ==============================================================================
+TEMP_IMG=$(mktemp /tmp/iram-ocr-XXXXXX.png)
+TEMP_TXT=$(mktemp /tmp/iram-ocr-XXXXXX)
+
+# Grab selection using slurp + grim
+GEOM=$(slurp 2>/dev/null)
+if [ -z "$GEOM" ]; then
+    rm -f "$TEMP_IMG" "$TEMP_TXT"*
+    exit 0
+fi
+
+if ! grim -g "$GEOM" "$TEMP_IMG" 2>/dev/null; then
+    rm -f "$TEMP_IMG" "$TEMP_TXT"*
+    exit 0
+fi
+
+# Run tesseract OCR
+if tesseract "$TEMP_IMG" "$TEMP_TXT" --oem 1 -l eng 2>/dev/null; then
+    if [ -f "${TEMP_TXT}.txt" ]; then
+        EXTRACTED=$(sed '/^[[:space:]]*$/d' "${TEMP_TXT}.txt")
+        if [ -n "$EXTRACTED" ]; then
+            printf "%s" "$EXTRACTED" | wl-copy
+            if command -v notify-send >/dev/null 2>&1; then
+                PREVIEW=$(echo "$EXTRACTED" | head -n 3 | cut -c 1-80)
+                notify-send -a "IRAM OCR" "Text Extracted & Copied to Clipboard" "$PREVIEW" -i edit-paste -t 4000
+            fi
+        fi
+    fi
+fi
+
+rm -f "$TEMP_IMG" "$TEMP_TXT"*
