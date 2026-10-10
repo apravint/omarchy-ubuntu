@@ -197,6 +197,7 @@ A bootable hybrid UEFI/BIOS ISO is available for bare-metal deployment and testi
 | :--- | :--- | :--- |
 | `Print` or `Super + Shift + S` | **Region Screenshot** | Drag to snip region; saves to `~/Pictures` & clipboard |
 | `Alt + Print` | **Screen Recorder** | Start / stop screen recording (`wf-recorder`) |
+| `Super + Ctrl + M` or `Alt + Shift + Print` | **Monologue Screencast** | 1-key dedicated dev talking-head & microphone recording (`iram-monologue`) |
 | `Super + Print` | **Color Picker** | Eyedropper tool to copy hex color (`hyprpicker`) |
 | `Super + Ctrl + Print` | **OCR Text Snipper** | Extracts on-screen text directly to clipboard (`tesseract`) |
 
@@ -217,6 +218,7 @@ All tools are located in `bin/` and automatically installed to `~/.local/bin/` a
 ### Audio & Media Tools
 | Command | Description |
 | :--- | :--- |
+| `iram-monologue` | Dedicated lightweight developer screencast recorder (OBS alternative with zero bloat) |
 | `iram-audio-toggle` | Cycles active default audio sink and moves active playback streams |
 | `iram-audio-init` | Startup sound service ensuring HDMI/TV outputs are unmuted and persistent |
 | `iram-screenshot` | Interactive region screenshot utility |
@@ -235,6 +237,8 @@ All tools are located in `bin/` and automatically installed to `~/.local/bin/` a
 | Command | Description |
 | :--- | :--- |
 | `iram-agent-tree` | Hierarchical tiered agent engine (Architect reasoning -> Coordinator -> Grunt Workers) |
+| `iram-ai-route` | Intelligent compute router (RouteLLM + GPTCache): routes simple tasks to $0 local models and caches responses |
+| `iram-toolgate` | Tool-call safety firewall (7 risk questions) + Canny evidence verification ledger |
 | `iram-code-review` | $0 open-source pre-push code review gatekeeper with 100+ local scanners & AI audit |
 | `iram-memory` | Unified multi-tier persistent memory (Mem0 preferences, Letta session, Graphiti graph) |
 | `iram-skills` | Modular skill loader executing specialized instructions on demand without context bloat |

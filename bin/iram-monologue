@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# IRAM OS Dedicated Monologue & Screencast Recorder (iram-monologue)
+# Lightweight alternative to OBS Studio for recording voiceover dev walkthroughs
+# Uses wf-recorder and PipeWire audio directly with zero configuration bloat.
+# https://github.com/apravint/iram-os
+# ==============================================================================
+set -euo pipefail
+
+MONOLOGUE_DIR="$HOME/Videos/Monologues"
+PID_FILE="/tmp/iram-monologue.pid"
+mkdir -p "$MONOLOGUE_DIR"
+
+notify() {
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send -a "IRAM Monologue" -i "camera-video" "$1" "${2:-}"
+    else
+        echo "[$1] ${2:-}"
+    fi
+}
+
+# If already recording, STOP it gracefully
+if [ -f "$PID_FILE" ]; then
+    REC_PID=$(cat "$PID_FILE" 2>/dev/null || true)
+    if [ -n "$REC_PID" ] && kill -0 "$REC_PID" 2>/dev/null; then
+        kill -INT "$REC_PID" 2>/dev/null || kill "$REC_PID" 2>/dev/null
+        rm -f "$PID_FILE"
+        sleep 1
+        LAST_VIDEO=$(ls -t "$MONOLOGUE_DIR"/*.mp4 2>/dev/null | head -n 1 || true)
+        if [ -n "$LAST_VIDEO" ]; then
+            if command -v wl-copy >/dev/null 2>&1; then
+                echo -n "$LAST_VIDEO" | wl-copy
+            fi
+            notify "🎬 Monologue Recorded" "Saved to: $(basename "$LAST_VIDEO") (Path copied to clipboard)"
+        else
+            notify "🎬 Monologue Stopped" "Recording finished."
+        fi
+        exit 0
+    fi
+    rm -f "$PID_FILE"
+fi
+
+# Detect default audio source (microphone) via pactl / pipewire
+DEFAULT_SOURCE=$(pactl get-default-source 2>/dev/null || echo "")
+
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+OUTPUT_FILE="${MONOLOGUE_DIR}/monologue_${TIMESTAMP}.mp4"
+
+# Start recording
+AUDIO_FLAG=()
+if [ -n "$DEFAULT_SOURCE" ]; then
+    AUDIO_FLAG=(--audio="$DEFAULT_SOURCE")
+fi
+
+notify "🎙️ Recording Monologue..." "Speak into your mic. Run 'iram-monologue' again or press shortcut to finish."
+
+wf-recorder "${AUDIO_FLAG[@]}" -f "$OUTPUT_FILE" -c libx264 -p preset=veryfast -p crf=22 >/dev/null 2>&1 &
+REC_PID=$!
+echo "$REC_PID" > "$PID_FILE"
+echo "Recording started (PID $REC_PID) -> $OUTPUT_FILE"

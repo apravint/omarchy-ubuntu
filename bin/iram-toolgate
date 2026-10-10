@@ -1,0 +1,181 @@
+#!/usr/bin/env python3
+"""
+IRAM OS Tool-Call Firewall & Evidence Ledger (iram-toolgate)
+Inspired by toolgate, winnow, and Canny:
+- Risk-based tool call firewall: intercepts destructive commands and fails closed
+- Evaluates 7 core security risk factors before allowing command execution
+- Canny Evidence Ledger: challenges agent 'done' claims without verifiable proof
+https://github.com/apravint/iram-os
+"""
+
+import sys
+import os
+import re
+import json
+import time
+import subprocess
+import argparse
+from typing import Tuple, List, Dict, Any
+
+LEDGER_DIR = os.path.expanduser("~/.local/state/iram/evidence_ledger")
+os.makedirs(LEDGER_DIR, exist_ok=True)
+
+# ANSI Colors
+RED = "\033[0;31m"
+GREEN = "\033[0;32m"
+YELLOW = "\033[1;33m"
+BLUE = "\033[0;34m"
+MAGENTA = "\033[0;35m"
+CYAN = "\033[0;36m"
+BOLD = "\033[1m"
+NC = "\033[0m"
+
+# High-risk patterns that MUST be denied or prompted
+CRITICAL_DENY_PATTERNS = [
+    r"rm\s+(-[a-zA-Z]*r[a-zA-Z]*f[a-zA-Z]*|-[a-zA-Z]*f[a-zA-Z]*r[a-zA-Z]*)\s+(/|/\*|~|~/\*|\$HOME|\$HOME/\*)",
+    r"mkfs\.[a-z0-9]+",
+    r"dd\s+if=.*of=/dev/(sd[a-z]|nvme[0-9]n[0-9])",
+    r":\(\)\s*\{\s*:\s*\|\s*:\s*&\s*\}\s*;\s*:",  # fork bomb
+    r"chmod\s+(-R\s+)?777\s+(/|/etc|/boot|/usr)",
+    r">\s*/dev/sd[a-z]",
+]
+
+PROMPT_PATTERNS = [
+    r"systemctl\s+(stop|disable|mask)\s+",
+    r"iptables\s+-F",
+    r"git\s+push\s+.*--force",
+    r"git\s+reset\s+--hard",
+    r"sudo\s+userdel",
+]
+
+def evaluate_command_risk(cmd: str) -> Tuple[str, List[str]]:
+    """
+    Evaluates 7 safety questions:
+    1. Does this command wipe root or home filesystems?
+    2. Does this write raw bytes to disk devices?
+    3. Does this disable system-critical services?
+    4. Does this alter global firewall/networking rules?
+    5. Does this destroy git repository history?
+    6. Does this grant unrestricted world-writable permissions?
+    7. Is this a fork bomb or denial-of-service vector?
+    """
+    flags = []
+
+    # Check hard deny
+    for p in CRITICAL_DENY_PATTERNS:
+        if re.search(p, cmd):
+            flags.append(f"CRITICAL: Destructive filesystem or disk corruption pattern matched ({p})")
+            return "DENY", flags
+
+    # Check prompt required
+    for p in PROMPT_PATTERNS:
+        if re.search(p, cmd):
+            flags.append(f"HIGH: Modifies persistent system services or unrecoverable git history ({p})")
+            return "PROMPT", flags
+
+    return "ALLOW", ["Passes safety heuristics"]
+
+def record_evidence(task_name: str, claim: str, proof_command: str) -> bool:
+    """
+    Canny Evidence Ledger: Challenges the 'Done' claim.
+    Executes proof_command to verify claim.
+    """
+    print(f"{BOLD}{CYAN}🔍 [Canny Evidence Ledger] Challenging claim for: '{task_name}'{NC}")
+    print(f"   Claim: {claim}")
+    print(f"   Proof Verification Command: `{proof_command}`")
+
+    try:
+        t0 = time.time()
+        res = subprocess.run(proof_command, shell=True, capture_output=True, text=True, timeout=15)
+        dt = time.time() - t0
+        passed = (res.returncode == 0)
+    except Exception as e:
+        passed = False
+        res = subprocess.CompletedProcess(args=proof_command, returncode=1, stdout="", stderr=str(e))
+        dt = 0.0
+
+    entry = {
+        "timestamp": time.time(),
+        "task_name": task_name,
+        "claim": claim,
+        "proof_command": proof_command,
+        "verified": passed,
+        "return_code": res.returncode,
+        "output_snippet": (res.stdout + res.stderr)[:400],
+        "latency": dt
+    }
+
+    record_file = os.path.join(LEDGER_DIR, f"evidence_{int(time.time())}.json")
+    with open(record_file, "w") as f:
+        json.dump(entry, f, indent=2)
+
+    if passed:
+        print(f"   {GREEN}✓ Proof Verified! Evidence accepted and ledger updated.{NC}")
+    else:
+        print(f"   {RED}✗ Proof Failed! Exit code {res.returncode}. Claim rejected.{NC}")
+        if res.stderr.strip():
+            print(f"     Error: {res.stderr.strip()[:200]}")
+
+    return passed
+
+def main():
+    parser = argparse.ArgumentParser(description="IRAM OS Tool-Call Firewall & Evidence Ledger")
+    subparsers = parser.add_subparsers(dest="subcommand")
+
+    # check
+    p_check = subparsers.add_parser("check", help="Evaluate security risk of a shell command")
+    p_check.add_argument("cmd", help="Command string to evaluate")
+
+    # verify
+    p_verify = subparsers.add_parser("verify", help="Challenge agent 'done' claim with proof command")
+    p_verify.add_argument("task", help="Task name")
+    p_verify.add_argument("claim", help="Stated achievement")
+    p_verify.add_argument("proof", help="Verification command that must exit 0")
+
+    # ledger
+    subparsers.add_parser("ledger", help="List recent verified evidence entries")
+
+    args = parser.parse_args()
+
+    if args.subcommand == "check":
+        verdict, flags = evaluate_command_risk(args.cmd)
+        if verdict == "DENY":
+            print(f"{RED}{BOLD}🛑 [TOOLGATE: DENIED] Command blocked by safety firewall!{NC}")
+            for f in flags:
+                print(f"   ✗ {f}")
+            sys.exit(1)
+        elif verdict == "PROMPT":
+            print(f"{YELLOW}{BOLD}⚠️ [TOOLGATE: PROMPT REQUIRED] Elevated risk detected!{NC}")
+            for f in flags:
+                print(f"   • {f}")
+            confirm = input(f"Allow execution of '{args.cmd}'? (y/N): ")
+            if confirm.lower() != "y":
+                print(f"{RED}Operation aborted by user.{NC}")
+                sys.exit(2)
+            print(f"{GREEN}Approved by user.{NC}")
+            sys.exit(0)
+        else:
+            print(f"{GREEN}✓ [TOOLGATE: ALLOWED] Command passed safety filters.{NC}")
+            sys.exit(0)
+
+    elif args.subcommand == "verify":
+        success = record_evidence(args.task, args.claim, args.proof)
+        sys.exit(0 if success else 1)
+
+    elif args.subcommand == "ledger":
+        records = sorted(os.listdir(LEDGER_DIR), reverse=True)
+        print(f"{BOLD}{MAGENTA}📜 Canny Evidence Ledger Records:{NC}")
+        if not records:
+            print("   (No evidence records logged yet)")
+            return
+        for r in records[:10]:
+            path = os.path.join(LEDGER_DIR, r)
+            with open(path, "r") as f:
+                d = json.load(f)
+                status = f"{GREEN}VERIFIED{NC}" if d["verified"] else f"{RED}REJECTED{NC}"
+                print(f"   • [{status}] {d['task_name']}: {d['claim']} ({d.get('proof_command','')[:30]}...)")
+    else:
+        parser.print_help()
+
+if __name__ == "__main__":
+    main()
