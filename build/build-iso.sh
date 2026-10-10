@@ -390,13 +390,13 @@ set menu_color_highlight=black/light-cyan
 
 menuentry "🚀 Start IRAM OS Live (Default)" {
     set gfxpayload=keep
-    linux /casper/vmlinuz boot=casper quiet splash ---
+    linux /casper/vmlinuz boot=casper fsck.mode=skip quiet splash ---
     initrd /casper/initrd
 }
 
 menuentry "🛡️ Start IRAM OS Live (Safe Graphics)" {
     set gfxpayload=keep
-    linux /casper/vmlinuz boot=casper nomodeset quiet splash ---
+    linux /casper/vmlinuz boot=casper nomodeset fsck.mode=skip quiet splash ---
     initrd /casper/initrd
 }
 
@@ -413,6 +413,10 @@ menuentry "⏻ Power Off System" {
     halt
 }
 EOF
+
+# Generate md5sum.txt inside the ISO root for Casper integrity checks
+log_step "Generating ISO root md5sum.txt for Casper media check..."
+(cd "${ISO_DIR}" && find . -type f -not -name "md5sum.txt" -not -path "./boot/grub/*" -not -path "./isolinux/*" | sort | xargs md5sum > "${ISO_DIR}/md5sum.txt" 2>/dev/null || true)
 
 # ------------------------------------------------------------------------------
 # 8. Generate Hybrid UEFI/BIOS Bootable ISO
