@@ -73,8 +73,12 @@ if ! command -v ollama >/dev/null 2>&1; then
     curl -fsSL https://ollama.com/install.sh | sh || true
 fi
 if command -v pip3 >/dev/null 2>&1; then
-    echo "Installing OpenClaw, Edge-TTS & DDGS Agent stack..."
-    pip3 install --break-system-packages openclaw edge-tts ddgs 2>/dev/null || pip3 install openclaw edge-tts ddgs 2>/dev/null || true
+    echo "Installing Omarchy Agentic Stack (FastMCP, Qdrant, Crawl4AI, Docling, Graphiti, smolagents, LangGraph, Phoenix)..."
+    pip3 install --break-system-packages fastmcp qdrant-client crawl4ai docling graphiti-core smolagents langgraph arize-phoenix openclaw edge-tts ddgs 2>/dev/null || true
+fi
+if command -v npm >/dev/null 2>&1; then
+    echo "Installing Repomix AI context bundler..."
+    npm install -g repomix 2>/dev/null || true
 fi
 
 echo -e "\n${YELLOW}[2/6] Installing Omarchy core repository & theme suite...${NC}"
