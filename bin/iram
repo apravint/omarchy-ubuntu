@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# IRAM OS CLI Gateway
+set -euo pipefail
+
+# Intercept theme commands for modern themes suite
+if [[ "${1:-}" == "theme" ]]; then
+    subcmd="${2:-}"
+    if [[ "$subcmd" == "list" ]]; then
+        if [[ "${3:-}" == "--all" || "${3:-}" == "-a" ]]; then
+            exec /usr/local/bin/omarchy theme list
+        fi
+        find "${HOME}/.config/iram/themes/" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -u | sed -E 's/(^|-)([a-z])/\1\u\2/g; s/-/ /g'
+        exit 0
+    elif [[ "$subcmd" == "switch" || "$subcmd" == "gui" ]]; then
+        exec "${HOME}/.local/bin/iram-theme-switcher-gui" "${@:3}"
+    fi
+fi
+
+exec /usr/local/bin/omarchy "$@"

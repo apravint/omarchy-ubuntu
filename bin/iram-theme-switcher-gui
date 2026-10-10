@@ -2,6 +2,7 @@
 """
 Iram Visual Theme Switcher with Previews
 Native Wayland/Hyprland card grid theme selector for Iram.
+Supports Curated Modern Suite and Legacy themes with instant preview cards.
 """
 
 import os
@@ -12,9 +13,21 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 
+MODERN_THEME_IDS = [
+    "cyberpunk-neon",
+    "dracula",
+    "oxocarbon",
+    "vesper",
+    "material-ocean",
+    "aura-dark",
+    "rose-pine-moon",
+    "monokai-pro"
+]
+
 THEMES_DIRS = [
     os.path.expanduser('~/.config/iram/themes'),
     os.path.expanduser('~/.config/omarchy/themes'),
+    os.path.expanduser('~/.config/omarchy/themes.bak'),
     '/usr/share/iram/themes',
     '/usr/share/omarchy/themes'
 ]
@@ -30,7 +43,7 @@ def get_current_theme():
                 return f.read().strip()
         except Exception:
             pass
-    return "catppuccin"
+    return "cyberpunk-neon"
 
 
 def find_theme_preview(theme_path):
@@ -57,12 +70,25 @@ def get_all_themes():
             full_path = os.path.join(base_dir, entry)
             if os.path.isdir(full_path) and entry not in themes:
                 preview = find_theme_preview(full_path)
+                category = "modern" if entry in MODERN_THEME_IDS else "legacy"
                 themes[entry] = {
                     'name': entry,
                     'path': full_path,
-                    'preview': preview
+                    'preview': preview,
+                    'category': category
                 }
-    return list(themes.values())
+    
+    # Sort: Modern suite first in designated order, then legacy alphabetically
+    sorted_list = []
+    for mod_id in MODERN_THEME_IDS:
+        if mod_id in themes:
+            sorted_list.append(themes[mod_id])
+    
+    legacy_list = [t for t in themes.values() if t['category'] == 'legacy']
+    legacy_list.sort(key=lambda x: x['name'])
+    sorted_list.extend(legacy_list)
+    
+    return sorted_list
 
 
 class ThemeCard(Gtk.FlowBoxChild):
@@ -70,6 +96,7 @@ class ThemeCard(Gtk.FlowBoxChild):
         super().__init__()
         self.theme_name = theme_data['name']
         self.preview_path = theme_data['preview']
+        self.theme_category = theme_data.get('category', 'legacy')
         self.is_active = is_active
 
         # Card container
@@ -92,6 +119,11 @@ class ThemeCard(Gtk.FlowBoxChild):
         self.title_label.get_style_context().add_class("theme-title")
         self.title_label.set_alignment(0, 0.5)
         label_box.pack_start(self.title_label, True, True, 4)
+
+        if self.theme_category == "modern":
+            badge_mod = Gtk.Label(label="MODERN")
+            badge_mod.get_style_context().add_class("modern-badge")
+            label_box.pack_start(badge_mod, False, False, 2)
 
         self.badge = Gtk.Label()
         self.badge.get_style_context().add_class("active-badge")
@@ -138,36 +170,57 @@ class ThemeSwitcherApp(Gtk.Window):
     def __init__(self):
         super().__init__(title="Iram Theme Switcher")
         self.set_wmclass("iram-theme-switcher-gui", "iram-theme-switcher-gui")
-        self.set_default_size(980, 680)
+        self.set_default_size(980, 700)
         self.set_position(Gtk.WindowPosition.CENTER)
         self.set_border_width(16)
 
-        # Dark theme styling matching Catppuccin / Iram
+        self.category_filter = "modern"
+
+        # Dark theme styling matching modern aesthetic
         css_provider = Gtk.CssProvider()
         css_data = """
         window {
-            background-color: #1e1e2e;
+            background-color: #14161f;
             color: #cdd6f4;
         }
         .header-title {
             font-size: 20px;
             font-weight: 800;
-            color: #89b4fa;
+            color: #00f0ff;
         }
         .header-subtitle {
             font-size: 13px;
             color: #a6adc8;
         }
         search-entry, entry {
-            background-color: #313244;
+            background-color: #1e2233;
             color: #cdd6f4;
-            border: 1px solid #45475a;
-            border-radius: 0;
+            border: 1px solid #33394f;
+            border-radius: 6px;
             padding: 8px 12px;
             font-size: 14px;
         }
         entry:focus {
-            border-color: #89b4fa;
+            border-color: #00f0ff;
+        }
+        .cat-btn {
+            background-color: #1e2233;
+            color: #9aa2c2;
+            border: 1px solid #33394f;
+            border-radius: 6px;
+            padding: 6px 16px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .cat-btn:hover {
+            background-color: #293049;
+            color: #ffffff;
+        }
+        .cat-btn-active {
+            background-color: #00f0ff;
+            color: #0d0f18;
+            border-color: #00f0ff;
+            font-weight: 800;
         }
         flowbox {
             background-color: transparent;
@@ -177,53 +230,61 @@ class ThemeSwitcherApp(Gtk.Window):
             background-color: transparent;
         }
         .theme-card {
-            background-color: #181825;
-            border: 2px solid #313244;
-            border-radius: 0;
+            background-color: #1a1c28;
+            border: 2px solid #282c3f;
+            border-radius: 8px;
             padding: 8px;
             transition: all 150ms ease;
         }
         .theme-card:hover {
-            border-color: #89b4fa;
-            background-color: #1e1e2e;
+            border-color: #00f0ff;
+            background-color: #202434;
         }
         .active-card {
-            border-color: #a6e3a1;
-            background-color: #1e2030;
+            border-color: #05ffa1;
+            background-color: #182522;
         }
         .theme-title {
             font-size: 14px;
             font-weight: bold;
-            color: #cdd6f4;
+            color: #ffffff;
+        }
+        .modern-badge {
+            background-color: rgba(0, 240, 255, 0.15);
+            color: #00f0ff;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
         }
         .active-badge {
-            background-color: #a6e3a1;
-            color: #11111b;
+            background-color: #05ffa1;
+            color: #05140d;
             font-size: 11px;
             font-weight: 800;
             padding: 2px 8px;
-            border-radius: 0;
+            border-radius: 4px;
         }
         button.suggested-action {
-            background-color: #89b4fa;
-            color: #11111b;
+            background-color: #00f0ff;
+            color: #08090f;
             font-weight: 800;
-            border-radius: 0;
+            border-radius: 6px;
             padding: 10px 24px;
             font-size: 14px;
         }
         button.suggested-action:hover {
-            background-color: #b4befe;
+            background-color: #33f3ff;
         }
         button.cancel-btn {
-            background-color: #313244;
+            background-color: #1e2233;
             color: #cdd6f4;
-            border-radius: 0;
+            border-radius: 6px;
             padding: 10px 20px;
             font-size: 14px;
         }
         button.cancel-btn:hover {
-            background-color: #45475a;
+            background-color: #293049;
         }
         """
         css_provider.load_from_data(css_data.encode('utf-8'))
@@ -240,7 +301,7 @@ class ThemeSwitcherApp(Gtk.Window):
         top_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
         
         title_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
-        title_label = Gtk.Label(label="🎨 Iram Theme Switcher")
+        title_label = Gtk.Label(label="🎨 Iram Modern Theme Switcher")
         title_label.get_style_context().add_class("header-title")
         title_label.set_alignment(0, 0.5)
         title_box.pack_start(title_label, False, False, 0)
@@ -254,11 +315,31 @@ class ThemeSwitcherApp(Gtk.Window):
 
         # Search Bar
         self.search_entry = Gtk.SearchEntry()
-        self.search_entry.set_placeholder_text("🔍 Search 22 themes...")
+        self.search_entry.set_placeholder_text("🔍 Search themes...")
         self.search_entry.set_width_chars(25)
         self.search_entry.connect("search-changed", self.on_search_changed)
         top_box.pack_end(self.search_entry, False, False, 0)
         main_box.pack_start(top_box, False, False, 0)
+
+        # Category Filter Pills
+        cat_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        self.btn_modern = Gtk.Button(label="✨ Modern Suite (8)")
+        self.btn_modern.get_style_context().add_class("cat-btn")
+        self.btn_modern.get_style_context().add_class("cat-btn-active")
+        self.btn_modern.connect("clicked", lambda b: self.set_category_filter("modern"))
+        cat_box.pack_start(self.btn_modern, False, False, 0)
+
+        self.btn_legacy = Gtk.Button(label="📦 Legacy Themes")
+        self.btn_legacy.get_style_context().add_class("cat-btn")
+        self.btn_legacy.connect("clicked", lambda b: self.set_category_filter("legacy"))
+        cat_box.pack_start(self.btn_legacy, False, False, 0)
+
+        self.btn_all = Gtk.Button(label="🌐 All Themes")
+        self.btn_all.get_style_context().add_class("cat-btn")
+        self.btn_all.connect("clicked", lambda b: self.set_category_filter("all"))
+        cat_box.pack_start(self.btn_all, False, False, 0)
+
+        main_box.pack_start(cat_box, False, False, 0)
 
         # Scrollable Area for Grid
         scrolled = Gtk.ScrolledWindow()
@@ -303,6 +384,16 @@ class ThemeSwitcherApp(Gtk.Window):
         self.selected_theme_name = self.current_theme
         self.load_themes()
 
+    def set_category_filter(self, cat):
+        self.category_filter = cat
+        for btn, name in [(self.btn_modern, "modern"), (self.btn_legacy, "legacy"), (self.btn_all, "all")]:
+            ctx = btn.get_style_context()
+            if name == cat:
+                ctx.add_class("cat-btn-active")
+            else:
+                ctx.remove_class("cat-btn-active")
+        self.flowbox.invalidate_filter()
+
     def load_themes(self):
         themes = get_all_themes()
         selected_child = None
@@ -320,6 +411,8 @@ class ThemeSwitcherApp(Gtk.Window):
             self.flowbox.select_child(selected_child)
 
     def filter_themes(self, child):
+        if self.category_filter != "all" and child.theme_category != self.category_filter:
+            return False
         query = self.search_entry.get_text().strip().lower()
         if not query:
             return True

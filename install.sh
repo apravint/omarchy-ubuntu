@@ -192,7 +192,7 @@ fi
 
 echo -e "\n${YELLOW}[5/6] Initializing default Iram theme & Self-Healing Timer...${NC}"
 export IRAM_PATH=/usr/share/iram
-iram theme set "Tokyo Night" || true
+iram theme set "Cyberpunk Neon" || iram theme set "Tokyo Night" || true
 "$HOME/.local/bin/iram-theme-sync-all" || true
 systemctl --user enable --now iram-agentd.service 2>/dev/null || true
 systemctl --user enable --now iram-healthd.timer 2>/dev/null || true

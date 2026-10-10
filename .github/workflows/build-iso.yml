@@ -55,7 +55,8 @@ jobs:
             dosfstools \
             isolinux \
             syslinux-utils \
-            zstd
+            zstd \
+            xz-utils
 
       - name: Run ISO Builder
         env:

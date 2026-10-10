@@ -365,7 +365,7 @@ umount -lf "${ROOTFS_DIR}/proc" 2>/dev/null || true
 umount -lf "${ROOTFS_DIR}/sys" 2>/dev/null || true
 
 mksquashfs "${ROOTFS_DIR}" "${ISO_DIR}/casper/filesystem.squashfs" \
-    -comp zstd -Xcompression-level 15
+    -comp xz -b 1048576 -Xbcj x86
 
 # ------------------------------------------------------------------------------
 # 7. Configure GRUB Bootloader for BIOS & UEFI Hybrid Boot
