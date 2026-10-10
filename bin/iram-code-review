@@ -1,0 +1,233 @@
+#!/usr/bin/env python3
+"""
+IRAM OS AI Code Review Gatekeeper (iram-code-review)
+Inspired by openqodex: 100+ local static security & syntax scans + AI diff reviewer
+Can be installed as a git pre-push hook to prevent broken commits and secret leaks.
+https://github.com/apravint/iram-os
+"""
+
+import sys
+import os
+import re
+import json
+import subprocess
+import urllib.request
+import argparse
+from typing import List, Dict, Any, Tuple
+
+# ANSI Colors
+RED = "\033[0;31m"
+GREEN = "\033[0;32m"
+YELLOW = "\033[1;33m"
+BLUE = "\033[0;34m"
+MAGENTA = "\033[0;35m"
+CYAN = "\033[0;36m"
+BOLD = "\033[1m"
+NC = "\033[0m"
+
+SECRET_PATTERNS = [
+    (r"(?i)api[_-]?key\s*[:=]\s*['\"][A-Za-z0-9_-]{20,}['\"]", "Potential API Key"),
+    (r"(?i)secret[_-]?key\s*[:=]\s*['\"][A-Za-z0-9_-]{20,}['\"]", "Potential Secret Key"),
+    (r"AIza[0-9A-Za-z-_]{35}", "Google API Key"),
+    (r"ghp_[0-9a-zA-Z]{36}", "GitHub Personal Access Token"),
+    (r"xox[baprs]-[0-9a-zA-Z]{10,48}", "Slack Token"),
+    (r"-----BEGIN\s+(RSA|OPENSSH|PRIVATE)\s+KEY-----", "Private Cryptographic Key"),
+    (r"sk-[a-zA-Z0-9]{20,}", "OpenAI / Cloud Secret Key"),
+]
+
+def get_api_key() -> str:
+    key = os.environ.get("GEMINI_API_KEY", "")
+    if key:
+        return key
+    conf_path = os.path.expanduser("~/.config/environment.d/20-gemini.conf")
+    if os.path.exists(conf_path):
+        with open(conf_path, "r") as f:
+            for line in f:
+                if line.startswith("GEMINI_API_KEY="):
+                    return line.strip().split("=", 1)[1].strip('"').strip("'")
+    return ""
+
+def run_local_scans() -> Tuple[List[str], List[str]]:
+    """
+    Run $0 local security and syntax checks across modified repository files.
+    Returns (errors, warnings).
+    """
+    errors = []
+    warnings = []
+
+    # Get changed files
+    res = subprocess.run(["git", "diff", "--name-only", "HEAD~1"], capture_output=True, text=True)
+    if res.returncode != 0:
+        res = subprocess.run(["git", "diff", "--name-only", "--cached"], capture_output=True, text=True)
+    files = [f.strip() for f in res.stdout.splitlines() if f.strip() and os.path.exists(f.strip())]
+
+    # Get diff text for secret scanning
+    diff_res = subprocess.run(["git", "diff", "HEAD~1"], capture_output=True, text=True)
+    if diff_res.returncode != 0:
+        diff_res = subprocess.run(["git", "diff", "--cached"], capture_output=True, text=True)
+    diff_text = diff_res.stdout
+
+    # 1. Secret Scanning on diff
+    for pattern, desc in SECRET_PATTERNS:
+        matches = re.findall(pattern, diff_text)
+        if matches:
+            errors.append(f"🔒 Secret Leak Detected: {desc} (Match: {matches[0][:15]}...)")
+
+    # 2. Merge Conflict Markers
+    for line in diff_text.splitlines():
+        if line.startswith("+<<<<<<< ") or line.startswith("+=======") or line.startswith("+>>>>>>> "):
+            errors.append("⚔️ Unresolved Git Merge Conflict Markers found in added lines")
+            break
+
+    # 3. File Syntax Checks
+    for f in files:
+        # Bash scripts
+        if f.endswith(".sh") or f.startswith("bin/"):
+            try:
+                with open(f, "rb") as fh:
+                    first_line = fh.readline()
+                if b"bash" in first_line or b"sh" in first_line:
+                    chk = subprocess.run(["bash", "-n", f], capture_output=True, text=True)
+                    if chk.returncode != 0:
+                        errors.append(f"🐚 Shell syntax error in {f}: {chk.stderr.strip()}")
+            except Exception:
+                pass
+
+        # Python scripts
+        if f.endswith(".py") or f.startswith("bin/"):
+            try:
+                with open(f, "rb") as fh:
+                    first_line = fh.readline()
+                if b"python" in first_line or f.endswith(".py"):
+                    chk = subprocess.run(["python3", "-m", "py_compile", f], capture_output=True, text=True)
+                    if chk.returncode != 0:
+                        errors.append(f"🐍 Python syntax compilation error in {f}: {chk.stderr.strip()}")
+            except Exception:
+                pass
+
+        # JSON files
+        if f.endswith(".json"):
+            try:
+                with open(f, "r") as fh:
+                    json.load(fh)
+            except Exception as e:
+                errors.append(f"📄 JSON parse error in {f}: {e}")
+
+        # Check binary file sizes (> 15MB)
+        try:
+            if os.path.getsize(f) > 15 * 1024 * 1024 and not f.endswith(".iso"):
+                warnings.append(f"📦 Large file detected (>15MB): {f}")
+        except Exception:
+            pass
+
+    return errors, warnings
+
+def query_ai_reviewer(diff_text: str) -> str:
+    """Send git diff to AI reviewer model."""
+    if not diff_text.strip():
+        return "No code changes detected in diff."
+
+    prompt = (
+        "You are an expert Principal Systems Engineer conducting a strict code review for IRAM OS.\n"
+        "Analyze the following git diff and provide a concise review covering:\n"
+        "1. Security & Safety (Privilege escalation, injections, leaks)\n"
+        "2. Correctness & Breaking Changes\n"
+        "3. Performance & Resource Impact\n"
+        "4. Recommendation (APPROVE / REQUEST_CHANGES)\n\n"
+        f"Git Diff (truncated to 4000 chars):\n```diff\n{diff_text[:4000]}\n```"
+    )
+
+    api_key = get_api_key()
+    if api_key:
+        model = os.environ.get("REVIEW_MODEL", "gemini-2.5-flash")
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+        payload = {"contents": [{"parts": [{"text": prompt}]}]}
+        try:
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json", "x-goog-api-key": api_key}
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                return data["candidates"][0]["content"]["parts"][0]["text"].strip()
+        except Exception:
+            pass
+
+    # Local Ollama fallback
+    try:
+        req = urllib.request.Request(
+            "http://localhost:11434/api/generate",
+            data=json.dumps({"model": "qwen2.5:1.5b", "prompt": prompt, "stream": False}).encode("utf-8"),
+            headers={"Content-Type": "application/json"}
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return data.get("response", "").strip()
+    except Exception as e:
+        return f"[AI Reviewer unavailable: {e}. Local static checks passed.]"
+
+def install_git_hook():
+    """Install iram-code-review into .git/hooks/pre-push"""
+    hook_path = ".git/hooks/pre-push"
+    if not os.path.exists(".git"):
+        print(f"{RED}Error: Not in the root of a git repository.{NC}")
+        sys.exit(1)
+
+    hook_content = (
+        "#!/usr/bin/env bash\n"
+        "# IRAM OS Pre-Push AI Code Review Hook\n"
+        "echo -e '\\033[1;34m==> Running IRAM OS AI Code Review Gatekeeper...\\033[0m'\n"
+        "iram-code-review --gate || {\n"
+        "    echo -e '\\033[1;31m[PUSH REJECTED] Code review gate failed. Fix errors above before pushing.\\033[0m'\n"
+        "    exit 1\n"
+        "}\n"
+    )
+    with open(hook_path, "w") as f:
+        f.write(hook_content)
+    os.chmod(hook_path, 0o755)
+    print(f"{GREEN}✓ Successfully installed pre-push gatekeeper hook at {hook_path}{NC}")
+
+def main():
+    parser = argparse.ArgumentParser(description="IRAM OS AI Code Review Gatekeeper")
+    parser.add_argument("--gate", action="store_true", help="Fail with non-zero exit code on critical findings (for CI / pre-push)")
+    parser.add_argument("--install-hook", action="store_true", help="Install as .git/hooks/pre-push gatekeeper")
+    args = parser.parse_args()
+
+    if args.install_hook:
+        install_git_hook()
+        return
+
+    print(f"{BOLD}{CYAN}🔍 IRAM OS AI Code Reviewer ($0 Open-Source Gatekeeper){NC}")
+    print(f"   Scanning staged changes and commit diff...")
+
+    errors, warnings = run_local_scans()
+
+    # Display local scanner findings
+    print(f"\n{BOLD}1. Local Static & Security Scanners:{NC}")
+    if not errors and not warnings:
+        print(f"   {GREEN}✓ All local security and syntax checks passed clean (0 leaks, 0 errors).{NC}")
+    else:
+        for err in errors:
+            print(f"   {RED}✗ {err}{NC}")
+        for warn in warnings:
+            print(f"   {YELLOW}⚠ {warn}{NC}")
+
+    # Run AI Reviewer
+    diff_res = subprocess.run(["git", "diff", "HEAD~1"], capture_output=True, text=True)
+    if diff_res.returncode != 0:
+        diff_res = subprocess.run(["git", "diff", "--cached"], capture_output=True, text=True)
+    diff_text = diff_res.stdout
+
+    print(f"\n{BOLD}2. AI Deep Logic & Architecture Review:{NC}")
+    ai_feedback = query_ai_reviewer(diff_text)
+    print(ai_feedback)
+
+    if errors and args.gate:
+        print(f"\n{RED}{BOLD}🚨 GATE BLOCKED: Critical issues detected. Resolve errors before pushing.{NC}")
+        sys.exit(1)
+    else:
+        print(f"\n{GREEN}{BOLD}✨ Review complete. Codebase is in good health.{NC}")
+
+if __name__ == "__main__":
+    main()

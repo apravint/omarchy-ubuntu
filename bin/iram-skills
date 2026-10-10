@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+"""
+IRAM OS Modular Skills Engine (iram-skills)
+Inspired by anthropics/skills & obra/superpowers:
+Reusable, on-demand instructions and scripts loaded dynamically
+instead of bloating the agent's context window on every turn.
+https://github.com/apravint/iram-os
+"""
+
+import sys
+import os
+import json
+import argparse
+import subprocess
+from typing import Dict, List, Any
+
+USER_SKILLS_DIR = os.path.expanduser("~/.config/iram/skills")
+REPO_SKILLS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "skills")
+os.makedirs(USER_SKILLS_DIR, exist_ok=True)
+
+# Built-in Default Skills
+BUILTIN_SKILLS = {
+    "superpowers": {
+        "description": "Transforms vague tasks into verifiable TDD plans with execution checkpoints.",
+        "instructions": (
+            "# Superpowers Skill: Test-Driven Planning & Verification Checkpoints\n"
+            "1. Clarify Requirements: Identify the single core behavior that must change.\n"
+            "2. Write/Identify Tests First: Specify how success will be verified before altering code.\n"
+            "3. Make Minimal Atomic Edit: Keep diffs focused strictly on the objective.\n"
+            "4. Execute Verification: Run compilation (bash -n / py_compile / tests).\n"
+            "5. Rollback on Failure: Never commit broken state; adapt and retry.\n"
+        )
+    },
+    "git-workflow": {
+        "description": "Standardized conventional commit drafting, clean diff inspection, and safe branch hygiene.",
+        "instructions": (
+            "# Git Workflow Skill\n"
+            "- Inspect staged diff using `git diff --staged` before finalizing.\n"
+            "- Craft conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`.\n"
+            "- Never force-push to main or include uncommitted merge markers.\n"
+        )
+    },
+    "pipewire-audio": {
+        "description": "Diagnoses PipeWire/WirePlumber streams, ALSA converter priorities, and sink routing.",
+        "instructions": (
+            "# PipeWire Audio Routing Skill\n"
+            "- Inspect sinks: `wpctl status`\n"
+            "- Toggle active default sink: `iram-audio-toggle`\n"
+            "- Ensure HDMI monitor converters are unmuted: `iram-audio-init`\n"
+        )
+    },
+    "hyprland-geometry": {
+        "description": "Multi-monitor geometry collision prevention and window rules management.",
+        "instructions": (
+            "# Hyprland Geometry Skill\n"
+            "- Audit display coordinates: `iram-displays-gui` or `hyprctl monitors`\n"
+            "- Verify 0x0 offset collision avoidance on secondary 4K and TV screens.\n"
+            "- Verify config syntax: `hyprland --verify-config`.\n"
+        )
+    }
+}
+
+# ANSI Colors
+GREEN = "\033[0;32m"
+CYAN = "\033[0;36m"
+BOLD = "\033[1m"
+NC = "\033[0m"
+
+def list_skills():
+    print(f"{BOLD}{CYAN}⚡ IRAM OS Installed Modular Skills:{NC}")
+    for name, data in BUILTIN_SKILLS.items():
+        print(f"  • {BOLD}{name}{NC}: {data['description']}")
+    
+    # Custom user skills
+    if os.path.exists(USER_SKILLS_DIR):
+        user_skills = [f for f in os.listdir(USER_SKILLS_DIR) if f.endswith(".md") or f.endswith(".json")]
+        for s in user_skills:
+            print(f"  • {BOLD}{s}{NC} (custom user skill in ~/.config/iram/skills/)")
+
+def view_skill(skill_name: str):
+    if skill_name in BUILTIN_SKILLS:
+        print(f"{BOLD}Skill: {skill_name}{NC}\n")
+        print(BUILTIN_SKILLS[skill_name]["instructions"])
+        return
+
+    custom_path = os.path.join(USER_SKILLS_DIR, f"{skill_name}.md")
+    if os.path.exists(custom_path):
+        with open(custom_path, "r", encoding="utf-8") as f:
+            print(f.read())
+        return
+
+    print(f"Skill '{skill_name}' not found. List available skills with: iram-skills list")
+
+def main():
+    parser = argparse.ArgumentParser(description="IRAM OS Modular Skills Engine")
+    subparsers = parser.add_subparsers(dest="subcommand")
+
+    subparsers.add_parser("list", help="List available modular skills")
+    
+    p_view = subparsers.add_parser("view", help="View instructions for a specific skill")
+    p_view.add_argument("name", help="Name of skill")
+
+    p_run = subparsers.add_parser("inject", help="Emit skill instructions for prompt injection")
+    p_run.add_argument("name", help="Name of skill")
+
+    args = parser.parse_args()
+
+    if args.subcommand == "list" or not args.subcommand:
+        list_skills()
+    elif args.subcommand in ["view", "inject"]:
+        view_skill(args.name)
+
+if __name__ == "__main__":
+    main()

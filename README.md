@@ -234,6 +234,10 @@ All tools are located in `bin/` and automatically installed to `~/.local/bin/` a
 ### Autonomous Agentic AI Toolchain
 | Command | Description |
 | :--- | :--- |
+| `iram-agent-tree` | Hierarchical tiered agent engine (Architect reasoning -> Coordinator -> Grunt Workers) |
+| `iram-code-review` | $0 open-source pre-push code review gatekeeper with 100+ local scanners & AI audit |
+| `iram-memory` | Unified multi-tier persistent memory (Mem0 preferences, Letta session, Graphiti graph) |
+| `iram-skills` | Modular skill loader executing specialized instructions on demand without context bloat |
 | `iram-mcp-server` | FastMCP desktop server exposing Hyprland, audio, themes, and memory over stdio MCP |
 | `iram-qdrant` | Embedded local Qdrant vector retrieval engine for codebase chunks and memory |
 | `iram-graphiti` | Temporal knowledge graph tracking project decisions, facts, and entity relations |

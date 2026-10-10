@@ -1,57 +1,203 @@
 #!/usr/bin/env python3
 """
-Iram Episodic Vector Memory Layer (iram-memory)
-Indexes user document notes, terminal history, and project code for semantic AI memory search.
-Powered by Local Embedded Qdrant Vectors + Graphiti Knowledge Graph.
+IRAM OS Persistent Universal Memory Engine (iram-memory)
+Unifies the 10 open-source AI memory patterns:
+- Mem0 / Supermemory: User preferences & long-term habits
+- Graphiti / Zep: Temporal knowledge graphs with chronological facts
+- Letta / Memvid / Engram: File-backed session working memory that survives reboots
+- Qdrant: Dense embedded vector search over conversations & code
 https://github.com/apravint/iram-os
 """
 
 import sys
 import os
 import json
+import time
 import subprocess
-from typing import List, Tuple
+import argparse
+from typing import Dict, List, Any, Optional
 
-def add_memory(category: str, content: str):
-    """
-    Save memory into both Qdrant vector memory and Graphiti knowledge graph.
-    """
-    try:
-        # 1. Qdrant
-        subprocess.run(["iram-qdrant", "add-memory", content, "--category", category], check=True)
-        # 2. Graphiti
-        subprocess.run(["iram-graphiti", "fact", content, "--tags", category], check=True)
-    except Exception as e:
-        print(f"Error persisting memory: {e}")
+MEMORY_DIR = os.path.expanduser("~/.local/state/iram/memory")
+PREFS_FILE = os.path.join(MEMORY_DIR, "preferences.json")
+SESSION_FILE = os.path.join(MEMORY_DIR, "session_state.json")
+os.makedirs(MEMORY_DIR, exist_ok=True)
 
-def search_memory(query: str, top_k: int = 5):
-    """
-    Query Qdrant memory collection.
-    """
+# ANSI Colors
+CYAN = "\033[0;36m"
+GREEN = "\033[0;32m"
+YELLOW = "\033[1;33m"
+BLUE = "\033[0;34m"
+MAGENTA = "\033[0;35m"
+BOLD = "\033[1m"
+NC = "\033[0m"
+
+def load_json(path: str, default: Any) -> Any:
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return default
+    return default
+
+def save_json(path: str, data: Any):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+
+# --- 1. Mem0 Style: Long-term User Preferences ---
+def add_preference(text: str, category: str = "general"):
+    prefs = load_json(PREFS_FILE, [])
+    item = {
+        "id": len(prefs) + 1,
+        "text": text,
+        "category": category,
+        "created_at": time.time(),
+        "created_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    }
+    prefs.append(item)
+    save_json(PREFS_FILE, prefs)
+
+    # Sync to Qdrant vector memory
     try:
-        res = subprocess.run(["iram-qdrant", "search-memory", query, "--limit", str(top_k)], capture_output=True, text=True)
-        return res.stdout.strip()
-    except Exception as e:
-        return f"Search error: {e}"
+        subprocess.run(["iram-qdrant", "add-memory", f"Preference ({category}): {text}"], check=False, capture_output=True)
+    except Exception:
+        pass
+    print(f"{GREEN}✓ Stored user preference ({category}): {text}{NC}")
+
+def list_preferences():
+    prefs = load_json(PREFS_FILE, [])
+    print(f"{BOLD}{MAGENTA}🧠 Persistent User Preferences (Mem0 Layer):{NC}")
+    if not prefs:
+        print("   (No preferences stored yet. Add one with: iram-memory pref '<preference>')")
+        return
+    for p in prefs:
+        print(f"   [{p.get('category', 'general')}] #{p['id']}: {p['text']} {CYAN}({p.get('created_iso','')}){NC}")
+
+# --- 2. Letta / Memvid Style: Session Working Memory ---
+def set_session_var(key: str, value: str):
+    session = load_json(SESSION_FILE, {})
+    session[key] = {
+        "value": value,
+        "updated_at": time.time(),
+        "updated_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    }
+    save_json(SESSION_FILE, session)
+    print(f"{GREEN}✓ Updated session working memory: {key} = {value}{NC}")
+
+def get_session():
+    session = load_json(SESSION_FILE, {})
+    print(f"{BOLD}{BLUE}📝 Session Working Memory (Letta/Memvid Layer):{NC}")
+    if not session:
+        print("   (No active session variables)")
+        return
+    for k, v in session.items():
+        print(f"   • {BOLD}{k}{NC}: {v['value']} {CYAN}({v.get('updated_iso','')}){NC}")
+
+# --- 3. Unified Cross-Tier Retrieval (Supermemory Style) ---
+def search_all_memory(query: str):
+    print(f"{BOLD}{CYAN}🔍 Unified Memory Search for: '{query}'{NC}\n")
+
+    # A. Preferences check
+    prefs = load_json(PREFS_FILE, [])
+    matched_prefs = [p for p in prefs if query.lower() in p["text"].lower() or query.lower() in p.get("category", "").lower()]
+    if matched_prefs:
+        print(f"{BOLD}1. User Preferences (Mem0):{NC}")
+        for p in matched_prefs:
+            print(f"   • {p['text']} [{p.get('category','')}]")
+        print()
+
+    # B. Session State check
+    session = load_json(SESSION_FILE, {})
+    matched_session = {k: v for k, v in session.items() if query.lower() in k.lower() or query.lower() in str(v["value"]).lower()}
+    if matched_session:
+        print(f"{BOLD}2. Session Working State (Letta):{NC}")
+        for k, v in matched_session.items():
+            print(f"   • {k}: {v['value']}")
+        print()
+
+    # C. Graphiti Knowledge Graph facts
+    print(f"{BOLD}3. Temporal Knowledge Graph (Graphiti):{NC}")
+    try:
+        res = subprocess.run(["iram-graphiti", "search", query], capture_output=True, text=True)
+        if res.stdout.strip():
+            print("   " + res.stdout.strip().replace("\n", "\n   "))
+        else:
+            print("   (No direct knowledge graph edges matched)")
+    except Exception:
+        print("   (Graphiti offline)")
+    print()
+
+    # D. Qdrant Vector Semantic Search
+    print(f"{BOLD}4. Semantic Vector Store (Qdrant):{NC}")
+    try:
+        res = subprocess.run(["iram-qdrant", "search-memory", query, "--limit", "3"], capture_output=True, text=True)
+        if res.stdout.strip():
+            print("   " + res.stdout.strip().replace("\n", "\n   "))
+        else:
+            print("   (No vector points matched)")
+    except Exception:
+        print("   (Qdrant offline)")
 
 def main():
-    if len(sys.argv) > 2 and sys.argv[1] == "add":
-        cat = "general"
-        content = " ".join(sys.argv[2:])
-        add_memory(cat, content)
-    elif len(sys.argv) > 1 and sys.argv[1] in ["--help", "-h"]:
-        print("Usage:")
-        print("  iram-memory add '<content>'        Add memory fact")
-        print("  iram-memory '<search_query>'       Semantic memory search")
-        print("  iram-memory status                 Show memory & vector statistics")
-    elif len(sys.argv) > 1 and sys.argv[1] == "status":
+    parser = argparse.ArgumentParser(description="IRAM OS Persistent Universal Memory Engine")
+    subparsers = parser.add_subparsers(dest="subcommand")
+
+    # pref
+    p_pref = subparsers.add_parser("pref", help="Add or view persistent user preferences (Mem0)")
+    p_pref.add_argument("text", nargs="?", help="Preference statement")
+    p_pref.add_argument("--category", "-c", default="general", help="Category (coding, desktop, audio, etc.)")
+
+    # session
+    p_sess = subparsers.add_parser("session", help="Get or set session working memory (Letta)")
+    p_sess.add_argument("key", nargs="?", help="Variable key")
+    p_sess.add_argument("value", nargs="?", help="Variable value")
+
+    # fact
+    p_fact = subparsers.add_parser("fact", help="Add chronological fact to temporal graph (Graphiti)")
+    p_fact.add_argument("text", help="Fact statement")
+
+    # search
+    p_search = subparsers.add_parser("search", help="Unified cross-tier search (Supermemory)")
+    p_search.add_argument("query", help="Search query")
+
+    # list
+    subparsers.add_parser("list", help="List all stored preferences and active session state")
+
+    # status
+    subparsers.add_parser("status", help="Show system memory status across all tiers")
+
+    args = parser.parse_args()
+
+    if args.subcommand == "pref":
+        if args.text:
+            add_preference(args.text, args.category)
+        else:
+            list_preferences()
+    elif args.subcommand == "session":
+        if args.key and args.value:
+            set_session_var(args.key, args.value)
+        else:
+            get_session()
+    elif args.subcommand == "fact":
+        subprocess.run(["iram-graphiti", "fact", args.text])
+    elif args.subcommand == "search":
+        search_all_memory(args.query)
+    elif args.subcommand == "list":
+        list_preferences()
+        print()
+        get_session()
+    elif args.subcommand == "status":
+        list_preferences()
+        print()
+        get_session()
+        print()
         subprocess.run(["iram-qdrant", "status"])
-        subprocess.run(["iram-graphiti", "search", ""])
-    elif len(sys.argv) > 1:
-        query = " ".join(sys.argv[1:])
-        print(search_memory(query))
     else:
-        print("Usage: iram-memory <search_query> OR iram-memory add 'content'")
+        # Default behavior: if string provided, do search; if empty, show help
+        if len(sys.argv) > 1 and not sys.argv[1].startswith("-"):
+            search_all_memory(" ".join(sys.argv[1:]))
+        else:
+            parser.print_help()
 
 if __name__ == "__main__":
     main()
