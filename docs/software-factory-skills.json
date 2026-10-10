@@ -1,0 +1,132 @@
+{
+  "title": "20 Skills for a Complete Autonomous Software Factory",
+  "description": "Taxonomy of agent skills converting LLM coders into an enterprise software delivery factory.",
+  "workflow_stages": [
+    "1. Specification & Architecture",
+    "2. Planning & Team Orchestration",
+    "3. Implementation & Verification",
+    "4. Quality Gates & Delivery"
+  ],
+  "skills": [
+    {
+      "id": 1,
+      "name": "spec-driven-development",
+      "repo": "https://github.com/magnus919/agent-skills/tree/main/spec-driven-development",
+      "role": "Turn product requirements into structured specifications, implementation plans, and verifiable deliverables."
+    },
+    {
+      "id": 2,
+      "name": "pipeline",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/pipeline",
+      "role": "Orchestrate autonomous plan -> build -> review workflows with quality gates and isolated Git worktrees."
+    },
+    {
+      "id": 3,
+      "name": "ensemble-team",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/ensemble-team",
+      "role": "Coordinate specialized AI agents for planning, implementation, testing, and code review."
+    },
+    {
+      "id": 4,
+      "name": "task-management",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/task-management",
+      "role": "Break complex features into manageable tasks with dependencies, ownership, and progress tracking."
+    },
+    {
+      "id": 5,
+      "name": "tdd",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/tdd",
+      "role": "Enforce test-driven development through automated red-green-refactor cycles."
+    },
+    {
+      "id": 6,
+      "name": "code-review",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/code-review",
+      "role": "Review AI-generated code for specification compliance, quality, and domain correctness."
+    },
+    {
+      "id": 7,
+      "name": "debugging-protocol",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/debugging-protocol",
+      "role": "Systematically investigate bugs, identify root causes, and validate fixes."
+    },
+    {
+      "id": 8,
+      "name": "ci-integration",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/ci-integration",
+      "role": "Integrate automated builds, tests, and quality gates into software delivery pipelines."
+    },
+    {
+      "id": 9,
+      "name": "mutation-testing",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/mutation-testing",
+      "role": "Evaluate test effectiveness by introducing controlled code mutations."
+    },
+    {
+      "id": 10,
+      "name": "architecture-decisions",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/architecture-decisions",
+      "role": "Record technical tradeoffs and architectural decisions for consistent agent execution."
+    },
+    {
+      "id": 11,
+      "name": "domain-modeling",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/domain-modeling",
+      "role": "Design robust domain models using type-driven design and explicit business invariants."
+    },
+    {
+      "id": 12,
+      "name": "event-modeling",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/event-modeling",
+      "role": "Model business workflows, system events, and acceptance scenarios before implementation."
+    },
+    {
+      "id": 13,
+      "name": "ticket-triage",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/ticket-triage",
+      "role": "Evaluate issue readiness and turn ambiguous tickets into actionable engineering tasks."
+    },
+    {
+      "id": 14,
+      "name": "factory-review",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/factory-review",
+      "role": "Review autonomous factory output with quality metrics, audit trails, and human approval."
+    },
+    {
+      "id": 15,
+      "name": "memory-protocol",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/memory-protocol",
+      "role": "Preserve development knowledge and retrieve past context across agent sessions."
+    },
+    {
+      "id": 16,
+      "name": "bootstrap",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/bootstrap",
+      "role": "Initialize projects with agent instructions, environment detection, and development workflows."
+    },
+    {
+      "id": 17,
+      "name": "atomic-design",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/atomic-design",
+      "role": "Build consistent, reusable UI systems using component-based design principles."
+    },
+    {
+      "id": 18,
+      "name": "user-input-protocol",
+      "repo": "https://github.com/jwilger/agent-skills/tree/main/skills/user-input-protocol",
+      "role": "Handle human clarification and approval requests without losing agent workflow state."
+    },
+    {
+      "id": 19,
+      "name": "spec-to-plan",
+      "repo": "https://github.com/artreimus/software-factory-starter/tree/main/.agents/skills/spec-to-plan",
+      "role": "Convert approved specifications into actionable engineering plans for coding agents."
+    },
+    {
+      "id": 20,
+      "name": "agentic-code-review",
+      "repo": "https://github.com/artreimus/software-factory-starter/tree/main/.agents/skills/agentic-code-review",
+      "role": "Create repeatable AI-powered code review loops with structured feedback and validation."
+    }
+  ]
+}

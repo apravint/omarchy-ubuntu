@@ -1,0 +1,41 @@
+{
+  "title": "5 Turnkey Open-Source Business Engines",
+  "business_logic": "Find a recurring problem -> Use the repo to build a working solution -> Package the setup, training, and support.",
+  "offers": [
+    {
+      "name": "Activepieces",
+      "repo": "http://github.com/activepieces/activepieces",
+      "niche": "Workflow Automation & App Sync",
+      "pain": "Copy-pasting between client apps; high Zapier fees",
+      "offer": "Connect tools, build custom workflows, ongoing automation maintenance"
+    },
+    {
+      "name": "Chatwoot",
+      "repo": "http://github.com/chatwoot/chatwoot",
+      "niche": "Omnichannel Customer Support",
+      "pain": "Scattered customer messages across WhatsApp, email, DMs",
+      "offer": "Unified support inbox, team routing, help center configuration"
+    },
+    {
+      "name": "GPT Researcher",
+      "repo": "http://github.com/assafelovic/gpt-researcher",
+      "niche": "Autonomous Market Intelligence",
+      "pain": "Founders wasting hours on competitor and industry research",
+      "offer": "Weekly automated research briefs, fact-checked intelligence reports"
+    },
+    {
+      "name": "ERPNext",
+      "repo": "http://github.com/frappe/erpnext",
+      "niche": "Business Operations & ERP",
+      "pain": "Spreadsheet chaos across inventory, payroll, accounting",
+      "offer": "Full ERP migration, setup, role-based workflows, employee training"
+    },
+    {
+      "name": "Paperless-ngx",
+      "repo": "http://github.com/paperless-ngx/paperless-ngx",
+      "niche": "Document Archiving & OCR",
+      "pain": "Unsearchable scanned receipts, invoices, paper filing cabinets",
+      "offer": "Turn piles of documents into searchable digital archives with OCR and indexing"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "title": "OSIRIS (OI Assist) — Global CCTV & AI Vision Intelligence",
+  "terminal_url": "https://osirisai.live",
+  "repo": "https://github.com/simplifaisoul/osiris",
+  "capabilities": [
+    "Stream live public CCTV camera nodes keyless and free",
+    "Global geospatial camera locator",
+    "Client-side API key injection for privacy-preserving AI vision",
+    "Real-time object detection and traffic tracking",
+    "Automated situational summaries"
+  ]
+}
