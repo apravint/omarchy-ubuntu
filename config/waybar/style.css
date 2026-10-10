@@ -4,97 +4,109 @@
     border: none;
     border-radius: 0;
     font-family: "JetBrainsMono Nerd Font", monospace;
-    font-size: 13px;
+    font-size: 12px;
     min-height: 0;
 }
 
 window#waybar {
-    background: @bg;
-    border-radius: 0;
+    background-color: rgba(18, 18, 28, 0.95);
     color: @fg;
-    border: 1px solid @border;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    border-bottom: 2px solid @border;
+    box-shadow: none;
 }
 
 #custom-menu {
-    padding: 0 12px;
-    margin: 3px 4px 3px 4px;
+    padding: 0 14px;
+    margin: 0;
+    background: @accent;
+    color: #11111b;
+    font-size: 14px;
+    font-weight: 800;
     border-radius: 0;
-    background: @accent_rgba;
-    color: @accent;
-    font-size: 15px;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.15s ease-in-out;
 }
 
 #custom-menu:hover {
-    background: @accent;
-    color: #0b0c16;
+    background: @fg;
+    color: #11111b;
+}
+
+#workspaces {
+    margin: 0;
+    padding: 0;
 }
 
 #workspaces button {
-    padding: 0 10px;
+    padding: 0 12px;
+    margin: 0;
     background: transparent;
     color: @muted;
     border-radius: 0;
-    margin: 3px 2px;
-    transition: all 0.2s ease-in-out;
+    border-bottom: 2px solid transparent;
+    font-weight: 700;
+    transition: all 0.15s ease-in-out;
 }
 
 #workspaces button.active {
     background: @accent_rgba;
     color: @accent;
     border-bottom: 2px solid @accent;
-    font-weight: bold;
+    font-weight: 800;
 }
 
 #workspaces button:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     color: @fg;
+}
+
+#workspaces button.urgent {
+    background: #f7768e;
+    color: #11111b;
+    border-bottom: 2px solid #f7768e;
 }
 
 #window {
-    padding: 0 12px;
-    font-weight: 500;
-    color: @fg;
+    padding: 0 14px;
+    font-weight: 600;
+    color: @muted;
 }
 
 #clock {
-    padding: 0 12px;
-    margin: 3px 2px;
-    border-radius: 0;
-    background: @selection;
-    font-weight: bold;
+    padding: 0 14px;
+    margin: 0 1px;
+    background: rgba(255, 255, 255, 0.04);
+    font-weight: 800;
     color: @accent;
     letter-spacing: 0.5px;
-    transition: all 0.2s ease;
+    border-bottom: 2px solid @accent;
+    transition: all 0.15s ease;
 }
 
 #clock:hover {
-    background: @accent_glow;
-    color: #ffffff;
+    background: @accent_rgba;
 }
 
 #custom-weather {
-    padding: 0 10px;
-    margin: 3px 2px;
-    border-radius: 0;
-    background: @selection;
+    padding: 0 12px;
+    margin: 0 1px;
+    background: rgba(255, 255, 255, 0.03);
     color: @fg;
-    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s ease;
 }
 
 #custom-weather:hover {
-    background: @accent_glow;
-    color: #ffffff;
+    background: @accent_rgba;
+    border-bottom: 2px solid @accent;
 }
 
 #mpris {
-    padding: 0 10px;
-    margin: 3px 2px;
-    border-radius: 0;
-    background: @selection;
+    padding: 0 12px;
+    margin: 0 1px;
+    background: rgba(255, 255, 255, 0.03);
     color: @fg;
-    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s ease;
 }
 
 #mpris.paused {
@@ -102,8 +114,8 @@ window#waybar {
 }
 
 #mpris:hover {
-    background: @accent_glow;
-    color: #ffffff;
+    background: @accent_rgba;
+    border-bottom: 2px solid @accent;
 }
 
 #custom-ai-agent,
@@ -112,67 +124,91 @@ window#waybar {
 #memory,
 #pulseaudio,
 #network,
-#battery,
-#tray,
-#custom-power {
+#battery {
     padding: 0 10px;
-    margin: 3px 2px;
-    border-radius: 0;
-    background: @selection;
+    margin: 0 1px;
+    background: rgba(255, 255, 255, 0.03);
     color: @fg;
-    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s ease;
 }
 
 #custom-ai-agent {
     color: @accent;
-    font-weight: bold;
-    padding: 0 11px;
+    font-weight: 800;
+    padding: 0 12px;
 }
 
 #custom-ai-agent:hover {
-    background: @accent_glow;
-    color: #ffffff;
+    background: @accent_rgba;
+    border-bottom: 2px solid @accent;
 }
 
 #custom-ai-agent.executing {
     color: #f7768e;
+    background: rgba(247, 118, 142, 0.18);
+    border-bottom: 2px solid #f7768e;
     animation: blink 0.8s linear infinite alternate;
 }
 
 #custom-theme {
     color: @accent;
-    font-size: 14px;
-    padding: 0 10px;
-}
-
-#custom-power {
-    color: #f7768e;
     font-size: 13px;
     padding: 0 10px;
-    margin-right: 4px;
 }
 
-#custom-theme:hover,
+#pulseaudio {
+    color: @accent;
+}
+
 #cpu:hover,
 #memory:hover,
 #pulseaudio:hover,
 #network:hover,
-#battery:hover {
-    background: @accent_glow;
-    color: #ffffff;
+#battery:hover,
+#custom-theme:hover {
+    background: @accent_rgba;
+    border-bottom: 2px solid @accent;
+}
+
+#tray {
+    padding: 0 8px;
+    margin: 0 1px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: #f7768e;
+}
+
+#custom-power {
+    padding: 0 14px;
+    margin: 0;
+    background: rgba(247, 118, 142, 0.18);
+    color: #f7768e;
+    font-weight: 800;
+    border-bottom: 2px solid #f7768e;
+    transition: all 0.15s ease;
 }
 
 #custom-power:hover {
     background: #f7768e;
-    color: #ffffff;
+    color: #11111b;
 }
 
 #battery.warning {
     color: #f7768e;
+    border-bottom: 2px solid #f7768e;
 }
 
 #battery.critical {
     background-color: #f7768e;
-    color: #ffffff;
+    color: #11111b;
+    border-bottom: 2px solid #f7768e;
     animation: blink 0.5s linear infinite alternate;
 }

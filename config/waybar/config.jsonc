@@ -1,10 +1,12 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 34,
-    "margin-top": 6,
-    "margin-left": 12,
-    "margin-right": 12,
+    "height": 30,
+    "margin-top": 0,
+    "margin-left": 0,
+    "margin-right": 0,
+    "margin-bottom": 0,
+    "spacing": 0,
 
     "modules-left": [
         "custom/menu",
