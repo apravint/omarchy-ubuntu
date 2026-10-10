@@ -1,4 +1,6 @@
-# Iram for Ubuntu 🌌
+# IRAM OS 🌌
+
+> **IRAM OS (formerly Omarchy-Ubuntu) – The agentic desktop environment.**
 
 A preconfigured Hyprland desktop environment for Ubuntu LTS featuring sharp geometric tiling, compact window gaps, edge-to-edge Waybar, automated multi-display management, and integrated developer tools.
 
@@ -237,12 +239,12 @@ This project is licensed under the **[MIT License](LICENSE)**.
 
 ### Attributions & Upstream Projects
 - **Base OS**: [Ubuntu LTS](https://ubuntu.com) by Canonical Ltd.
-- **Upstream Iram**: Originally created by [David Heinemeier Hansson](https://github.com/omacom/omarchy) under the MIT License.
+- **Upstream Omarchy**: Originally created by [David Heinemeier Hansson](https://github.com/omacom/omarchy) under the MIT License.
 - **Compositor**: [Hyprland](https://hyprland.org) by Vaxry and contributors (BSD-3-Clause).
 - **Status Bar**: [Waybar](https://github.com/Alexays/Waybar) by Alexays and contributors (MIT).
 - **Audio Routing**: [PipeWire](https://pipewire.org) & [WirePlumber](https://gitlab.freedesktop.org/pipewire/wireplumber) (MIT / LGPL).
 
 ### Legal & Trademark Disclaimers
 - **Ubuntu** is a registered trademark of **Canonical Ltd.** This project is an independent community project and is not affiliated with, sponsored by, or endorsed by Canonical Ltd. The name "Ubuntu" is used strictly in a nominative, descriptive sense to indicate operating system compatibility.
-- **Iram** is an independent project originally authored by David Heinemeier Hansson. This repository provides an adaptation for Ubuntu LTS and is not an official release of the upstream Iram project.
+- **Omarchy / IRAM**: "Omarchy" was originally authored by David Heinemeier Hansson (omacom/omarchy). IRAM OS is an independent community adaptation and desktop environment for Ubuntu LTS and is not an official release of the upstream Omarchy project.
 - All other third-party trademarks, product names, logos, and brands mentioned or displayed in this repository are the property of their respective owners. Their inclusion does not imply affiliation or endorsement.
