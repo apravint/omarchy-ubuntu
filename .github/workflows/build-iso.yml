@@ -67,6 +67,7 @@ jobs:
 
       - name: List Generated Artifacts
         run: |
+          sudo chmod -R 777 out/ 2>/dev/null || true
           ls -lh out/
 
       - name: Upload ISO Artifact
