@@ -25,16 +25,11 @@ SOFTWARE.
 
 ### Trademarks & Disclaimers
 
-1. **Ubuntu**: "Ubuntu" and associated logos are registered trademarks of Canonical Ltd.
-   This project is an independent open-source community distribution configuration and
-   is not affiliated with, sponsored by, or endorsed by Canonical Ltd. The name "Ubuntu"
-   is used strictly in a descriptive, nominative sense to indicate operating system compatibility.
+1. **Omarchy / IRAM**: "Omarchy" was originally authored by David Heinemeier Hansson (omacom/omarchy)
+   under the MIT License. IRAM OS is an independent project and is not an official release of
+   the upstream Omarchy project.
 
-2. **Omarchy**: "Omarchy" was originally authored by David Heinemeier Hansson (omacom/omarchy)
-   under the MIT License. This project is an independent adaptation for Ubuntu LTS and is not
-   an official release of the upstream Omarchy project.
-
-3. **Third-Party Trademarks**: All other product names, logos, and brands are property of
+2. **Third-Party Trademarks**: All other product names, logos, and brands are property of
    their respective owners. All company, product, and service names used in this software
    are for identification purposes only. Use of these names, logos, and brands does not
    imply endorsement.

@@ -55,7 +55,7 @@ def query_gemini(prompt, system_prompt=None):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
     if not system_prompt:
         system_prompt = (
-            "You are an expert Linux CLI terminal copilot on Ubuntu with Hyprland. "
+            "You are an expert Linux CLI terminal copilot on IRAM OS with Hyprland. "
             "Convert the user's plain English request into the single most efficient, modern bash command. "
             "OUTPUT RULES: Output ONLY the bash command itself. "
             "Do NOT include markdown code blocks, do NOT write explanations, do NOT wrap in backticks."
@@ -80,7 +80,7 @@ def query_ollama(prompt, system_prompt=None):
     url = "http://localhost:11434/api/generate"
     if not system_prompt:
         system_prompt = (
-            "You are an expert Linux CLI terminal copilot on Ubuntu with Hyprland. "
+            "You are an expert Linux CLI terminal copilot on IRAM OS with Hyprland. "
             "Convert the user's plain English request into the single most efficient, modern bash command. "
             "OUTPUT RULES: Output ONLY the bash command itself. "
             "Do NOT include markdown code blocks, do NOT write explanations, do NOT wrap in backticks."

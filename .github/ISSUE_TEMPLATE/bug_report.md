@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Create a report to help us improve Omarchy for Ubuntu
+about: Create a report to help us improve IRAM OS
 title: '[BUG] '
 labels: bug
 assignees: apravint

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Iram Update for Ubuntu
+# Iram Update for IRAM OS
 
 set -e
 
@@ -8,7 +8,7 @@ if [ -d "/usr/share/iram/.git" ]; then
   sudo git -C /usr/share/iram pull --ff-only 2>/dev/null || true
 fi
 
-echo -e "\033[1;34m==> Updating Iram Ubuntu Port...\033[0m"
+echo -e "\033[1;34m==> Updating IRAM OS Repository...\033[0m"
 if [ -d "$HOME/iram-os/.git" ]; then
   git -C "$HOME/iram-os" pull --ff-only 2>/dev/null || true
 fi

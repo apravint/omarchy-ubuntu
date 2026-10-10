@@ -1,19 +1,19 @@
 # 🌐 DistroWatch Official Distribution Submission Application
 
-Use the details below to submit **Iram for Ubuntu** to the global Linux registry at **[https://distrowatch.com/dwres.php?resource=submit](https://distrowatch.com/dwres.php?resource=submit)**.
+Use the details below to submit **IRAM OS** to the global Linux registry at **[https://distrowatch.com/dwres.php?resource=submit](https://distrowatch.com/dwres.php?resource=submit)**.
 
 ---
 
 ### 📋 General Distribution Information
 
-* **Distribution Name**: Iram for Ubuntu
+* **Distribution Name**: IRAM OS
 * **Distribution Category**: Desktop, Live Medium
-* **Based On**: Ubuntu LTS (Independent Derivative)
+* **Based On**: Independent / Debian
 * **Origin**: India
 * **Default Desktop / Window Manager**: Hyprland (Wayland)
 * **Architecture**: x86_64 (64-bit AMD/Intel)
 * **Current Status**: Active
-* **Release Model**: Fixed LTS Base with Rolling Compositor / Theme Updates
+* **Release Model**: Rolling Compositor & Theme Updates
 * **Initial Release Date**: 2026-10-03
 * **Official Homepage**: `https://github.com/apravint/iram-os`
 * **Documentation URL**: `https://github.com/apravint/iram-os#readme`
@@ -34,7 +34,7 @@ Use the details below to submit **Iram for Ubuntu** to the global Linux registry
 
 ### 📝 Short Description (For DistroWatch Catalog)
 
-> **Iram for Ubuntu** is a turnkey, 64-bit Linux operating system distribution engineered to combine the rock-solid hardware support and extensive software ecosystem of Ubuntu LTS with the fluid dynamics of the Hyprland Wayland compositor. It ships with out-of-the-box multi-display collision handling, studio-grade PipeWire audio routing, managed systemd user daemons, and a curated 22-theme suite with zero-restart live palette synchronization. Available as a hybrid UEFI/BIOS bootable live ISO image.
+> **IRAM OS** is a turnkey, 64-bit Linux operating system distribution engineered with an integrated agentic AI stack and the fluid dynamics of the Hyprland Wayland compositor. It ships with out-of-the-box multi-display collision handling, studio-grade PipeWire audio routing, managed systemd user daemons, and a curated 22-theme suite with zero-restart live palette synchronization. Available as a hybrid UEFI/BIOS bootable live ISO image.
 
 ---
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Iram Root Menu Bridge for Ubuntu
+# Iram Root Menu Bridge for IRAM OS
 
 if pgrep -x iram-shell >/dev/null 2>&1; then
   exec /usr/share/iram/bin/iram-menu "$@"

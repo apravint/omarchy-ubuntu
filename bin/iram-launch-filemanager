@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Universal file manager launcher for Ubuntu
+# Universal file manager launcher for IRAM OS
 for fm in dolphin nautilus nemo thunar pcmanfm; do
     if command -v "$fm" >/dev/null 2>&1; then
         exec "$fm" "$@"

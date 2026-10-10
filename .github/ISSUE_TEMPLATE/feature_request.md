@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest an idea or new feature for Omarchy for Ubuntu
+about: Suggest an idea or new feature for IRAM OS
 title: '[FEATURE] '
 labels: enhancement
 assignees: apravint

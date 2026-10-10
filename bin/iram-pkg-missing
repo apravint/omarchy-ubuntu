@@ -1,5 +1,5 @@
 #!/bin/bash
-# Ubuntu adapter for iram-pkg-missing
+# IRAM OS adapter for iram-pkg-missing
 
 for pkg in "$@"; do
   # Check dpkg package status or binary on PATH

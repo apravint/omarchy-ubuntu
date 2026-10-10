@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Iram for Ubuntu - Uninstaller
+# IRAM OS - Uninstaller
 # https://github.com/apravint/iram-os
 # ==============================================================================
 set -e
@@ -12,10 +12,10 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 echo -e "${YELLOW}======================================================${NC}"
-echo -e "${RED}       Iram for Ubuntu - Uninstallation${NC}"
+echo -e "${RED}             IRAM OS - Uninstallation${NC}"
 echo -e "${YELLOW}======================================================${NC}"
 
-read -p "Are you sure you want to uninstall Iram from Ubuntu? (y/N): " -r CONFIRM
+read -p "Are you sure you want to uninstall IRAM OS? (y/N): " -r CONFIRM
 if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
     echo "Aborted."
     exit 0

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Ubuntu adapter for iram-pkg-add
+# IRAM OS adapter for iram-pkg-add
 
 if iram-pkg-missing "$@"; then
   echo "Installing missing packages with apt: $*"

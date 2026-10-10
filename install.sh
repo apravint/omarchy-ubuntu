@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Iram for Ubuntu - Automated Installer
-# Experience authentic Iram (Hyprland + Themes + Waybar) on Ubuntu
+# IRAM OS - Automated Installer
+# Experience authentic IRAM OS (Hyprland + Themes + Waybar)
 # https://github.com/apravint/iram-os
 # ==============================================================================
 set -euo pipefail
@@ -16,7 +16,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}======================================================${NC}"
-echo -e "${GREEN}     Iram for Ubuntu - Setup & Installation${NC}"
+echo -e "${GREEN}            IRAM OS - Setup & Installation${NC}"
 echo -e "${BLUE}======================================================${NC}"
 
 # Check for sudo/root

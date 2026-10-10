@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Iram Screenshot Tool for Ubuntu / Hyprland
+# Iram Screenshot Tool for IRAM OS / Hyprland
 set -euo pipefail
 
 MODE="${1:-region}"

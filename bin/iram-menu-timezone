@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Iram Timezone Selector for Ubuntu / Waybar
+# Iram Timezone Selector for IRAM OS / Waybar
 set -euo pipefail
 
 CURRENT_TZ=$(timedatectl show --property=Timezone --value 2>/dev/null || echo "Unknown")

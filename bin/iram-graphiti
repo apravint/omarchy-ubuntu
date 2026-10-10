@@ -122,7 +122,7 @@ class KnowledgeGraph:
 
 def bootstrap_system_knowledge(kg: KnowledgeGraph):
     """
-    Populate foundational knowledge graph of the Iram Ubuntu system.
+    Populate foundational knowledge graph of the IRAM OS system.
     """
     kg.add_edge("Waybar", "configured_with", "Sharp Edges 0px border-radius", "Geometric flush layout")
     kg.add_edge("Waybar", "has_gap_to_apps", "4px vertical margin", "Precision y-coordinate alignment")
@@ -132,7 +132,7 @@ def bootstrap_system_knowledge(kg: KnowledgeGraph):
     kg.add_edge("Audio", "primary_sink", "Motherboard Analog Line Out", "Priority 500 via wireplumber")
     kg.add_edge("Audio", "secondary_sink", "Sony TV HDMI Audio", "Dual monitor toggleable")
     kg.add_edge("License", "attributed_to", "David Heinemeier Hansson (omacom)", "Upstream copyright notice")
-    kg.add_edge("License", "disclaims_trademark", "Canonical Ltd. (Ubuntu)", "Nominative fair-use disclaimer")
+    kg.add_edge("Architecture", "design_philosophy", "Independent Agentic Desktop", "Built-in autonomous AI toolchain")
     kg.record_fact("Waybar flush layout updated with 4px gap and sharp rectangular tabs.", tags=["waybar", "style"])
     kg.record_fact("Embedded Qdrant, Crawl4AI, FastMCP, Smolagents, Graphiti integrated into Iram Agentic OS.", tags=["ai", "architecture"])
 

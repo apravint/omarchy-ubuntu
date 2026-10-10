@@ -1,4 +1,4 @@
-name: Build & Release Omarchy for Ubuntu Live ISO
+name: Build & Release IRAM OS Live ISO
 
 on:
   release:
@@ -12,8 +12,8 @@ on:
         description: 'Release version tag (e.g. v26.04.0 or v24.04.1)'
         required: true
         default: 'v26.04.0'
-      ubuntu_codename:
-        description: 'Target Ubuntu codename (resolute or noble)'
+      base_codename:
+        description: 'Target base codename (resolute or noble)'
         required: true
         default: 'resolute'
       distro_version:
@@ -59,7 +59,7 @@ jobs:
 
       - name: Run ISO Builder
         env:
-          UBUNTU_CODENAME: ${{ github.event.inputs.ubuntu_codename || 'resolute' }}
+          BASE_CODENAME: ${{ github.event.inputs.base_codename || 'resolute' }}
           DISTRO_VERSION: ${{ github.event.inputs.distro_version || '26.04' }}
         run: |
           sudo -E bash build/build-iso.sh
@@ -71,7 +71,7 @@ jobs:
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: omarchy-ubuntu-Live-ISO
+          name: iram-os-Live-ISO
           path: |
             out/*.iso
             out/sha256sum.txt
@@ -82,14 +82,14 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.release.tag_name || github.event.inputs.version || github.ref_name }}
-          name: ${{ github.event.release.name || format('Omarchy for Ubuntu {0}', github.event.inputs.version || github.ref_name) }}
+          name: ${{ github.event.release.name || format('IRAM OS {0}', github.event.inputs.version || github.ref_name) }}
           body: |
-            # 🚀 Omarchy for Ubuntu Live ISO Release
+            # 🚀 IRAM OS Live ISO Release
 
-            Welcome to the official release of **Omarchy for Ubuntu** — the turnkey Hyprland + Waybar desktop operating system on Ubuntu LTS.
+            Welcome to the official release of **IRAM OS** — the turnkey agentic Hyprland + Waybar desktop operating system.
 
             ### 📦 Download Links
-            - **Live ISO Image**: Available in the release assets below (`omarchy-ubuntu-*.iso`).
+            - **Live ISO Image**: Available in the release assets below (`iram-os-*.iso`).
             - **Checksum**: Verify the SHA256 checksum against `sha256sum.txt`.
 
             ### 💻 How to Flash & Boot
@@ -97,12 +97,12 @@ jobs:
             2. Flash to a USB drive using [BalenaEtcher](https://etcher.balena.io/), [Ventoy](https://www.ventoy.net/), or [Rufus](https://rufus.ie/).
             3. Boot your PC, choose your USB drive in the boot menu (`F12`, `F11`, or `Esc`).
             4. Default Live Session Credentials:
-               - **User**: `omarchy`
-               - **Password**: `omarchy` *(Passwordless sudo enabled)*
+               - **User**: `iram`
+               - **Password**: `iram` *(Passwordless sudo enabled)*
 
             ### ✨ Key Features
             - Pre-configured Hyprland Wayland compositor with fluid animations
-            - Dual-monitor auto-detection with GUI manager (`omarchy-displays-gui`)
+            - Dual-monitor auto-detection with GUI manager (`iram-displays-gui`)
             - Out-of-the-box PipeWire audio routing & toggle shortcuts (`Super + Shift + A`)
             - Persistent Waybar & wallpaper services with 0 collisions
             - 22 custom built-in themes with instant live switching

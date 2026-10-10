@@ -1,20 +1,20 @@
 # IRAM OS 🌌
 
-> **IRAM OS (formerly Omarchy-Ubuntu) – The agentic desktop environment.**
+> **IRAM OS (formerly Omarchy) – The agentic desktop environment.**
 
-A preconfigured Hyprland desktop environment for Ubuntu LTS featuring sharp geometric tiling, compact window gaps, edge-to-edge Waybar, automated multi-display management, and integrated developer tools.
+A preconfigured Hyprland desktop environment featuring sharp geometric tiling, compact window gaps, edge-to-edge Waybar, automated multi-display management, and integrated developer tools.
 
 <div align="center">
 
 [![GitHub Release](https://img.shields.io/github/v/release/apravint/iram-os?color=7aa2f7&logo=github&label=Release)](https://github.com/apravint/iram-os/releases)
 [![Compositor: Hyprland](https://img.shields.io/badge/Compositor-Hyprland%20Wayland-00c853.svg?logo=wayland&logoColor=white)](https://hyprland.org)
-[![Base: Ubuntu LTS](https://img.shields.io/badge/Base-Ubuntu%20LTS-E95420.svg?logo=ubuntu&logoColor=white)](https://ubuntu.com)
+[![Base: Linux](https://img.shields.io/badge/Base-Linux-FCC624.svg?logo=linux&logoColor=black)](https://kernel.org)
 [![Audio: PipeWire](https://img.shields.io/badge/Audio-PipeWire%20%2B%20WirePlumber-brightgreen.svg)](https://pipewire.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 <br/>
 
-<img src="assets/preview.png" alt="Iram for Ubuntu Desktop" width="100%" style="border-radius: 4px;" />
+<img src="assets/preview.png" alt="IRAM OS Desktop" width="100%" style="border-radius: 4px;" />
 
 </div>
 
@@ -22,7 +22,7 @@ A preconfigured Hyprland desktop environment for Ubuntu LTS featuring sharp geom
 
 ## Overview
 
-**Iram for Ubuntu** provides an out-of-the-box, fully configured Wayland desktop experience on top of Ubuntu LTS. It packages Hyprland dynamic tiling, a flush edge-to-edge status bar, PipeWire audio routing, automated multi-monitor setup, and 22 switchable color schemes into an easy-to-install setup.
+**IRAM OS** provides an out-of-the-box, fully configured Wayland desktop experience. It packages Hyprland dynamic tiling, a flush edge-to-edge status bar, PipeWire audio routing, automated multi-monitor setup, and 22 switchable color schemes into an easy-to-install setup.
 
 ### Key Components
 
@@ -51,9 +51,9 @@ Iram implements dedicated system layers for autonomous intelligence, separating 
 
 ## Installation
 
-### Method 1: Existing Ubuntu Installation (Recommended)
+### Method 1: Automated Installation (Recommended)
 
-Run the automated installer on an existing Ubuntu 24.04+ (or Debian-based) system:
+Run the automated installer on an existing Linux system:
 
 ```bash
 # Clone the repository
@@ -87,7 +87,7 @@ For bare-metal deployment, a bootable ISO image is available:
    ```bash
    sudo dd if=iram-os-24.04-amd64.iso of=/dev/sdX bs=4M status=progress oflag=sync
    ```
-3. Boot the USB drive and select **Start Iram for Ubuntu Live**.
+3. Boot the USB drive and select **Start IRAM OS Live**.
    - Default user: `iram`
    - Password: `iram` (passwordless sudo enabled)
 
@@ -238,13 +238,11 @@ cd iram-os
 This project is licensed under the **[MIT License](LICENSE)**.
 
 ### Attributions & Upstream Projects
-- **Base OS**: [Ubuntu LTS](https://ubuntu.com) by Canonical Ltd.
 - **Upstream Omarchy**: Originally created by [David Heinemeier Hansson](https://github.com/omacom/omarchy) under the MIT License.
 - **Compositor**: [Hyprland](https://hyprland.org) by Vaxry and contributors (BSD-3-Clause).
 - **Status Bar**: [Waybar](https://github.com/Alexays/Waybar) by Alexays and contributors (MIT).
 - **Audio Routing**: [PipeWire](https://pipewire.org) & [WirePlumber](https://gitlab.freedesktop.org/pipewire/wireplumber) (MIT / LGPL).
 
 ### Legal & Trademark Disclaimers
-- **Ubuntu** is a registered trademark of **Canonical Ltd.** This project is an independent community project and is not affiliated with, sponsored by, or endorsed by Canonical Ltd. The name "Ubuntu" is used strictly in a nominative, descriptive sense to indicate operating system compatibility.
-- **Omarchy / IRAM**: "Omarchy" was originally authored by David Heinemeier Hansson (omacom/omarchy). IRAM OS is an independent community adaptation and desktop environment for Ubuntu LTS and is not an official release of the upstream Omarchy project.
+- **Omarchy / IRAM**: "Omarchy" was originally authored by David Heinemeier Hansson (omacom/omarchy). IRAM OS is an independent community adaptation and desktop environment, and is not an official release of the upstream Omarchy project.
 - All other third-party trademarks, product names, logos, and brands mentioned or displayed in this repository are the property of their respective owners. Their inclusion does not imply affiliation or endorsement.

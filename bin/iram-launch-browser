@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Universal browser launcher for Ubuntu
+# Universal browser launcher for IRAM OS
 if command -v google-chrome >/dev/null 2>&1; then
     exec google-chrome "$@"
 elif command -v google-chrome-stable >/dev/null 2>&1; then

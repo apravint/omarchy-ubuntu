@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Iram Emoji Picker
-# Part of Iram for Ubuntu
+# Part of IRAM OS
 set -euo pipefail
 
 EMOJI_FILE="/usr/share/iram/shell/plugins/emojis/emojis.json"

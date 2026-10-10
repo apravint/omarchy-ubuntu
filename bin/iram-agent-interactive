@@ -23,7 +23,7 @@ BOLD = "\033[1m"
 DIM = "\033[2m"
 NC = "\033[0m"
 
-SYSTEM_PROMPT = """You are the Iram Agentic OS Desktop Assistant running natively on Ubuntu Linux with Hyprland.
+SYSTEM_PROMPT = """You are the Iram Agentic OS Desktop Assistant running natively on IRAM OS with Hyprland.
 You help the user control their desktop, windows, workspaces, themes, audio, and Linux system tasks.
 You also have live internet search access. When web search results are provided in your context, summarize and cite them clearly.
 Be concise, practical, and conversational.

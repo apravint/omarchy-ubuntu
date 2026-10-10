@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Iram Ubuntu - Agentic System Crash Diagnostics Hook
+# IRAM OS - Agentic System Crash Diagnostics Hook
 # Captures systemd coredump / Apport crash reports and triggers local/cloud AI
 # ==============================================================================
 set -euo pipefail

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Iram Browser Theme Setter (Ubuntu Optimized)
+# Iram Browser Theme Setter (IRAM OS)
 # Applies theme color to Chromium, Chrome, Edge, and Brave policies without prompting for passwords
 
 IRAM_PATH="${IRAM_PATH:-/usr/share/iram}"

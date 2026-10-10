@@ -1,2 +1,2 @@
-# Grant passwordless browser policy writing for sudo group on Ubuntu
+# Grant passwordless browser policy writing for sudo group in IRAM OS
 %sudo ALL=(root) NOPASSWD: /usr/local/bin/iram-theme-set-browser-policy [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f], /usr/bin/iram-theme-set-browser-policy [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]

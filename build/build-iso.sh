@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Iram for Ubuntu - Automated Live ISO Builder
-# Builds a bootable hybrid UEFI/BIOS Live ISO based on Ubuntu LTS
+# IRAM OS - Automated Live ISO Builder
+# Builds a bootable hybrid UEFI/BIOS Live ISO for IRAM OS
 # ==============================================================================
 set -euo pipefail
 
-# Target Ubuntu version: defaults to 26.04 (Resolute) or respects environment override
-CODENAME="${UBUNTU_CODENAME:-resolute}"
+# Target base release version: defaults to 26.04 (Resolute) or respects environment override
+CODENAME="${BASE_CODENAME:-resolute}"
 DISTRO_VERSION="${DISTRO_VERSION:-26.04}"
 DISTRO_NAME="iram-os"
 ARCH="amd64"
@@ -14,6 +14,7 @@ ROOTFS_DIR="/tmp/iram-rootfs"
 ISO_DIR="/tmp/iram-iso"
 OUTPUT_DIR="${PWD}/out"
 ISO_NAME="${DISTRO_NAME}-${DISTRO_VERSION}-${ARCH}.iso"
+APT_MIRROR="${APT_MIRROR:-http://archive.ubuntu.com/ubuntu/}"
 
 # Colors for logging
 GREEN='\033[0;32m'
@@ -64,9 +65,9 @@ rm -rf "${ROOTFS_DIR}" "${ISO_DIR}" "${OUTPUT_DIR}"
 mkdir -p "${ROOTFS_DIR}" "${ISO_DIR}/casper" "${ISO_DIR}/boot/grub" "${OUTPUT_DIR}"
 
 # ------------------------------------------------------------------------------
-# 3. Bootstrap Base Ubuntu System
+# 3. Bootstrap Base System
 # ------------------------------------------------------------------------------
-log_step "Bootstrapping minimal Ubuntu ${CODENAME} (${ARCH})..."
+log_step "Bootstrapping minimal system base ${CODENAME} (${ARCH})..."
 
 # Ensure debootstrap has a suite script for target codename (e.g. resolute -> gutsy)
 if [ -d "/usr/share/debootstrap/scripts" ] && [ ! -e "/usr/share/debootstrap/scripts/${CODENAME}" ]; then
@@ -74,7 +75,7 @@ if [ -d "/usr/share/debootstrap/scripts" ] && [ ! -e "/usr/share/debootstrap/scr
     ln -s gutsy "/usr/share/debootstrap/scripts/${CODENAME}" || true
 fi
 
-debootstrap --arch="${ARCH}" --variant=minbase "${CODENAME}" "${ROOTFS_DIR}" http://archive.ubuntu.com/ubuntu/
+debootstrap --arch="${ARCH}" --variant=minbase "${CODENAME}" "${ROOTFS_DIR}" "${APT_MIRROR}"
 
 # Configure DNS so chroot networking works reliably
 mkdir -p "${ROOTFS_DIR}/etc"
@@ -104,9 +105,9 @@ log_step "Configuring packages, kernel, live-boot and desktop environment in chr
 
 # Setup apt sources with universe & multiverse
 cat << EOF > "${ROOTFS_DIR}/etc/apt/sources.list"
-deb http://archive.ubuntu.com/ubuntu/ ${CODENAME} main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ ${CODENAME}-updates main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ ${CODENAME}-security main restricted universe multiverse
+deb ${APT_MIRROR} ${CODENAME} main restricted universe multiverse
+deb ${APT_MIRROR} ${CODENAME}-updates main restricted universe multiverse
+deb ${APT_MIRROR} ${CODENAME}-security main restricted universe multiverse
 EOF
 
 # Setup hostname and hosts
@@ -133,7 +134,7 @@ apt-get install -y --no-install-recommends \
     gnupg \
     software-properties-common
 
-# If Hyprland is not available in universe (Ubuntu 24.04 noble), add cppiber PPA
+# If Hyprland is not available in base repositories, add cppiber PPA
 if ! apt-cache show hyprland >/dev/null 2>&1; then
     echo "Hyprland not found in base repositories. Adding cppiber PPA for ${CODENAME}..."
     mkdir -p /etc/apt/keyrings
@@ -319,17 +320,17 @@ fi
 
 # Set custom OS Release Branding
 cat << EOF > "${ROOTFS_DIR}/etc/os-release"
-NAME="Iram for Ubuntu"
-VERSION="${DISTRO_VERSION} LTS (${CODENAME})"
+NAME="IRAM OS"
+VERSION="${DISTRO_VERSION} (${CODENAME})"
 ID=iram-os
-ID_LIKE="ubuntu debian"
-PRETTY_NAME="Iram for Ubuntu ${DISTRO_VERSION} LTS (${CODENAME})"
+ID_LIKE="debian"
+PRETTY_NAME="IRAM OS ${DISTRO_VERSION} (${CODENAME})"
 VERSION_ID="${DISTRO_VERSION}"
 HOME_URL="https://github.com/apravint/iram-os"
 SUPPORT_URL="https://github.com/apravint/iram-os/issues"
 BUG_REPORT_URL="https://github.com/apravint/iram-os/issues"
 PRIVACY_POLICY_URL="https://github.com/apravint/iram-os"
-UBUNTU_CODENAME=${CODENAME}
+BASE_CODENAME=${CODENAME}
 EOF
 
 # Copy kernel & initrd into casper directory for ISO booting
@@ -384,13 +385,13 @@ insmod font
 set menu_color_normal=white/black
 set menu_color_highlight=black/light-cyan
 
-menuentry "🚀 Start Iram for Ubuntu Live (Default)" {
+menuentry "🚀 Start IRAM OS Live (Default)" {
     set gfxpayload=keep
     linux /casper/vmlinuz boot=casper quiet splash ---
     initrd /casper/initrd
 }
 
-menuentry "🛡️ Start Iram for Ubuntu Live (Safe Graphics)" {
+menuentry "🛡️ Start IRAM OS Live (Safe Graphics)" {
     set gfxpayload=keep
     linux /casper/vmlinuz boot=casper nomodeset quiet splash ---
     initrd /casper/initrd

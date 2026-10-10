@@ -1,5 +1,5 @@
 #!/bin/bash
-# Iram Browser Policy Writer (Ubuntu Optimized)
+# Iram Browser Policy Writer (IRAM OS)
 # Writes browser theme policies safely; never prompts for sudo/pkexec passwords
 set -euo pipefail
 

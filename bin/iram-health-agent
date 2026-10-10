@@ -49,7 +49,7 @@ def ask_gemini_diagnosis(service_name, log_snippet):
     model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
     prompt = (
-        f"A systemd service '{service_name}' failed on Ubuntu Linux.\n"
+        f"A systemd service '{service_name}' failed on IRAM OS.\n"
         f"Recent journal log:\n```\n{log_snippet[:1500]}\n```\n"
         f"In 1 concise sentence, what is the root cause and recommended action?"
     )

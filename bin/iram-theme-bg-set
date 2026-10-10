@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Iram Background Setter for Ubuntu / Wayland
+# Iram Background Setter for IRAM OS / Wayland
 set -euo pipefail
 
 if [[ -z ${1:-} ]]; then
