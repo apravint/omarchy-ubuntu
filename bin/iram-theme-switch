@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
-# Omarchy Visual Theme Switcher (with full previews)
+# Iram Visual Theme Switcher (with full previews)
 set -euo pipefail
 
 # If text/dmenu mode explicitly requested, use wofi
 if [[ "${1:-}" == "--dmenu" || "${1:-}" == "--wofi" || "${1:-}" == "--text" ]]; then
-    THEMES=$(omarchy theme list)
-    CURRENT=$(cat "$HOME/.local/state/omarchy/current/theme.name" 2>/dev/null || echo "None")
+    THEMES=$(iram theme list)
+    CURRENT=$(cat "$HOME/.local/state/iram/current/theme.name" 2>/dev/null || echo "None")
     SELECTED=$(echo "$THEMES" | wofi --dmenu --prompt "Theme (Current: $CURRENT):" --width 380 --height 450)
     if [[ -n "${SELECTED:-}" ]]; then
-        omarchy theme set "$SELECTED"
-        if [[ -x "$HOME/.local/bin/omarchy-theme-sync-all" ]]; then
-            "$HOME/.local/bin/omarchy-theme-sync-all" || true
+        iram theme set "$SELECTED"
+        if [[ -x "$HOME/.local/bin/iram-theme-sync-all" ]]; then
+            "$HOME/.local/bin/iram-theme-sync-all" || true
         fi
-        notify-send -a "Omarchy" "Theme Changed" "Applied theme: $SELECTED" 2>/dev/null || true
+        notify-send -a "Iram" "Theme Changed" "Applied theme: $SELECTED" 2>/dev/null || true
     fi
     exit 0
 fi
 
 # Launch the visual card-grid preview GUI
-exec "$HOME/.local/bin/omarchy-theme-switcher-gui" "$@"
+exec "$HOME/.local/bin/iram-theme-switcher-gui" "$@"

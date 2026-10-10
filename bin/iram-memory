@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Omarchy Episodic Vector Memory Layer (omarchy-memory)
+Iram Episodic Vector Memory Layer (iram-memory)
 Indexes user document notes, terminal history, and project code for semantic AI memory search.
 Powered by Local Embedded Qdrant Vectors + Graphiti Knowledge Graph.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import sys
@@ -18,9 +18,9 @@ def add_memory(category: str, content: str):
     """
     try:
         # 1. Qdrant
-        subprocess.run(["omarchy-qdrant", "add-memory", content, "--category", category], check=True)
+        subprocess.run(["iram-qdrant", "add-memory", content, "--category", category], check=True)
         # 2. Graphiti
-        subprocess.run(["omarchy-graphiti", "fact", content, "--tags", category], check=True)
+        subprocess.run(["iram-graphiti", "fact", content, "--tags", category], check=True)
     except Exception as e:
         print(f"Error persisting memory: {e}")
 
@@ -29,7 +29,7 @@ def search_memory(query: str, top_k: int = 5):
     Query Qdrant memory collection.
     """
     try:
-        res = subprocess.run(["omarchy-qdrant", "search-memory", query, "--limit", str(top_k)], capture_output=True, text=True)
+        res = subprocess.run(["iram-qdrant", "search-memory", query, "--limit", str(top_k)], capture_output=True, text=True)
         return res.stdout.strip()
     except Exception as e:
         return f"Search error: {e}"
@@ -41,17 +41,17 @@ def main():
         add_memory(cat, content)
     elif len(sys.argv) > 1 and sys.argv[1] in ["--help", "-h"]:
         print("Usage:")
-        print("  omarchy-memory add '<content>'        Add memory fact")
-        print("  omarchy-memory '<search_query>'       Semantic memory search")
-        print("  omarchy-memory status                 Show memory & vector statistics")
+        print("  iram-memory add '<content>'        Add memory fact")
+        print("  iram-memory '<search_query>'       Semantic memory search")
+        print("  iram-memory status                 Show memory & vector statistics")
     elif len(sys.argv) > 1 and sys.argv[1] == "status":
-        subprocess.run(["omarchy-qdrant", "status"])
-        subprocess.run(["omarchy-graphiti", "search", ""])
+        subprocess.run(["iram-qdrant", "status"])
+        subprocess.run(["iram-graphiti", "search", ""])
     elif len(sys.argv) > 1:
         query = " ".join(sys.argv[1:])
         print(search_memory(query))
     else:
-        print("Usage: omarchy-memory <search_query> OR omarchy-memory add 'content'")
+        print("Usage: iram-memory <search_query> OR iram-memory add 'content'")
 
 if __name__ == "__main__":
     main()

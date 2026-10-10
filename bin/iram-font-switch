@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Omarchy Interactive Font Switcher
+# Iram Interactive Font Switcher
 set -euo pipefail
 
-CURRENT=$(omarchy font current 2>/dev/null || echo "JetBrainsMono Nerd Font")
-FONTS=$(omarchy font list 2>/dev/null)
+CURRENT=$(iram font current 2>/dev/null || echo "JetBrainsMono Nerd Font")
+FONTS=$(iram font list 2>/dev/null)
 
 SELECTED=$(echo "$FONTS" | wofi --dmenu --prompt "Font (Current: $CURRENT):" --width 400 --height 450)
 
 if [[ -n "${SELECTED:-}" ]]; then
     echo "Setting font to: $SELECTED..."
-    omarchy font set "$SELECTED"
-    notify-send -a "Omarchy" "Font Changed" "Active Font: $SELECTED" 2>/dev/null || true
+    iram font set "$SELECTED"
+    notify-send -a "Iram" "Font Changed" "Active Font: $SELECTED" 2>/dev/null || true
 fi

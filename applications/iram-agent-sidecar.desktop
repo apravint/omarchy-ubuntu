@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=💬 Omarchy Agent Sidecar Chat
+Name=💬 Iram Agent Sidecar Chat
 Comment=Interactive AI Sidecar Terminal Window (Super + Shift + A)
-Exec=/home/apravint/.local/bin/omarchy-agent-sidecar
+Exec=/home/apravint/.local/bin/iram-agent-sidecar
 Icon=utilities-terminal
 Terminal=false
 Categories=Utility;ArtificialIntelligence;System;

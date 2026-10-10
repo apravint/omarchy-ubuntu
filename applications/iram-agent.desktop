@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=🤖 Omarchy Agentic OS
+Name=🤖 Iram Agentic OS
 Comment=Autonomous Linux AI Desktop Assistant (Super + A)
-Exec=/home/apravint/.local/bin/omarchy-agent
+Exec=/home/apravint/.local/bin/iram-agent
 Icon=system-search
 Terminal=false
 Categories=Utility;ArtificialIntelligence;System;

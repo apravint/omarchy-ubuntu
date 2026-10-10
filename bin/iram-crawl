@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Omarchy Crawl4AI Documentation Scraper (omarchy-crawl)
+Iram Crawl4AI Documentation Scraper (iram-crawl)
 Scrapes live documentation and web articles into clean, LLM-ready markdown.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import sys
@@ -100,10 +100,10 @@ def fetch_and_extract(url: str) -> str:
         return clean_html_to_markdown(html, base_url=url)
 
 def main():
-    parser = argparse.ArgumentParser(description="Omarchy Crawl4AI Documentation Scraper")
+    parser = argparse.ArgumentParser(description="Iram Crawl4AI Documentation Scraper")
     parser.add_argument("url", help="Webpage or documentation URL to scrape")
     parser.add_argument("-o", "--output", help="Save markdown output to file")
-    parser.add_argument("-i", "--index", action="store_true", help="Index scraped content into Omarchy Qdrant memory")
+    parser.add_argument("-i", "--index", action="store_true", help="Index scraped content into Iram Qdrant memory")
     args = parser.parse_args()
 
     url = args.url
@@ -145,11 +145,11 @@ def main():
     if args.index:
         try:
             import subprocess
-            tmp_doc = os.path.expanduser(f"~/.local/state/omarchy/crawled_{int(asyncio.get_event_loop().time()) if hasattr(asyncio, 'get_event_loop') else 1}.md")
+            tmp_doc = os.path.expanduser(f"~/.local/state/iram/crawled_{int(asyncio.get_event_loop().time()) if hasattr(asyncio, 'get_event_loop') else 1}.md")
             with open(tmp_doc, "w", encoding="utf-8") as f:
                 f.write(f"# Source: {url}\n\n{content}")
-            subprocess.run(["omarchy-qdrant", "index", tmp_doc], check=True)
-            print(f"✓ Indexed into Omarchy Qdrant collection!")
+            subprocess.run(["iram-qdrant", "index", tmp_doc], check=True)
+            print(f"✓ Indexed into Iram Qdrant collection!")
         except Exception as e:
             print(f"⚠️ Indexing error: {e}")
 

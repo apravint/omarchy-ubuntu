@@ -1,5 +1,5 @@
 #!/bin/bash
-# Omarchy Interactive Reminder Menu via Wofi
+# Iram Interactive Reminder Menu via Wofi
 
 CHOICE=$(printf "⏱️ 5m  - Quick Break\n⏱️ 10m - Stretch\n⏱️ 15m - Tea / Coffee\n⏱️ 25m - Pomodoro Focus\n⏱️ 30m - Half Hour\n⏱️ 45m - Standup / Sync\n⏱️ 60m - 1 Hour\n✏️ Custom timer (format: <mins> <message>)\n📋 Show active reminders\n🗑️ Clear all reminders" | wofi --dmenu --prompt "Set Reminder:" --lines 10 -i)
 
@@ -7,31 +7,31 @@ CHOICE=$(printf "⏱️ 5m  - Quick Break\n⏱️ 10m - Stretch\n⏱️ 15m - Te
 
 case "$CHOICE" in
   *"5m"*)
-    omarchy reminder 5 "Quick Break"
+    iram reminder 5 "Quick Break"
     ;;
   *"10m"*)
-    omarchy reminder 10 "Stretch"
+    iram reminder 10 "Stretch"
     ;;
   *"15m"*)
-    omarchy reminder 15 "Tea / Coffee"
+    iram reminder 15 "Tea / Coffee"
     ;;
   *"25m"*)
-    omarchy reminder 25 "Pomodoro Focus"
+    iram reminder 25 "Pomodoro Focus"
     ;;
   *"30m"*)
-    omarchy reminder 30 "Half Hour"
+    iram reminder 30 "Half Hour"
     ;;
   *"45m"*)
-    omarchy reminder 45 "Standup / Sync"
+    iram reminder 45 "Standup / Sync"
     ;;
   *"60m"*)
-    omarchy reminder 60 "1 Hour"
+    iram reminder 60 "1 Hour"
     ;;
   *"Show active"*)
-    omarchy reminder show
+    iram reminder show
     ;;
   *"Clear all"*)
-    omarchy reminder clear
+    iram reminder clear
     ;;
   *)
     # Custom input
@@ -40,14 +40,14 @@ case "$CHOICE" in
       MINS=$(echo "$INPUT" | awk '{print $1}')
       MSG=$(echo "$INPUT" | cut -d' ' -f2-)
       [[ "$MINS" == "$MSG" ]] && MSG="Reminder"
-      omarchy reminder "$MINS" "$MSG"
+      iram reminder "$MINS" "$MSG"
     else
       CUSTOM_IN=$(echo "" | wofi --dmenu --prompt "Enter: <minutes> <message> (e.g. 7 Call client)")
       if [[ -n "$CUSTOM_IN" ]]; then
         MINS=$(echo "$CUSTOM_IN" | awk '{print $1}')
         MSG=$(echo "$CUSTOM_IN" | cut -d' ' -f2-)
         [[ "$MINS" == "$MSG" ]] && MSG="Reminder"
-        omarchy reminder "$MINS" "$MSG"
+        iram reminder "$MINS" "$MSG"
       fi
     fi
     ;;

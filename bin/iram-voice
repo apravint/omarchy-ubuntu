@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Omarchy AI Voice Assistant (omarchy-voice)
+# Iram AI Voice Assistant (iram-voice)
 # Records voice input, transcribes speech, executes agent instructions, and speaks response.
-# https://github.com/apravint/omarchy-ubuntu
+# https://github.com/apravint/iram-ubuntu
 # ==============================================================================
 
 set -euo pipefail
 
-AUDIO_TMP="/tmp/omarchy_voice_input.wav"
+AUDIO_TMP="/tmp/iram_voice_input.wav"
 
-notify-send -a "Omarchy Voice AI" "🎙️ Listening..." "Speak your command clearly (5 seconds)..." -t 3000
+notify-send -a "Iram Voice AI" "🎙️ Listening..." "Speak your command clearly (5 seconds)..." -t 3000
 
 # Record 5 seconds of audio from default mic sink
 if command -v ffmpeg >/dev/null 2>&1; then
@@ -18,12 +18,12 @@ elif command -v arecord >/dev/null 2>&1; then
     arecord -d 5 -f cd "$AUDIO_TMP" >/dev/null 2>&1 || true
 fi
 
-notify-send -a "Omarchy Voice AI" "🤖 Transcribing & Processing..." -t 2000
+notify-send -a "Iram Voice AI" "🤖 Transcribing & Processing..." -t 2000
 
 # Transcribe using Whisper or local python speech pipeline
 TRANSCRIPTION=""
 if command -v whisper >/dev/null 2>&1; then
-    TRANSCRIPTION=$(whisper "$AUDIO_TMP" --model tiny --language English --output_format txt 2>/dev/null | cat /tmp/omarchy_voice_input.txt 2>/dev/null || true)
+    TRANSCRIPTION=$(whisper "$AUDIO_TMP" --model tiny --language English --output_format txt 2>/dev/null | cat /tmp/iram_voice_input.txt 2>/dev/null || true)
 fi
 
 if [ -z "$TRANSCRIPTION" ]; then
@@ -32,8 +32,8 @@ if [ -z "$TRANSCRIPTION" ]; then
 fi
 
 if [ -n "$TRANSCRIPTION" ]; then
-    notify-send -a "Omarchy Voice AI" "⚡ Executing Voice Command" "$TRANSCRIPTION"
-    omarchy-agent "$TRANSCRIPTION"
+    notify-send -a "Iram Voice AI" "⚡ Executing Voice Command" "$TRANSCRIPTION"
+    iram-agent "$TRANSCRIPTION"
 fi
 
 rm -f "$AUDIO_TMP"

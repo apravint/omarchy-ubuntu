@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=🪄 Omarchy AI Smart Clipboard
+Name=🪄 Iram AI Smart Clipboard
 Comment=Code refactoring, translation, and text summarization (Super + Shift + V)
-Exec=/home/apravint/.local/bin/omarchy-clipboard-agent
+Exec=/home/apravint/.local/bin/iram-clipboard-agent
 Icon=edit-paste
 Terminal=false
 Categories=Utility;ArtificialIntelligence;TextEditor;

@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=👁️ Omarchy Screen Vision Analyst
+Name=👁️ Iram Screen Vision Analyst
 Comment=Screen capture and visual reasoning AI (Super + Shift + Print)
-Exec=/home/apravint/.local/bin/omarchy-vision-agent
+Exec=/home/apravint/.local/bin/iram-vision-agent
 Icon=camera-photo
 Terminal=false
 Categories=Utility;ArtificialIntelligence;Graphics;

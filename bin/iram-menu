@@ -1,8 +1,8 @@
 #!/bin/bash
-# Omarchy Root Menu Bridge for Ubuntu
+# Iram Root Menu Bridge for Ubuntu
 
-if pgrep -x omarchy-shell >/dev/null 2>&1; then
-  exec /usr/share/omarchy/bin/omarchy-menu "$@"
+if pgrep -x iram-shell >/dev/null 2>&1; then
+  exec /usr/share/iram/bin/iram-menu "$@"
 fi
 
 verb="${1-toggle}"
@@ -10,31 +10,31 @@ route="${2-root}"
 
 case "$route" in
   theme*|style.theme)
-    exec ~/.local/bin/omarchy-theme-switch
+    exec ~/.local/bin/iram-theme-switch
     ;;
   background*|style.background)
-    exec omarchy theme bg next
+    exec iram theme bg next
     ;;
   system|power)
-    exec ~/.local/bin/omarchy-power-menu
+    exec ~/.local/bin/iram-power-menu
     ;;
   clipboard)
-    exec ~/.local/bin/omarchy-clipboard-menu
+    exec ~/.local/bin/iram-clipboard-menu
     ;;
   capture*)
-    exec ~/.local/bin/omarchy-capture-menu
+    exec ~/.local/bin/iram-capture-menu
     ;;
   keybindings)
-    exec /usr/share/omarchy/bin/omarchy-menu-keybindings
+    exec /usr/share/iram/bin/iram-menu-keybindings
     ;;
   reminder*)
-    exec ~/.local/bin/omarchy-reminder-menu
+    exec ~/.local/bin/iram-reminder-menu
     ;;
   cursor)
-    exec ~/.local/bin/omarchy-cursor-switch
+    exec ~/.local/bin/iram-cursor-switch
     ;;
   timezone*|setup.timezone)
-    exec ~/.local/bin/omarchy-menu-timezone
+    exec ~/.local/bin/iram-menu-timezone
     ;;
   close)
     pkill -x wofi 2>/dev/null || true
@@ -42,7 +42,7 @@ case "$route" in
     ;;
   *)
     # Root menu
-    CHOICE=$(printf "🚀 Applications Launcher\n🖥️ Display and Monitor Settings\n🔊 Sound and Audio Control (Pavucontrol)\n⚙️ System Settings\n🎨 Theme Switcher (22 Themes)\n🔤 Font Switcher\n🖱️ Cursor Theme Switcher\n🖼️ Next Background Wallpaper\n⌨️ Keybindings Cheat Sheet\n⏱️ Set Reminder\n📸 Screenshot and Screen Recording\n📋 Clipboard History\n📶 Network and Wi-Fi Settings\n󰂯 Bluetooth Devices\n󰃝 Toggle Nightlight (Eye Care)\n⏻ Power Menu (Lock, Sleep, Shutdown)" | wofi --dmenu --prompt "Omarchy Menu:" --lines 16 -i)
+    CHOICE=$(printf "🚀 Applications Launcher\n🖥️ Display and Monitor Settings\n🔊 Sound and Audio Control (Pavucontrol)\n⚙️ System Settings\n🎨 Theme Switcher (22 Themes)\n🔤 Font Switcher\n🖱️ Cursor Theme Switcher\n🖼️ Next Background Wallpaper\n⌨️ Keybindings Cheat Sheet\n⏱️ Set Reminder\n📸 Screenshot and Screen Recording\n📋 Clipboard History\n📶 Network and Wi-Fi Settings\n󰂯 Bluetooth Devices\n󰃝 Toggle Nightlight (Eye Care)\n⏻ Power Menu (Lock, Sleep, Shutdown)" | wofi --dmenu --prompt "Iram Menu:" --lines 16 -i)
     
     [[ -z "$CHOICE" ]] && exit 0
     
@@ -51,7 +51,7 @@ case "$route" in
         wofi --show drun
         ;;
       *"Display"*)
-        ~/.local/bin/omarchy-displays-gui
+        ~/.local/bin/iram-displays-gui
         ;;
       *"Sound"*|*"Audio"*)
         pavucontrol
@@ -60,28 +60,28 @@ case "$route" in
         gnome-control-center 2>/dev/null || systemsettings
         ;;
       *"Theme Switcher"*)
-        ~/.local/bin/omarchy-theme-switch
+        ~/.local/bin/iram-theme-switch
         ;;
       *"Font Switcher"*)
-        ~/.local/bin/omarchy-font-switch
+        ~/.local/bin/iram-font-switch
         ;;
       *"Next Background"*)
-        omarchy theme bg next
+        iram theme bg next
         ;;
       *"Keybindings"*)
-        /usr/share/omarchy/bin/omarchy-menu-keybindings
+        /usr/share/iram/bin/iram-menu-keybindings
         ;;
       *"Reminder"*)
-        ~/.local/bin/omarchy-reminder-menu
+        ~/.local/bin/iram-reminder-menu
         ;;
       *"Screenshot"*)
-        ~/.local/bin/omarchy-capture-menu
+        ~/.local/bin/iram-capture-menu
         ;;
       *"Clipboard"*)
-        ~/.local/bin/omarchy-clipboard-menu
+        ~/.local/bin/iram-clipboard-menu
         ;;
       *"Cursor"*)
-        ~/.local/bin/omarchy-cursor-switch
+        ~/.local/bin/iram-cursor-switch
         ;;
       *"Network"*)
         nm-connection-editor
@@ -90,10 +90,10 @@ case "$route" in
         blueman-manager
         ;;
       *"Nightlight"*)
-        ~/.local/bin/omarchy-toggle-nightlight
+        ~/.local/bin/iram-toggle-nightlight
         ;;
       *"Power"*)
-        ~/.local/bin/omarchy-power-menu
+        ~/.local/bin/iram-power-menu
         ;;
     esac
     ;;

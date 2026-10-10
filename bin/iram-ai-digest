@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Omarchy AI Daily System & Intelligence Digest (omarchy-ai-digest)
+Iram AI Daily System & Intelligence Digest (iram-ai-digest)
 Synthesizes system health, security posture, git activity, and financial news into an executive briefing.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 import sys
 import os
@@ -17,24 +17,24 @@ def run_cmd(cmd):
         return ""
 
 def generate_digest():
-    print("🤖 Synthesizing Omarchy AI System Digest...")
+    print("🤖 Synthesizing Iram AI System Digest...")
     
     # 1. Gather Telemetry
     failed_services = run_cmd("systemctl --failed --no-legend") or "None"
     free_mem = run_cmd("free -h | grep Mem | awk '{print $3 \" used of \" $2}'")
     uptime = run_cmd("uptime -p")
-    git_recent = run_cmd("cd /home/apravint/omarchy-ubuntu && git log -n 3 --oneline")
-    market_head = run_cmd("~/.local/bin/omarchy-stock-briefing | tail -n 2")
+    git_recent = run_cmd("cd /home/apravint/iram-ubuntu && git log -n 3 --oneline")
+    market_head = run_cmd("~/.local/bin/iram-stock-briefing | tail -n 2")
     
     context = (
         f"Uptime: {uptime}\n"
         f"Memory: {free_mem}\n"
         f"Failed Services: {failed_services}\n"
-        f"Recent Omarchy Git Commits:\n{git_recent}\n"
+        f"Recent Iram Git Commits:\n{git_recent}\n"
     )
     
     prompt = (
-        "You are the Omarchy OS Executive Intelligence Assistant. "
+        "You are the Iram OS Executive Intelligence Assistant. "
         "Summarize the following computer state in 3-4 ultra-concise, high-impact bullet points. "
         "Highlight system health, stability, and recent developer work. Keep it punchy.\n\n"
         f"{context}\n\nExecutive Briefing:"
@@ -55,10 +55,10 @@ def generate_digest():
             data = json.loads(resp.read().decode("utf-8"))
             briefing = data.get("response", "").strip()
     except Exception as e:
-        briefing = f"• System healthy ({free_mem})\n• All systemd units active\n• 3 recent commits pushed to omarchy-ubuntu"
+        briefing = f"• System healthy ({free_mem})\n• All systemd units active\n• 3 recent commits pushed to iram-ubuntu"
         
     print("\n" + "="*60)
-    print("      📊 OMARCHY AGENTIC OS EXECUTIVE BRIEFING        ")
+    print("      📊 IRAM AGENTIC OS EXECUTIVE BRIEFING        ")
     print("="*60)
     print(briefing)
     print("="*60 + "\n")
@@ -67,7 +67,7 @@ def generate_digest():
     short_summary = briefing[:250] + ("..." if len(briefing) > 250 else "")
     subprocess.run([
         'notify-send',
-        '-a', 'Omarchy Executive Digest',
+        '-a', 'Iram Executive Digest',
         '📊 Daily AI System Digest',
         short_summary
     ])

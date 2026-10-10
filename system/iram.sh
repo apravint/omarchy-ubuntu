@@ -1,1 +1,1 @@
-export OMARCHY_PATH=/usr/share/omarchy
+export IRAM_PATH=/usr/share/iram

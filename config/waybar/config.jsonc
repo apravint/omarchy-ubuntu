@@ -31,8 +31,8 @@
 
     "custom/menu": {
         "format": "󰀻",
-        "tooltip": "Left-click: Omarchy Menu | Right-click: Terminal",
-        "on-click": "~/.local/bin/omarchy-menu",
+        "tooltip": "Left-click: Iram Menu | Right-click: Terminal",
+        "on-click": "~/.local/bin/iram-menu",
         "on-click-right": "alacritty"
     },
 
@@ -51,25 +51,25 @@
     "clock": {
         "format": "󰃭 {:%a %b %d  %H:%M}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "on-click-middle": "~/.local/bin/omarchy-menu-timezone"
+        "on-click-middle": "~/.local/bin/iram-menu-timezone"
     },
 
     "custom/weather": {
         "format": "{}",
         "return-type": "json",
         "interval": 300,
-        "exec": "~/.local/bin/omarchy-waybar-weather",
-        "on-click": "~/.local/bin/omarchy-notification-weather"
+        "exec": "~/.local/bin/iram-waybar-weather",
+        "on-click": "~/.local/bin/iram-notification-weather"
     },
 
     "custom/ai-agent": {
         "format": "{}",
         "return-type": "json",
         "interval": 5,
-        "exec": "~/.local/bin/omarchy-waybar-agent",
-        "on-click": "~/.local/bin/omarchy-agent-sidecar",
-        "on-click-right": "~/.local/bin/omarchy-models",
-        "on-click-middle": "~/.local/bin/omarchy-health-agent"
+        "exec": "~/.local/bin/iram-waybar-agent",
+        "on-click": "~/.local/bin/iram-agent-sidecar",
+        "on-click-right": "~/.local/bin/iram-models",
+        "on-click-middle": "~/.local/bin/iram-health-agent"
     },
 
     "mpris": {
@@ -92,8 +92,8 @@
     "custom/theme": {
         "format": "󰔎",
         "tooltip": "Left-click: Theme Switcher | Right-click: Next Wallpaper",
-        "on-click": "~/.local/bin/omarchy-theme-switch",
-        "on-click-right": "omarchy theme bg next"
+        "on-click": "~/.local/bin/iram-theme-switch",
+        "on-click-right": "iram theme bg next"
     },
 
     "cpu": {
@@ -117,7 +117,7 @@
         "scroll-step": 5,
         "tooltip-format": "{desc} | Left: Audio mixer | Middle: Cycle output (Bluetooth/TV/Monitor) | Right: Mute",
         "on-click": "pavucontrol",
-        "on-click-middle": "~/.local/bin/omarchy-audio-toggle",
+        "on-click-middle": "~/.local/bin/iram-audio-toggle",
         "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
         "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
         "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%"
@@ -152,6 +152,6 @@
     "custom/power": {
         "format": "⏻",
         "tooltip": "Power Menu (Lock, Sleep, Logout, Shutdown)",
-        "on-click": "~/.local/bin/omarchy-power-menu"
+        "on-click": "~/.local/bin/iram-power-menu"
     }
 }

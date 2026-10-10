@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Omarchy Clipboard History Menu
+# Iram Clipboard History Menu
 set -e
 
 SELECTED=$(cliphist list | wofi --dmenu --prompt "Clipboard History:" --width 650 --height 450)

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Hyprland & Omarchy Session Launcher
+# Hyprland & Iram Session Launcher
 # Ensures all Wayland, toolkit, and GPU environment variables are properly exported.
 # ==============================================================================
 

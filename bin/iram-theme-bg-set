@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
-# Omarchy Background Setter for Ubuntu / Wayland
+# Iram Background Setter for Ubuntu / Wayland
 set -euo pipefail
 
 if [[ -z ${1:-} ]]; then
-  echo "Usage: omarchy-theme-bg-set <path-to-media>" >&2
+  echo "Usage: iram-theme-bg-set <path-to-media>" >&2
   exit 1
 fi
 
 BACKGROUND="$(realpath "$1")"
-CURRENT_BACKGROUND_LINK="$HOME/.local/state/omarchy/current/background"
+CURRENT_BACKGROUND_LINK="$HOME/.local/state/iram/current/background"
 
 if [[ ! -f $BACKGROUND ]]; then
   echo "File does not exist: $BACKGROUND" >&2
   exit 1
 fi
 
-mkdir -p "$HOME/.local/state/omarchy/current"
+mkdir -p "$HOME/.local/state/iram/current"
 ln -nsf "$BACKGROUND" "$CURRENT_BACKGROUND_LINK"
 
 # If swaybg is active or WAYLAND_DISPLAY is set, update wallpaper immediately
@@ -24,9 +24,9 @@ if pgrep -x swaybg >/dev/null 2>&1 || [[ -n ${WAYLAND_DISPLAY:-} ]]; then
   nohup swaybg -i "$BACKGROUND" -m fill >/dev/null 2>&1 &
 fi
 
-# Also ping omarchy-shell if present
-if command -v omarchy-shell >/dev/null 2>&1; then
-  omarchy-shell -q background set "$BACKGROUND" 2>/dev/null || true
+# Also ping iram-shell if present
+if command -v iram-shell >/dev/null 2>&1; then
+  iram-shell -q background set "$BACKGROUND" 2>/dev/null || true
 fi
 
 echo "Background updated: $BACKGROUND"

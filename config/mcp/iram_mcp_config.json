@@ -1,16 +1,16 @@
 {
   "mcpServers": {
-    "omarchy_system": {
-      "command": "/usr/local/bin/omarchy-mcp-server",
+    "iram_system": {
+      "command": "/usr/local/bin/iram-mcp-server",
       "args": [],
-      "description": "Native Omarchy Linux System, Hyprland Window Manager, Themes & Diagnostics MCP Server"
+      "description": "Native Iram Linux System, Hyprland Window Manager, Themes & Diagnostics MCP Server"
     },
     "filesystem": {
       "command": "npx",
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "/home/omarchy"
+        "/home/iram"
       ],
       "description": "Safe structured filesystem access for user home directory"
     },

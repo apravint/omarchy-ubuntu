@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Omarchy AI Smart Clipboard & Code Assistant (omarchy-ai-clipboard)
+Iram AI Smart Clipboard & Code Assistant (iram-ai-clipboard)
 Provides 1-click AI transformations on copied text: Summarize, Refactor Code, Translate, Extract Actions.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import sys
@@ -87,7 +87,7 @@ def ask_ollama(prompt, content):
 
 def show_wofi_actions(clip_text):
     if not clip_text:
-        subprocess.run(['notify-send', '-a', 'Omarchy AI Clipboard', 'Clipboard Empty', 'Please copy text first!'])
+        subprocess.run(['notify-send', '-a', 'Iram AI Clipboard', 'Clipboard Empty', 'Please copy text first!'])
         sys.exit(0)
 
     short_clip = (clip_text[:50] + "...") if len(clip_text) > 50 else clip_text
@@ -108,7 +108,7 @@ def show_wofi_actions(clip_text):
         if not selected_action:
             sys.exit(0)
 
-        subprocess.run(['notify-send', '-a', 'Omarchy AI Clipboard', '🤖 Processing AI Action...', selected_action], check=False)
+        subprocess.run(['notify-send', '-a', 'Iram AI Clipboard', '🤖 Processing AI Action...', selected_action], check=False)
 
         prompt_type = "Summarize text"
         if "Refactor" in selected_action:
@@ -124,7 +124,7 @@ def show_wofi_actions(clip_text):
         subprocess.run(["wl-copy"], input=result.encode("utf-8"))
 
         summary = result[:200] + ("..." if len(result) > 200 else "")
-        subprocess.run(['notify-send', '-a', 'Omarchy AI Clipboard', '✅ AI Result Copied to Clipboard!', summary])
+        subprocess.run(['notify-send', '-a', 'Iram AI Clipboard', '✅ AI Result Copied to Clipboard!', summary])
     except Exception as e:
         print(f"Error: {e}")
 

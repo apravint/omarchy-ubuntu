@@ -1,10 +1,10 @@
 [Desktop Entry]
 Name=Theme Switcher
 GenericName=Theme Selector
-Comment=Browse and apply Omarchy desktop themes with visual previews
-Exec=omarchy-theme-switch
+Comment=Browse and apply Iram desktop themes with visual previews
+Exec=iram-theme-switch
 Icon=preferences-desktop-theme
 Terminal=false
 Type=Application
 Categories=Settings;DesktopSettings;
-Keywords=theme;style;appearance;color;catppuccin;nord;gruvbox;omarchy;
+Keywords=theme;style;appearance;color;catppuccin;nord;gruvbox;iram;

@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=🎙️ Omarchy AI Voice Assistant
+Name=🎙️ Iram AI Voice Assistant
 Comment=Hands-free voice commands and audio transcription (Super + Ctrl + V)
-Exec=/home/apravint/.local/bin/omarchy-voice-agent
+Exec=/home/apravint/.local/bin/iram-voice-agent
 Icon=audio-input-microphone
 Terminal=false
 Categories=Utility;ArtificialIntelligence;Audio;

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Omarchy Waybar AI Agent Telemetry Provider (omarchy-waybar-agent)
+Iram Waybar AI Agent Telemetry Provider (iram-waybar-agent)
 Provides real-time agent status, Phoenix traces, Qdrant memory stats, and interactive click actions for Waybar.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 import os
 import sys
@@ -10,9 +10,9 @@ import json
 import time
 import urllib.request
 
-STATUS_FILE = os.path.expanduser("~/.local/state/omarchy/agent_status.json")
-TRACES_FILE = os.path.expanduser("~/.local/state/omarchy/agent_traces.jsonl")
-GRAPH_FILE = os.path.expanduser("~/.local/state/omarchy/knowledge_graph.json")
+STATUS_FILE = os.path.expanduser("~/.local/state/iram/agent_status.json")
+TRACES_FILE = os.path.expanduser("~/.local/state/iram/agent_traces.jsonl")
+GRAPH_FILE = os.path.expanduser("~/.local/state/iram/knowledge_graph.json")
 
 def get_api_key():
     key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
@@ -119,7 +119,7 @@ def main():
         last_span_info = f"{last_trace.get('span')} ({last_trace.get('duration_ms')}ms) [{last_trace.get('status')}]"
 
     tooltip = (
-        f"🤖 Omarchy Agentic OS HUD\n"
+        f"🤖 Iram Agentic OS HUD\n"
         f"• State: {agent_state.upper()} {f'({details})' if details else ''}\n"
         f"• Model: {default_name}\n"
         f"• Engine: {engine_name}\n"

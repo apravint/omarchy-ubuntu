@@ -1,11 +1,11 @@
 [Unit]
-Description=Omarchy Agentic OS Service Daemon
+Description=Iram Agentic OS Service Daemon
 After=network.target hyprland.service
 
 [Service]
 Type=simple
 Environment="PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin"
-ExecStart=/bin/sh -c 'if [ -x /usr/local/bin/omarchy-agent-daemon ]; then exec /usr/local/bin/omarchy-agent-daemon; else exec %h/.local/bin/omarchy-agent-daemon; fi'
+ExecStart=/bin/sh -c 'if [ -x /usr/local/bin/iram-agent-daemon ]; then exec /usr/local/bin/iram-agent-daemon; else exec %h/.local/bin/iram-agent-daemon; fi'
 Restart=always
 RestartSec=5
 

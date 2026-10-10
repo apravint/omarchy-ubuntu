@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Omarchy High-Fidelity Neural TTS Synthesizer
+# Iram High-Fidelity Neural TTS Synthesizer
 # Uses Microsoft Edge Neural Speech with automatic Tamil/English voice mapping.
 # ==============================================================================
 set -euo pipefail
@@ -8,10 +8,10 @@ set -euo pipefail
 TEXT="${1:-}"
 OUTPUT="${2:-/tmp/speech.wav}"
 LANG="${3:-en}"
-VOICE_OVERRIDE="${4:-${OMARCHY_VOICE:-}}"
+VOICE_OVERRIDE="${4:-${IRAM_VOICE:-}}"
 
 if [ -z "$TEXT" ]; then
-    echo "Usage: omarchy-tts <text> [output_file] [lang] [voice]"
+    echo "Usage: iram-tts <text> [output_file] [lang] [voice]"
     exit 1
 fi
 

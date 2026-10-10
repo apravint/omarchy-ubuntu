@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Omarchy Agentic OS Daemon (omarchy-agent-daemon)
+Iram Agentic OS Daemon (iram-agent-daemon)
 Background service managing agent state, Waybar status reporting, and REST trigger API.
 """
 
@@ -81,8 +81,8 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
                 AGENT_STATE["last_task"] = prompt
                 AGENT_STATE["updated_at"] = time.time()
 
-                # Trigger omarchy-agent in background
-                subprocess.Popen(["omarchy-agent", prompt])
+                # Trigger iram-agent in background
+                subprocess.Popen(["iram-agent", prompt])
 
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
@@ -102,7 +102,7 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
 def run_server(port=9090):
     server_address = ("127.0.0.1", port)
     httpd = HTTPServer(server_address, AgentRequestHandler)
-    print(f"🤖 Omarchy Agentic OS Daemon listening on http://127.0.0.1:{port}")
+    print(f"🤖 Iram Agentic OS Daemon listening on http://127.0.0.1:{port}")
     httpd.serve_forever()
 
 if __name__ == "__main__":

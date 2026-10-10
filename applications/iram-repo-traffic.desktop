@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=📈 Omarchy GitHub Traffic & Clones
+Name=📈 Iram GitHub Traffic & Clones
 Comment=Live repository clone and visitor analytics
-Exec=alacritty --hold -e /home/apravint/.local/bin/omarchy-repo-traffic
+Exec=alacritty --hold -e /home/apravint/.local/bin/iram-repo-traffic
 Icon=network-transmit-receive
 Terminal=false
 Categories=Utility;Development;

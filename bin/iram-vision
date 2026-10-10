@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Omarchy Visual AI Analyst & OCR Extractor (omarchy-vision)
+Iram Visual AI Analyst & OCR Extractor (iram-vision)
 Captures screen regions and uses multimodal Vision AI (Google Gemini / Qwen2-VL / LLaVA)
 to analyze code errors, tables, and UI layouts, or extract text directly to clipboard (--ocr).
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import sys
@@ -13,7 +13,7 @@ import json
 import base64
 import urllib.request
 
-IMG_PATH = "/tmp/omarchy_vision.png"
+IMG_PATH = "/tmp/iram_vision.png"
 
 def get_api_key():
     key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
@@ -118,9 +118,9 @@ def main():
     is_ocr = "--ocr" in sys.argv
 
     if is_ocr:
-        subprocess.run("notify-send -a 'Omarchy Vision' '📝 Select Text to Extract' 'Drag a box over any text, code, or image.' -t 2000", shell=True)
+        subprocess.run("notify-send -a 'Iram Vision' '📝 Select Text to Extract' 'Drag a box over any text, code, or image.' -t 2000", shell=True)
     else:
-        subprocess.run("notify-send -a 'Omarchy Vision' '👁️ Select Screen Region' 'Drag a box over the region you want to analyze.' -t 2000", shell=True)
+        subprocess.run("notify-send -a 'Iram Vision' '👁️ Select Screen Region' 'Drag a box over the region you want to analyze.' -t 2000", shell=True)
 
     if not capture_region():
         sys.exit(0)
@@ -132,15 +132,15 @@ def main():
             "Return ONLY the extracted text. Do not wrap in markdown code blocks unless the image contains code. "
             "Do not include conversational preamble or commentary."
         )
-        subprocess.run("notify-send -a 'Omarchy Vision' '⚡ Extracting Text with Gemini...' 'Reading characters...' -t 2000", shell=True)
+        subprocess.run("notify-send -a 'Iram Vision' '⚡ Extracting Text with Gemini...' 'Reading characters...' -t 2000", shell=True)
     else:
         prompt = get_wofi_prompt()
-        subprocess.run("notify-send -a 'Omarchy Vision' '🤖 Analyzing Image...' 'Processing visual model analysis...' -t 3000", shell=True)
+        subprocess.run("notify-send -a 'Iram Vision' '🤖 Analyzing Image...' 'Processing visual model analysis...' -t 3000", shell=True)
 
     analysis = analyze_image_gemini(IMG_PATH, prompt) or analyze_image_ollama(IMG_PATH, prompt)
 
     if not analysis:
-        subprocess.run('notify-send -a "Omarchy Vision AI" "⚠️ Extraction Failed" "Could not extract or analyze image."', shell=True)
+        subprocess.run('notify-send -a "Iram Vision AI" "⚠️ Extraction Failed" "Could not extract or analyze image."', shell=True)
         sys.exit(1)
 
     # Copy analysis result to clipboard
@@ -149,7 +149,7 @@ def main():
     # Display desktop alert summary
     short_summary = analysis[:250] + ("..." if len(analysis) > 250 else "")
     title = "✨ Text Copied to Clipboard!" if is_ocr else "👁️ Vision Analysis Result (Copied to Clipboard)"
-    subprocess.run(["notify-send", "-a", "Omarchy Vision AI", title, short_summary])
+    subprocess.run(["notify-send", "-a", "Iram Vision AI", title, short_summary])
 
 if __name__ == "__main__":
     main()

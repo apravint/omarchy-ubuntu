@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# omarchy:summary=Generate themed config files from Omarchy templates
-# omarchy:hidden=true
+# iram:summary=Generate themed config files from Iram templates
+# iram:hidden=true
 
-TEMPLATES_DIR="$OMARCHY_PATH/default/themed"
-USER_TEMPLATES_DIR="$HOME/.config/omarchy/themed"
-NEXT_THEME_DIR="$HOME/.local/state/omarchy/current/next-theme"
+TEMPLATES_DIR="$IRAM_PATH/default/themed"
+USER_TEMPLATES_DIR="$HOME/.config/iram/themed"
+NEXT_THEME_DIR="$HOME/.local/state/iram/current/next-theme"
 COLORS_FILE="$NEXT_THEME_DIR/colors.toml"
 
 # Theme switching waits on this script before the transition starts, so it
@@ -443,7 +443,7 @@ if [[ -f $COLORS_FILE ]]; then
   # shades, mode/theme_type) is shared with every other colors.toml consumer.
   while IFS=$'\t' read -r key value; do
     THEME_COLORS[$key]="$value"
-  done < <(omarchy-theme-color --file "$COLORS_FILE" --all)
+  done < <(iram-theme-color --file "$COLORS_FILE" --all)
 
   for key in "${!THEME_COLORS[@]}"; do
     add_template_value "$key" "${THEME_COLORS[$key]}"

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Omarchy Audio Output Cycler (omarchy-audio-toggle)
+Iram Audio Output Cycler (iram-audio-toggle)
 Dynamically cycles through all available audio outputs:
 - Bluetooth (e.g. JBL Flip 4, headphones)
 - Samsung Monitor (HDMI)
 - Sony TV (HDMI)
 - All Displays (Combined)
 Moves all active audio streams and notifies the user.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import subprocess
@@ -68,7 +68,7 @@ def main():
     icon = "audio-speakers-bluetooth" if "bluez" in target_name else "audio-card"
     subprocess.run([
         "notify-send",
-        "-a", "Omarchy Audio",
+        "-a", "Iram Audio",
         "🔊 Audio Output Switched",
         f"Active Device: {display_name}",
         "-i", icon,

@@ -1,10 +1,10 @@
 [Unit]
-Description=Timer for Omarchy AI Security Guard Inspections
+Description=Timer for Iram AI Security Guard Inspections
 
 [Timer]
 OnBootSec=5min
 OnUnitActiveSec=30min
-Unit=omarchy-security.service
+Unit=iram-security.service
 
 [Install]
 WantedBy=timers.target

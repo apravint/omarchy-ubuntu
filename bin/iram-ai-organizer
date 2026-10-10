@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Omarchy AI Workspace & Downloads Curator (omarchy-ai-organizer)
+Iram AI Workspace & Downloads Curator (iram-ai-organizer)
 Auto-categorizes Downloads/Desktop files into organized subfolders and renames cryptic filenames.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import os
@@ -48,7 +48,7 @@ def organize_downloads():
 
     if moved_count > 0:
         summary_msg = f"Organized {moved_count} files into clean subfolders:\n" + "\n".join(moved_summary[:4])
-        subprocess.run(f'notify-send -a "Omarchy AI File Curator" "📂 Downloads Organized!" "{summary_msg}"', shell=True)
+        subprocess.run(f'notify-send -a "Iram AI File Curator" "📂 Downloads Organized!" "{summary_msg}"', shell=True)
     else:
         print("✨ Downloads directory is already clean and organized!")
 

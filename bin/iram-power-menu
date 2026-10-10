@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Omarchy Power Menu via Wofi
+# Iram Power Menu via Wofi
 set -e
 
 OPTIONS="🔒 Lock
@@ -12,7 +12,7 @@ CHOICE=$(echo -e "$OPTIONS" | wofi --dmenu --prompt "System:" --width 250 --heig
 
 case "$CHOICE" in
     *"Lock"*)
-        BG=$(readlink -f "$HOME/.local/state/omarchy/current/background" 2>/dev/null || true)
+        BG=$(readlink -f "$HOME/.local/state/iram/current/background" 2>/dev/null || true)
         if [[ -n "$BG" && -f "$BG" ]]; then
             swaylock -f -i "$BG" -s fill
         else

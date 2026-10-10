@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Omarchy Interactive Agent Sidecar (omarchy-agent-interactive)
+Iram Interactive Agent Sidecar (iram-agent-interactive)
 Real-time, streaming conversational AI terminal interface powered by Google Gemini (Cloud · 0% CPU)
 with automatic Local Ollama offline fallback, Internet Web Search, and Desktop System Control.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import sys
@@ -23,7 +23,7 @@ BOLD = "\033[1m"
 DIM = "\033[2m"
 NC = "\033[0m"
 
-SYSTEM_PROMPT = """You are the Omarchy Agentic OS Desktop Assistant running natively on Ubuntu Linux with Hyprland.
+SYSTEM_PROMPT = """You are the Iram Agentic OS Desktop Assistant running natively on Ubuntu Linux with Hyprland.
 You help the user control their desktop, windows, workspaces, themes, audio, and Linux system tasks.
 You also have live internet search access. When web search results are provided in your context, summarize and cite them clearly.
 Be concise, practical, and conversational.
@@ -31,7 +31,7 @@ If a user request can be accomplished with a command, provide the exact bash or 
 Common dispatches:
 - hyprctl dispatch workspace <N>
 - hyprctl dispatch focuswindow <class>
-- omarchy theme set "<theme_name>"
+- iram theme set "<theme_name>"
 - pactl set-sink-volume @DEFAULT_AUDIO_SINK@ <level>%
 """
 
@@ -76,7 +76,7 @@ def print_header():
         engine_str = f"{YELLOW}🖥️ Local Ollama ({get_ollama_model()}){NC} {DIM}[Local CPU]{NC}"
 
     print(f"{BLUE}╔════════════════════════════════════════════════════════════════════╗{NC}")
-    print(f"{BLUE}║{GREEN}{BOLD}               🤖 OMARCHY AGENTIC OS SIDECAR CHAT                  {BLUE}║{NC}")
+    print(f"{BLUE}║{GREEN}{BOLD}               🤖 IRAM AGENTIC OS SIDECAR CHAT                  {BLUE}║{NC}")
     print(f"{BLUE}╠════════════════════════════════════════════════════════════════════╣{NC}")
     print(f"{BLUE}║{NC}  ► Engine: {engine_str:<66}{BLUE}║{NC}")
     print(f"{BLUE}║{NC}  ► Capabilities: {MAGENTA}Live Web Search • Hyprland • Waybar • Audio{NC}    {BLUE}║{NC}")
@@ -246,7 +246,7 @@ User Question:
             lines = [l.strip().strip("`") for l in assistant_reply.split("\n")]
             exec_candidate = None
             for l in lines:
-                if any(l.startswith(prefix) for prefix in ["hyprctl dispatch", "omarchy theme", "pactl set-sink", "systemctl"]):
+                if any(l.startswith(prefix) for prefix in ["hyprctl dispatch", "iram theme", "pactl set-sink", "systemctl"]):
                     exec_candidate = l
                     break
 

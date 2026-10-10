@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Omarchy Natural Language Shell Copilot (omarchy-ai-cmd / ?? / ai)
+Iram Natural Language Shell Copilot (iram-ai-cmd / ?? / ai)
 Translates plain English requests into executable Linux commands using Google Gemini & Local Ollama.
 Includes smart error fixing ('ai fix') and git commit generation ('ai commit').
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 import sys
 import os
@@ -272,7 +272,7 @@ def main():
         return
 
     query = " ".join(sys.argv[1:])
-    print(f"\n{BOLD}🤖 Omarchy Copilot:{RESET} Thinking for \"{query}\"...")
+    print(f"\n{BOLD}🤖 Iram Copilot:{RESET} Thinking for \"{query}\"...")
     
     raw = query_gemini(query) or query_ollama(query)
     cmd = clean_command(raw)

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Omarchy Self-Healing OS Agent (omarchy-health-agent)
+Iram Self-Healing OS Agent (iram-health-agent)
 Powered by Antigravity AI Engine logic & systemd integration.
 Diagnoses Linux system failures, failed services, audio sinks, and auto-restarts broken components.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import sys
@@ -22,7 +22,7 @@ def run_cmd(cmd):
 
 def notify(title, message, urgency="normal"):
     print(f"[{urgency.upper()}] {title}: {message}")
-    subprocess.run(["notify-send", "-u", urgency, "-a", "Omarchy Self-Healing OS", title, message])
+    subprocess.run(["notify-send", "-u", urgency, "-a", "Iram Self-Healing OS", title, message])
 
 def get_api_key():
     key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
@@ -120,7 +120,7 @@ def check_disk_usage():
         return 0.0
 
 def diagnose_and_heal():
-    print("🔍 Starting Omarchy Self-Healing OS Inspection...")
+    print("🔍 Starting Iram Self-Healing OS Inspection...")
     actions_taken = []
 
     # 1. Check failed systemd services

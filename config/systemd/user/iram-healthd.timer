@@ -1,10 +1,10 @@
 [Unit]
-Description=Timer for Omarchy Self-Healing OS Inspections
+Description=Timer for Iram Self-Healing OS Inspections
 
 [Timer]
 OnBootSec=2min
 OnUnitActiveSec=10min
-Unit=omarchy-healthd.service
+Unit=iram-healthd.service
 
 [Install]
 WantedBy=timers.target

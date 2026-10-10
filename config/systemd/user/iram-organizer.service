@@ -1,11 +1,11 @@
 [Unit]
-Description=Omarchy AI File Curator Service
+Description=Iram AI File Curator Service
 After=network.target
 
 [Service]
 Type=oneshot
 Environment="PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin"
-ExecStart=/bin/sh -c 'if [ -x /usr/local/bin/omarchy-ai-organizer ]; then exec /usr/local/bin/omarchy-ai-organizer; else exec %h/.local/bin/omarchy-ai-organizer; fi'
+ExecStart=/bin/sh -c 'if [ -x /usr/local/bin/iram-ai-organizer ]; then exec /usr/local/bin/iram-ai-organizer; else exec %h/.local/bin/iram-ai-organizer; fi'
 
 [Install]
 WantedBy=default.target

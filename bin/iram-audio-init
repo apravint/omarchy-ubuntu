@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Omarchy Audio Startup & Persistence Service
+# Iram Audio Startup & Persistence Service
 # Ensures Samsung Monitor HDMI Audio is active, set as default, and unmuted.
 
 # Wait up to 10 seconds for PipeWire to settle

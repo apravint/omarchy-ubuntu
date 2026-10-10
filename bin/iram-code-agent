@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Omarchy Code-as-Action Agent (omarchy-code-agent)
+Iram Code-as-Action Agent (iram-code-agent)
 Executes autonomous desktop actions and complex workflows by writing and executing Python code.
 Powered by HuggingFace smolagents architecture.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import sys
@@ -80,7 +80,7 @@ def search_code_qdrant(query: str, limit: int = 3) -> str:
         Matching code snippets.
     """
     try:
-        res = subprocess.run(["omarchy-qdrant", "search", query, "-n", str(limit)], capture_output=True, text=True)
+        res = subprocess.run(["iram-qdrant", "search", query, "-n", str(limit)], capture_output=True, text=True)
         return res.stdout.strip()
     except Exception as e:
         return f"Error: {e}"
@@ -95,7 +95,7 @@ def scrape_web_docs(url: str) -> str:
         Clean markdown text.
     """
     try:
-        res = subprocess.run(["omarchy-crawl", url], capture_output=True, text=True)
+        res = subprocess.run(["iram-crawl", url], capture_output=True, text=True)
         return res.stdout.strip()[:2000]
     except Exception as e:
         return f"Error: {e}"
@@ -103,14 +103,14 @@ def scrape_web_docs(url: str) -> str:
 @tool
 def record_knowledge_fact(fact: str) -> str:
     """
-    Save a persistent project fact into the Omarchy Knowledge Graph.
+    Save a persistent project fact into the Iram Knowledge Graph.
     Args:
         fact: Fact text to record.
     Returns:
         Confirmation message.
     """
     try:
-        res = subprocess.run(["omarchy-graphiti", "fact", fact], capture_output=True, text=True)
+        res = subprocess.run(["iram-graphiti", "fact", fact], capture_output=True, text=True)
         return res.stdout.strip()
     except Exception as e:
         return f"Error: {e}"
@@ -141,7 +141,7 @@ def execute_code_block(code_str: str) -> str:
         return f"Execution error: {e}"
 
 def main():
-    parser = argparse.ArgumentParser(description="Omarchy Code-as-Action Agent (smolagents)")
+    parser = argparse.ArgumentParser(description="Iram Code-as-Action Agent (smolagents)")
     parser.add_argument("prompt_or_code", help="Action prompt or Python code to execute")
     parser.add_argument("-c", "--code", action="store_true", help="Execute input directly as Python code action")
     args = parser.parse_args()

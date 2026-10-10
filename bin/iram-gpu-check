@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Omarchy GPU Acceleration Diagnostic & Installer (omarchy-gpu-check)
+# Iram GPU Acceleration Diagnostic & Installer (iram-gpu-check)
 # Auto-detects NVIDIA CUDA, AMD ROCm, and Intel NPU acceleration for AI models.
-# https://github.com/apravint/omarchy-ubuntu
+# https://github.com/apravint/iram-ubuntu
 # ==============================================================================
 
 set -euo pipefail
 
 echo "=========================================================="
-echo "      🤖 OMARCHY AI LINUX GPU HARDWARE DIAGNOSTICS        "
+echo "      🤖 IRAM AI LINUX GPU HARDWARE DIAGNOSTICS        "
 echo "=========================================================="
 
 GPU_FOUND=false

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Omarchy for Ubuntu - Automated Installer
-# Experience authentic Omarchy (Hyprland + Themes + Waybar) on Ubuntu
-# https://github.com/apravint/omarchy-ubuntu
+# Iram for Ubuntu - Automated Installer
+# Experience authentic Iram (Hyprland + Themes + Waybar) on Ubuntu
+# https://github.com/apravint/iram-ubuntu
 # ==============================================================================
 set -euo pipefail
-trap 'echo -e "\033[0;31m[ERROR] Omarchy installation failed at line $LINENO. Exiting gracefully.\033[0m"; exit 1' ERR
+trap 'echo -e "\033[0;31m[ERROR] Iram installation failed at line $LINENO. Exiting gracefully.\033[0m"; exit 1' ERR
 
 REPO_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -16,7 +16,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}======================================================${NC}"
-echo -e "${GREEN}     Omarchy for Ubuntu - Setup & Installation${NC}"
+echo -e "${GREEN}     Iram for Ubuntu - Setup & Installation${NC}"
 echo -e "${BLUE}======================================================${NC}"
 
 # Check for sudo/root
@@ -73,7 +73,7 @@ if ! command -v ollama >/dev/null 2>&1; then
     curl -fsSL https://ollama.com/install.sh | sh || true
 fi
 if command -v pip3 >/dev/null 2>&1; then
-    echo "Installing Omarchy Agentic Stack (FastMCP, Qdrant, Crawl4AI, Docling, Graphiti, smolagents, LangGraph, Phoenix)..."
+    echo "Installing Iram Agentic Stack (FastMCP, Qdrant, Crawl4AI, Docling, Graphiti, smolagents, LangGraph, Phoenix)..."
     pip3 install --break-system-packages fastmcp qdrant-client crawl4ai docling graphiti-core smolagents langgraph arize-phoenix openclaw edge-tts ddgs 2>/dev/null || true
 fi
 if command -v npm >/dev/null 2>&1; then
@@ -81,43 +81,43 @@ if command -v npm >/dev/null 2>&1; then
     npm install -g repomix 2>/dev/null || true
 fi
 
-echo -e "\n${YELLOW}[2/6] Installing Omarchy core repository & theme suite...${NC}"
-if [ ! -d "/usr/share/omarchy" ]; then
-    echo "Cloning official Omarchy repository..."
-    sudo git clone --branch quattro https://github.com/omacom/omarchy.git /usr/share/omarchy
+echo -e "\n${YELLOW}[2/6] Installing Iram core repository & theme suite...${NC}"
+if [ ! -d "/usr/share/iram" ]; then
+    echo "Cloning official Iram repository..."
+    sudo git clone --branch quattro https://github.com/omacom/omarchy.git /usr/share/iram
 else
-    echo "Updating existing Omarchy repository..."
-    sudo git -C /usr/share/omarchy pull --ff-only || true
+    echo "Updating existing Iram repository..."
+    sudo git -C /usr/share/iram pull --ff-only || true
 fi
 
 # Ensure git safe.directory
-sudo git config --system --add safe.directory /usr/share/omarchy || true
+sudo git config --system --add safe.directory /usr/share/iram || true
 
-# Symlink omarchy binaries
-echo "Linking Omarchy CLI binaries..."
-sudo ln -sf /usr/share/omarchy/bin/* /usr/local/bin/
-sudo ln -sf /usr/share/omarchy/bin/* /usr/bin/
+# Symlink iram binaries
+echo "Linking Iram CLI binaries..."
+sudo ln -sf /usr/share/iram/bin/* /usr/local/bin/
+sudo ln -sf /usr/share/iram/bin/* /usr/bin/
 sudo cp -a "$REPO_DIR/bin/"* /usr/local/bin/
 sudo chmod +x /usr/local/bin/*
 
-if [ -f "$REPO_DIR/system/sudoers.d/omarchy-theme-browser" ]; then
-    sudo cp "$REPO_DIR/system/sudoers.d/omarchy-theme-browser" /etc/sudoers.d/omarchy-theme-browser
-    sudo chmod 0440 /etc/sudoers.d/omarchy-theme-browser
+if [ -f "$REPO_DIR/system/sudoers.d/iram-theme-browser" ]; then
+    sudo cp "$REPO_DIR/system/sudoers.d/iram-theme-browser" /etc/sudoers.d/iram-theme-browser
+    sudo chmod 0440 /etc/sudoers.d/iram-theme-browser
 fi
 
 echo -e "\n${YELLOW}[3/6] Configuring system environment & session entries...${NC}"
-# System-wide OMARCHY_PATH
-sudo cp "$REPO_DIR/system/omarchy.conf" /etc/omarchy.conf
-sudo cp "$REPO_DIR/system/omarchy.sh" /etc/profile.d/omarchy.sh
-if ! grep -q "OMARCHY_PATH" /etc/environment 2>/dev/null; then
-    echo "OMARCHY_PATH=/usr/share/omarchy" | sudo tee -a /etc/environment >/dev/null
+# System-wide IRAM_PATH
+sudo cp "$REPO_DIR/system/iram.conf" /etc/iram.conf
+sudo cp "$REPO_DIR/system/iram.sh" /etc/profile.d/iram.sh
+if ! grep -q "IRAM_PATH" /etc/environment 2>/dev/null; then
+    echo "IRAM_PATH=/usr/share/iram" | sudo tee -a /etc/environment >/dev/null
 fi
 
 # Install Wayland session
-sudo cp "$REPO_DIR/system/omarchy.desktop" /usr/share/wayland-sessions/omarchy.desktop
+sudo cp "$REPO_DIR/system/iram.desktop" /usr/share/wayland-sessions/iram.desktop
 
 echo -e "\n${YELLOW}[4/6] Installing user dotfiles & scripts...${NC}"
-mkdir -p "$HOME/.config" "$HOME/.local/bin" "$HOME/.config/omarchy/hooks"
+mkdir -p "$HOME/.config" "$HOME/.local/bin" "$HOME/.config/iram/hooks"
 
 # Backup existing configs if they exist and are not symlinks
 for dir in hypr waybar wofi mako; do
@@ -135,7 +135,7 @@ cp -r "$REPO_DIR/config/"* "$HOME/.config/"
 cp -a "$REPO_DIR/bin/"* "$HOME/.local/bin/"
 chmod +x "$HOME/.local/bin/"*
 
-# Copy Omarchy desktop webapps and icons
+# Copy Iram desktop webapps and icons
 mkdir -p "$HOME/.local/share/applications" "$HOME/.local/share/icons/hicolor/128x128/apps"
 cp "$REPO_DIR/applications/"*.desktop "$HOME/.local/share/applications/" 2>/dev/null || true
 cp "$REPO_DIR/applications/icons/"*.png "$HOME/.local/share/icons/hicolor/128x128/apps/" 2>/dev/null || true
@@ -145,29 +145,29 @@ ln -sf /usr/bin/batcat "$HOME/.local/bin/bat" 2>/dev/null || true
 ln -sf /usr/bin/fdfind "$HOME/.local/bin/fd" 2>/dev/null || true
 
 # Setup theme-set hook
-cat << 'EOF' > "$HOME/.config/omarchy/hooks/theme-set"
+cat << 'EOF' > "$HOME/.config/iram/hooks/theme-set"
 #!/usr/bin/env bash
 set -euo pipefail
-THEME_NAME="${1:-$(cat "$HOME/.local/state/omarchy/current/theme.name" 2>/dev/null || echo "Unknown")}"
-if [[ -x "$HOME/.local/bin/omarchy-theme-sync-all" ]]; then
-    "$HOME/.local/bin/omarchy-theme-sync-all" || true
+THEME_NAME="${1:-$(cat "$HOME/.local/state/iram/current/theme.name" 2>/dev/null || echo "Unknown")}"
+if [[ -x "$HOME/.local/bin/iram-theme-sync-all" ]]; then
+    "$HOME/.local/bin/iram-theme-sync-all" || true
 fi
 if command -v notify-send >/dev/null 2>&1; then
-    notify-send -a "Omarchy" "Theme Changed" "Active Theme: $THEME_NAME" -t 3000 2>/dev/null || true
+    notify-send -a "Iram" "Theme Changed" "Active Theme: $THEME_NAME" -t 3000 2>/dev/null || true
 fi
 EOF
-chmod +x "$HOME/.config/omarchy/hooks/theme-set"
+chmod +x "$HOME/.config/iram/hooks/theme-set"
 
-# Configure Omarchy Shell Environment in ~/.bashrc
-if ! grep -q "OMARCHY_PATH" "$HOME/.bashrc" 2>/dev/null; then
+# Configure Iram Shell Environment in ~/.bashrc
+if ! grep -q "IRAM_PATH" "$HOME/.bashrc" 2>/dev/null; then
     cat << 'EOF' >> "$HOME/.bashrc"
 
-# Omarchy Environment & Shell Tools
-export OMARCHY_PATH=/usr/share/omarchy
+# Iram Environment & Shell Tools
+export IRAM_PATH=/usr/share/iram
 export EDITOR=nvim
 export VISUAL=nvim
-if [[ -f "$OMARCHY_PATH/default/bash/rc" ]]; then
-    source "$OMARCHY_PATH/default/bash/rc"
+if [[ -f "$IRAM_PATH/default/bash/rc" ]]; then
+    source "$IRAM_PATH/default/bash/rc"
 fi
 if [[ -f /usr/share/doc/fzf/examples/key-bindings.bash ]]; then
     source /usr/share/doc/fzf/examples/key-bindings.bash
@@ -176,23 +176,23 @@ if [[ -f /usr/share/doc/fzf/examples/completion.bash ]]; then
     source /usr/share/doc/fzf/examples/completion.bash
 fi
 
-# Omarchy AI Shell Copilot & Intelligence Tools
-alias '??'='omarchy-ai-cmd'
-alias 'ai-cmd'='omarchy-ai-cmd'
-alias 'ai-digest'='omarchy-ai-digest'
-alias 'ai-memory'='omarchy-memory'
-alias 'repo-traffic'='omarchy-repo-traffic'
+# Iram AI Shell Copilot & Intelligence Tools
+alias '??'='iram-ai-cmd'
+alias 'ai-cmd'='iram-ai-cmd'
+alias 'ai-digest'='iram-ai-digest'
+alias 'ai-memory'='iram-memory'
+alias 'repo-traffic'='iram-repo-traffic'
 EOF
 fi
 
-echo -e "\n${YELLOW}[5/6] Initializing default Omarchy theme & Self-Healing Timer...${NC}"
-export OMARCHY_PATH=/usr/share/omarchy
-omarchy theme set "Tokyo Night" || true
-"$HOME/.local/bin/omarchy-theme-sync-all" || true
-systemctl --user enable --now omarchy-agentd.service 2>/dev/null || true
-systemctl --user enable --now omarchy-healthd.timer 2>/dev/null || true
-systemctl --user enable --now omarchy-security.timer 2>/dev/null || true
-systemctl --user enable --now omarchy-organizer.timer 2>/dev/null || true
+echo -e "\n${YELLOW}[5/6] Initializing default Iram theme & Self-Healing Timer...${NC}"
+export IRAM_PATH=/usr/share/iram
+iram theme set "Tokyo Night" || true
+"$HOME/.local/bin/iram-theme-sync-all" || true
+systemctl --user enable --now iram-agentd.service 2>/dev/null || true
+systemctl --user enable --now iram-healthd.timer 2>/dev/null || true
+systemctl --user enable --now iram-security.timer 2>/dev/null || true
+systemctl --user enable --now iram-organizer.timer 2>/dev/null || true
 
 # Unmute audio sinks so sound works out of the box
 for sink in $(pactl list sinks short 2>/dev/null | awk '{print $2}'); do
@@ -210,13 +210,13 @@ fi
 echo -e "\n${BLUE}======================================================${NC}"
 echo -e "${GREEN}🎉 Installation Complete!${NC}"
 echo -e "${BLUE}======================================================${NC}"
-echo -e "To start using Omarchy:"
+echo -e "To start using Iram:"
 echo -e "1. Log out of your current session."
-echo -e "2. In the display manager (login screen), select ${GREEN}Omarchy${NC} from the session menu."
-echo -e "3. Log in and enjoy authentic Omarchy tiling!"
+echo -e "2. In the display manager (login screen), select ${GREEN}Iram${NC} from the session menu."
+echo -e "3. Log in and enjoy authentic Iram tiling!"
 echo -e "\n${YELLOW}Useful Shortcuts:${NC}"
 echo -e "  • ${GREEN}?? <query>${NC}                    : 🧠 Natural Language Shell Copilot (e.g. ?? find large files)"
-echo -e "  • ${GREEN}Super + A${NC}                     : 🤖 Launch Omarchy Agentic OS Assistant"
+echo -e "  • ${GREEN}Super + A${NC}                     : 🤖 Launch Iram Agentic OS Assistant"
 echo -e "  • ${GREEN}Super + Shift + A${NC}               : 💬 Launch Agent Interactive Sidecar Window"
 echo -e "  • ${GREEN}Super + Ctrl + H${NC}                : 🛡️ Instant OS Self-Healing & Service Audit"
 echo -e "  • ${GREEN}Super + Ctrl + V${NC}                : 🎙️ AI Voice Assistant & Hands-Free Control"
@@ -232,7 +232,7 @@ echo -e "  • ${GREEN}Super + Return${NC}                : Terminal (Alacritty)
 echo -e "  • ${GREEN}Super + Alt + Return${NC}          : Tmux Terminal Session"
 echo -e "  • ${GREEN}Super + K${NC}                     : Keybindings Cheat Sheet Menu"
 echo -e "  • ${GREEN}Super + V${NC}                     : Clipboard History Manager"
-echo -e "  • ${GREEN}Super + Ctrl + Shift + Space${NC}  : Omarchy 22-Theme Switcher"
+echo -e "  • ${GREEN}Super + Ctrl + Shift + Space${NC}  : Iram 22-Theme Switcher"
 echo -e "  • ${GREEN}Super + Ctrl + Space${NC}          : Next Background in Active Theme"
 echo -e "  • ${GREEN}Super + \` (Grave)${NC} / ${GREEN}Super + S${NC} : Toggle Scratchpad"
 echo -e "  • ${GREEN}Super + Ctrl + T${NC}              : Activity Monitor (btop)"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Omarchy Stock Market Daily Briefing & Alert Notification
-https://github.com/apravint/omarchy-ubuntu
+Iram Stock Market Daily Briefing & Alert Notification
+https://github.com/apravint/iram-ubuntu
 """
 
 import urllib.request
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     briefing = fetch_top_headlines()
     subprocess.run([
         'notify-send',
-        '-a', 'Omarchy Stock Market',
+        '-a', 'Iram Stock Market',
         '📈 Stock Market Top Headlines',
         briefing
     ])

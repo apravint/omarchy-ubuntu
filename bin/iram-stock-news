@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Omarchy Stock Market News & Ticker GUI Menu (omarchy-stock-news)
+Iram Stock Market News & Ticker GUI Menu (iram-stock-news)
 Fetches live financial headlines, market movers, and index updates.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import sys
@@ -55,7 +55,7 @@ def show_wofi_menu():
         if selected_entry and selected_entry in link_map:
             url = link_map[selected_entry]
             if url:
-                subprocess.run(["omarchy-launch-browser", url])
+                subprocess.run(["iram-launch-browser", url])
     except Exception as e:
         print(f"Error launching Wofi: {e}")
 

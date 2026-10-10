@@ -1,5 +1,5 @@
 #!/bin/bash
-# Omarchy Dictionary Lookup tool
+# Iram Dictionary Lookup tool
 
 WORD="$1"
 
@@ -23,7 +23,7 @@ CLEAN_WORD=$(echo "$WORD" | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]' | xar
 RES=$(curl -s --max-time 4 "https://api.dictionaryapi.dev/api/v2/entries/en/$CLEAN_WORD" 2>/dev/null)
 
 if [[ -z "$RES" ]] || echo "$RES" | jq -e 'has("title")' >/dev/null 2>&1; then
-  omarchy-notification-send -g 󰮔 -u low "Dictionary: $CLEAN_WORD" "No definition found for '$CLEAN_WORD'."
+  iram-notification-send -g 󰮔 -u low "Dictionary: $CLEAN_WORD" "No definition found for '$CLEAN_WORD'."
   exit 1
 fi
 
@@ -37,4 +37,4 @@ if [[ -n "$EXAMPLE" && "$EXAMPLE" != "null" ]]; then
   BODY+=$'\n\n'"\"$EXAMPLE\""
 fi
 
-omarchy-notification-send -g 󰮔 -u normal "$TITLE" "$BODY" -t 8000
+iram-notification-send -g 󰮔 -u normal "$TITLE" "$BODY" -t 8000

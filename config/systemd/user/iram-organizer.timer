@@ -1,10 +1,10 @@
 [Unit]
-Description=Timer for Omarchy AI File Curator Inspections
+Description=Timer for Iram AI File Curator Inspections
 
 [Timer]
 OnBootSec=10min
 OnUnitActiveSec=1h
-Unit=omarchy-organizer.service
+Unit=iram-organizer.service
 
 [Install]
 WantedBy=timers.target

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Omarchy for Ubuntu - Uninstaller
-# https://github.com/apravint/omarchy-ubuntu
+# Iram for Ubuntu - Uninstaller
+# https://github.com/apravint/iram-ubuntu
 # ==============================================================================
 set -e
 
@@ -12,21 +12,21 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 echo -e "${YELLOW}======================================================${NC}"
-echo -e "${RED}       Omarchy for Ubuntu - Uninstallation${NC}"
+echo -e "${RED}       Iram for Ubuntu - Uninstallation${NC}"
 echo -e "${YELLOW}======================================================${NC}"
 
-read -p "Are you sure you want to uninstall Omarchy from Ubuntu? (y/N): " -r CONFIRM
+read -p "Are you sure you want to uninstall Iram from Ubuntu? (y/N): " -r CONFIRM
 if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
     echo "Aborted."
     exit 0
 fi
 
 echo -e "\n${YELLOW}[1/3] Removing session entries...${NC}"
-sudo rm -f /usr/share/wayland-sessions/omarchy.desktop
-sudo rm -f /etc/omarchy.conf /etc/profile.d/omarchy.sh
+sudo rm -f /usr/share/wayland-sessions/iram.desktop
+sudo rm -f /etc/iram.conf /etc/profile.d/iram.sh
 
 echo -e "\n${YELLOW}[2/3] Removing local helper scripts...${NC}"
-rm -f "$HOME/.local/bin"/omarchy-*
+rm -f "$HOME/.local/bin"/iram-*
 
 echo -e "\n${YELLOW}[3/3] Restoring original configuration backups...${NC}"
 for dir in hypr waybar wofi; do
@@ -37,5 +37,5 @@ for dir in hypr waybar wofi; do
     fi
 done
 
-echo -e "\n${GREEN}✔ Omarchy session removed and backups restored successfully!${NC}"
+echo -e "\n${GREEN}✔ Iram session removed and backups restored successfully!${NC}"
 echo -e "Your primary desktop session (GNOME / KDE) is ready for your next login."

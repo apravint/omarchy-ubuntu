@@ -1,7 +1,7 @@
 #!/bin/bash
-# Ubuntu adapter for omarchy-pkg-add
+# Ubuntu adapter for iram-pkg-add
 
-if omarchy-pkg-missing "$@"; then
+if iram-pkg-missing "$@"; then
   echo "Installing missing packages with apt: $*"
   if (( EUID == 0 )); then
     apt-get update && apt-get install -y "$@" || exit 1

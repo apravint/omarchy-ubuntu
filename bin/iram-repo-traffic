@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Omarchy GitHub Repository Traffic & Clone Monitor
+# Iram GitHub Repository Traffic & Clone Monitor
 # Displays real-time clone counts, unique cloners, and view statistics.
-# https://github.com/apravint/omarchy-ubuntu
+# https://github.com/apravint/iram-ubuntu
 # ==============================================================================
 set -euo pipefail
 

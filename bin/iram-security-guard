@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Omarchy AI Security Guard & Firewall Monitor (omarchy-security-guard)
+Iram AI Security Guard & Firewall Monitor (iram-security-guard)
 Audits listening ports, SSH/sudo login attempts, firewall status, and anomalous network traffic.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import sys
@@ -19,11 +19,11 @@ def run_cmd(cmd):
 
 def notify(title, message, urgency="normal"):
     print(f"[{urgency.upper()}] {title}: {message}")
-    subprocess.run(f'notify-send -u {urgency} -a "Omarchy Security Guard" "{title}" "{message}"', shell=True)
+    subprocess.run(f'notify-send -u {urgency} -a "Iram Security Guard" "{title}" "{message}"', shell=True)
 
 def audit_security():
     issues = []
-    print("🛡️ Running Omarchy Security Guard Audit...")
+    print("🛡️ Running Iram Security Guard Audit...")
 
     # 1. Audit Listening Sockets
     ports_out = run_cmd("ss -tulpn | grep LISTEN")

@@ -1,11 +1,11 @@
 [Unit]
-Description=Omarchy Self-Healing OS System Inspection Service
+Description=Iram Self-Healing OS System Inspection Service
 After=network.target
 
 [Service]
 Type=oneshot
 Environment="PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin"
-ExecStart=/bin/sh -c 'if [ -x /usr/local/bin/omarchy-health-agent ]; then exec /usr/local/bin/omarchy-health-agent; else exec %h/.local/bin/omarchy-health-agent; fi'
+ExecStart=/bin/sh -c 'if [ -x /usr/local/bin/iram-health-agent ]; then exec /usr/local/bin/iram-health-agent; else exec %h/.local/bin/iram-health-agent; fi'
 
 [Install]
 WantedBy=default.target

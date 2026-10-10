@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Omarchy Interactive Capture Menu
+# Iram Interactive Capture Menu
 set -euo pipefail
 
 IS_RECORDING=$(pgrep -x wf-recorder >/dev/null 2>&1 && echo "yes" || echo "no")
@@ -23,21 +23,21 @@ CHOICE=$(echo -e "$OPTIONS" | wofi --dmenu --prompt "Capture / Record:" --width 
 
 case "$CHOICE" in
     *"Capture Region"*)
-        ~/.local/bin/omarchy-screenshot region
+        ~/.local/bin/iram-screenshot region
         ;;
     *"Capture Full Screen"*)
-        ~/.local/bin/omarchy-screenshot fullscreen
+        ~/.local/bin/iram-screenshot fullscreen
         ;;
     *"Capture Active Window"*)
-        ~/.local/bin/omarchy-screenshot window
+        ~/.local/bin/iram-screenshot window
         ;;
     *"Record Screen Region"*)
-        ~/.local/bin/omarchy-screenrecord
+        ~/.local/bin/iram-screenrecord
         ;;
     *"Stop Screen Recording"*)
-        ~/.local/bin/omarchy-screenrecord
+        ~/.local/bin/iram-screenrecord
         ;;
     *"Color Picker"*)
-        ~/.local/bin/omarchy-color-picker
+        ~/.local/bin/iram-color-picker
         ;;
 esac

@@ -1,14 +1,14 @@
 #!/bin/bash
-# Omarchy Nightlight toggle with wlsunset / hyprsunset fallback
+# Iram Nightlight toggle with wlsunset / hyprsunset fallback
 
 if command -v hyprsunset >/dev/null 2>&1; then
-  exec /usr/share/omarchy/bin/omarchy-toggle-nightlight "$@"
+  exec /usr/share/iram/bin/iram-toggle-nightlight "$@"
 fi
 
 if pgrep -x wlsunset >/dev/null 2>&1; then
   pkill -x wlsunset
-  omarchy-notification-send -g 󰃝 -u low "Nightlight Off" "Display color temperature restored to 6500K."
+  iram-notification-send -g 󰃝 -u low "Nightlight Off" "Display color temperature restored to 6500K."
 else
   wlsunset -t 4200 -T 6500 >/dev/null 2>&1 &
-  omarchy-notification-send -g 󰃡 -u low "Nightlight On" "Display color temperature warmed to 4200K."
+  iram-notification-send -g 󰃡 -u low "Nightlight On" "Display color temperature warmed to 4200K."
 fi

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Omarchy Project Knowledge Graph Engine (omarchy-graphiti)
+Iram Project Knowledge Graph Engine (iram-graphiti)
 Temporal entity-relationship knowledge graph tracking system state, decisions, and codebase facts over time.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import sys
@@ -12,7 +12,7 @@ import time
 import argparse
 from typing import Dict, List, Any
 
-GRAPH_FILE = os.path.expanduser("~/.local/state/omarchy/knowledge_graph.json")
+GRAPH_FILE = os.path.expanduser("~/.local/state/iram/knowledge_graph.json")
 
 class KnowledgeGraph:
     def __init__(self, filepath: str = GRAPH_FILE):
@@ -122,7 +122,7 @@ class KnowledgeGraph:
 
 def bootstrap_system_knowledge(kg: KnowledgeGraph):
     """
-    Populate foundational knowledge graph of the Omarchy Ubuntu system.
+    Populate foundational knowledge graph of the Iram Ubuntu system.
     """
     kg.add_edge("Waybar", "configured_with", "Sharp Edges 0px border-radius", "Geometric flush layout")
     kg.add_edge("Waybar", "has_gap_to_apps", "4px vertical margin", "Precision y-coordinate alignment")
@@ -134,10 +134,10 @@ def bootstrap_system_knowledge(kg: KnowledgeGraph):
     kg.add_edge("License", "attributed_to", "David Heinemeier Hansson (omacom)", "Upstream copyright notice")
     kg.add_edge("License", "disclaims_trademark", "Canonical Ltd. (Ubuntu)", "Nominative fair-use disclaimer")
     kg.record_fact("Waybar flush layout updated with 4px gap and sharp rectangular tabs.", tags=["waybar", "style"])
-    kg.record_fact("Embedded Qdrant, Crawl4AI, FastMCP, Smolagents, Graphiti integrated into Omarchy Agentic OS.", tags=["ai", "architecture"])
+    kg.record_fact("Embedded Qdrant, Crawl4AI, FastMCP, Smolagents, Graphiti integrated into Iram Agentic OS.", tags=["ai", "architecture"])
 
 def main():
-    parser = argparse.ArgumentParser(description="Omarchy Project Knowledge Graph (omarchy-graphiti)")
+    parser = argparse.ArgumentParser(description="Iram Project Knowledge Graph (iram-graphiti)")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # add-fact
@@ -171,7 +171,7 @@ def main():
 
     if args.command == "init":
         bootstrap_system_knowledge(kg)
-        print(f"✓ Initialized Omarchy knowledge graph with {len(kg.data['entities'])} entities and {len(kg.data['edges'])} edges at {kg.filepath}")
+        print(f"✓ Initialized Iram knowledge graph with {len(kg.data['entities'])} entities and {len(kg.data['edges'])} edges at {kg.filepath}")
     elif args.command == "fact":
         f = kg.record_fact(args.text, tags=args.tags)
         print(f"✓ Recorded Fact #{f['id']}: \"{f['text']}\"")

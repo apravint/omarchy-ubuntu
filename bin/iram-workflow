@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Omarchy LangGraph Stateful Autonomous Coding Loop (omarchy-workflow)
+Iram LangGraph Stateful Autonomous Coding Loop (iram-workflow)
 Cyclic stateful execution graph for long coding jobs with self-healing, verification, and SQLite checkpoints.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import sys
@@ -61,10 +61,10 @@ def node_executor(state: CodingState) -> Dict[str, Any]:
     task_lower = state["task"].lower()
     if "theme" in task_lower and step_idx == 1:
         theme = "Tokyo Night" if "tokyo" in task_lower else "Catppuccin" if "catppuccin" in task_lower else "Nord"
-        subprocess.run(["omarchy-theme-switch", theme], capture_output=True)
+        subprocess.run(["iram-theme-switch", theme], capture_output=True)
         logs.append(f"   ✓ Switched visual theme to {theme}")
     elif "audio" in task_lower and step_idx == 1:
-        res = subprocess.run(["omarchy-audio-toggle"], capture_output=True, text=True)
+        res = subprocess.run(["iram-audio-toggle"], capture_output=True, text=True)
         logs.append(f"   ✓ Audio toggle executed: {res.stdout.strip()}")
     elif "hyprland" in task_lower or "verify" in task_lower:
         res = subprocess.run(["hyprland", "--verify-config"], capture_output=True, text=True)
@@ -105,7 +105,7 @@ def node_healer(state: CodingState) -> Dict[str, Any]:
     
     # Execute system healing
     try:
-        heal_res = subprocess.run(["omarchy-health-agent", "--heal"], capture_output=True, text=True)
+        heal_res = subprocess.run(["iram-health-agent", "--heal"], capture_output=True, text=True)
         logs.append(f"   ✓ Ran automated self-healing: {heal_res.stdout.strip()[:100]}")
     except Exception as e:
         logs.append(f"   ⚠️ Healer error: {e}")
@@ -156,7 +156,7 @@ def build_workflow():
     return workflow.compile()
 
 def main():
-    parser = argparse.ArgumentParser(description="Omarchy LangGraph Stateful Coding Workflow")
+    parser = argparse.ArgumentParser(description="Iram LangGraph Stateful Coding Workflow")
     parser.add_argument("task", help="Coding job or system task description")
     args = parser.parse_args()
 

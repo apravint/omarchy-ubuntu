@@ -1,5 +1,5 @@
 #!/bin/bash
-# Omarchy Share Menu via LocalSend
+# Iram Share Menu via LocalSend
 
 CHOICE=$(printf "📋 Share Clipboard\n📄 Share File\n📁 Share Folder\n📥 Open LocalSend (Receive)" | wofi --dmenu --prompt "Share via LocalSend:" --lines 4 -i)
 
@@ -7,19 +7,19 @@ CHOICE=$(printf "📋 Share Clipboard\n📄 Share File\n📁 Share Folder\n📥 
 
 case "$CHOICE" in
   *"Clipboard"*)
-    omarchy share clipboard
+    iram share clipboard
     ;;
   *"File"*)
-    omarchy share file
+    iram share file
     ;;
   *"Folder"*)
-    omarchy share folder
+    iram share folder
     ;;
   *"Receive"*)
     if command -v localsend >/dev/null 2>&1; then
       localsend &
     else
-      omarchy-notification-send -g 󰇮 "LocalSend" "LocalSend application is not installed. Run 'omarchy install app localsend' or download from localsend.org."
+      iram-notification-send -g 󰇮 "LocalSend" "LocalSend application is not installed. Run 'iram install app localsend' or download from localsend.org."
     fi
     ;;
 esac

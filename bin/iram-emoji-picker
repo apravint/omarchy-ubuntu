@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Omarchy Emoji Picker
-# Part of Omarchy for Ubuntu
+# Iram Emoji Picker
+# Part of Iram for Ubuntu
 set -euo pipefail
 
-EMOJI_FILE="/usr/share/omarchy/shell/plugins/emojis/emojis.json"
-CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/omarchy"
+EMOJI_FILE="/usr/share/iram/shell/plugins/emojis/emojis.json"
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/iram"
 CACHE_FILE="$CACHE_DIR/emojis.txt"
 
 mkdir -p "$CACHE_DIR"

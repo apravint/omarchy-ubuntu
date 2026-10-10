@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Omarchy Observability & Phoenix Telemetry Layer (omarchy-trace)
+Iram Observability & Phoenix Telemetry Layer (iram-trace)
 Captures execution traces, spans, and error post-mortems for AI agents and OS tools.
 Provides real-time Waybar HUD telemetry and launches local Phoenix UI.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import sys
@@ -13,8 +13,8 @@ import time
 import argparse
 import subprocess
 
-STATUS_FILE = os.path.expanduser("~/.local/state/omarchy/agent_status.json")
-TRACES_FILE = os.path.expanduser("~/.local/state/omarchy/agent_traces.jsonl")
+STATUS_FILE = os.path.expanduser("~/.local/state/iram/agent_status.json")
+TRACES_FILE = os.path.expanduser("~/.local/state/iram/agent_traces.jsonl")
 
 def update_status(state: str, details: str = "", model: str = "Local AI", error: str = ""):
     """
@@ -67,7 +67,7 @@ def launch_phoenix_ui():
         print(f"Error launching Phoenix: {e}")
 
 def main():
-    parser = argparse.ArgumentParser(description="Omarchy Observability & Phoenix Telemetry (omarchy-trace)")
+    parser = argparse.ArgumentParser(description="Iram Observability & Phoenix Telemetry (iram-trace)")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # status

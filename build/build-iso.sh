@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Omarchy for Ubuntu - Automated Live ISO Builder
+# Iram for Ubuntu - Automated Live ISO Builder
 # Builds a bootable hybrid UEFI/BIOS Live ISO based on Ubuntu LTS
 # ==============================================================================
 set -euo pipefail
@@ -8,10 +8,10 @@ set -euo pipefail
 # Target Ubuntu version: defaults to 26.04 (Resolute) or respects environment override
 CODENAME="${UBUNTU_CODENAME:-resolute}"
 DISTRO_VERSION="${DISTRO_VERSION:-26.04}"
-DISTRO_NAME="omarchy-ubuntu"
+DISTRO_NAME="iram-ubuntu"
 ARCH="amd64"
-ROOTFS_DIR="/tmp/omarchy-rootfs"
-ISO_DIR="/tmp/omarchy-iso"
+ROOTFS_DIR="/tmp/iram-rootfs"
+ISO_DIR="/tmp/iram-iso"
 OUTPUT_DIR="${PWD}/out"
 ISO_NAME="${DISTRO_NAME}-${DISTRO_VERSION}-${ARCH}.iso"
 
@@ -110,10 +110,10 @@ deb http://archive.ubuntu.com/ubuntu/ ${CODENAME}-security main restricted unive
 EOF
 
 # Setup hostname and hosts
-echo "omarchy" > "${ROOTFS_DIR}/etc/hostname"
+echo "iram" > "${ROOTFS_DIR}/etc/hostname"
 cat << EOF > "${ROOTFS_DIR}/etc/hosts"
 127.0.0.1   localhost
-127.0.1.1   omarchy
+127.0.1.1   iram
 ::1         localhost ip6-localhost ip6-loopback
 EOF
 
@@ -215,29 +215,29 @@ apt-get install -y \
 curl -fsSL https://ollama.com/install.sh | sh || true
 pip3 install --break-system-packages openclaw edge-tts ddgs || pip3 install openclaw edge-tts ddgs || true
 
-# Install official Omarchy core themes & suite into /usr/share/omarchy
-if [ ! -d "/usr/share/omarchy" ]; then
-    git clone --depth 1 --branch quattro https://github.com/omacom/omarchy.git /usr/share/omarchy || true
+# Install official Iram core themes & suite into /usr/share/iram
+if [ ! -d "/usr/share/iram" ]; then
+    git clone --depth 1 --branch quattro https://github.com/omacom/omarchy.git /usr/share/iram || true
 fi
-git config --system --add safe.directory /usr/share/omarchy || true
+git config --system --add safe.directory /usr/share/iram || true
 
-# Setup default live user: 'omarchy' with passwordless sudo
+# Setup default live user: 'iram' with passwordless sudo
 mkdir -p /etc/sudoers.d
 groupadd -f sudo
 groupadd -f audio
 groupadd -f video
 
-useradd -m -s /bin/bash -G sudo,audio,video omarchy || true
-echo "omarchy:omarchy" | chpasswd || true
-echo "omarchy ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/omarchy
-chmod 0440 /etc/sudoers.d/omarchy
+useradd -m -s /bin/bash -G sudo,audio,video iram || true
+echo "iram:iram" | chpasswd || true
+echo "iram ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/iram
+chmod 0440 /etc/sudoers.d/iram
 
-# Autologin into Omarchy Hyprland session via SDDM
+# Autologin into Iram Hyprland session via SDDM
 mkdir -p /etc/sddm.conf.d
 cat << 'AUTOLOGIN_EOF' > /etc/sddm.conf.d/autologin.conf
 [Autologin]
-User=omarchy
-Session=omarchy.desktop
+User=iram
+Session=iram.desktop
 AUTOLOGIN_EOF
 
 # Enable essential systemd services
@@ -252,19 +252,19 @@ rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 CHROOT_EOF
 
 # ------------------------------------------------------------------------------
-# 5. Inject Omarchy Desktop Configurations & Scripts
+# 5. Inject Iram Desktop Configurations & Scripts
 # ------------------------------------------------------------------------------
-log_step "Injecting Omarchy scripts, systemd units, and skeleton user configs..."
+log_step "Injecting Iram scripts, systemd units, and skeleton user configs..."
 
-# Copy Omarchy system-wide binaries & profile
+# Copy Iram system-wide binaries & profile
 mkdir -p "${ROOTFS_DIR}/usr/local/bin" "${ROOTFS_DIR}/usr/share/wayland-sessions" "${ROOTFS_DIR}/etc/profile.d"
 cp -a --remove-destination "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/usr/local/bin/"
 chmod +x "${ROOTFS_DIR}/usr/local/bin/"*
 
-# Safely symlink any additional upstream omarchy binaries that were not overridden
+# Safely symlink any additional upstream iram binaries that were not overridden
 chroot "${ROOTFS_DIR}" /bin/bash << 'POST_CHROOT_EOF'
-if [ -d "/usr/share/omarchy/bin" ]; then
-    for bin_file in /usr/share/omarchy/bin/*; do
+if [ -d "/usr/share/iram/bin" ]; then
+    for bin_file in /usr/share/iram/bin/*; do
         if [ -f "$bin_file" ]; then
             base_name="$(basename "$bin_file")"
             if [ ! -e "/usr/local/bin/${base_name}" ]; then
@@ -275,19 +275,19 @@ if [ -d "/usr/share/omarchy/bin" ]; then
 fi
 POST_CHROOT_EOF
 
-if [ -f "${REPO_ROOT}/system/omarchy.conf" ]; then
-    cp -a --remove-destination "${REPO_ROOT}/system/omarchy.conf" "${ROOTFS_DIR}/etc/omarchy.conf"
+if [ -f "${REPO_ROOT}/system/iram.conf" ]; then
+    cp -a --remove-destination "${REPO_ROOT}/system/iram.conf" "${ROOTFS_DIR}/etc/iram.conf"
 fi
-if [ -f "${REPO_ROOT}/system/omarchy.sh" ]; then
-    cp -a --remove-destination "${REPO_ROOT}/system/omarchy.sh" "${ROOTFS_DIR}/etc/profile.d/omarchy.sh"
+if [ -f "${REPO_ROOT}/system/iram.sh" ]; then
+    cp -a --remove-destination "${REPO_ROOT}/system/iram.sh" "${ROOTFS_DIR}/etc/profile.d/iram.sh"
 fi
-if ! grep -q "OMARCHY_PATH" "${ROOTFS_DIR}/etc/environment" 2>/dev/null; then
-    echo "OMARCHY_PATH=/usr/share/omarchy" >> "${ROOTFS_DIR}/etc/environment"
+if ! grep -q "IRAM_PATH" "${ROOTFS_DIR}/etc/environment" 2>/dev/null; then
+    echo "IRAM_PATH=/usr/share/iram" >> "${ROOTFS_DIR}/etc/environment"
 fi
-if [ -f "${REPO_ROOT}/system/sudoers.d/omarchy-theme-browser" ]; then
+if [ -f "${REPO_ROOT}/system/sudoers.d/iram-theme-browser" ]; then
     mkdir -p "${ROOTFS_DIR}/etc/sudoers.d"
-    cp -a --remove-destination "${REPO_ROOT}/system/sudoers.d/omarchy-theme-browser" "${ROOTFS_DIR}/etc/sudoers.d/omarchy-theme-browser"
-    chmod 0440 "${ROOTFS_DIR}/etc/sudoers.d/omarchy-theme-browser"
+    cp -a --remove-destination "${REPO_ROOT}/system/sudoers.d/iram-theme-browser" "${ROOTFS_DIR}/etc/sudoers.d/iram-theme-browser"
+    chmod 0440 "${ROOTFS_DIR}/etc/sudoers.d/iram-theme-browser"
 fi
 
 # Copy skeleton configs so every user (and live user) gets them
@@ -298,37 +298,37 @@ cp -a --remove-destination "${REPO_ROOT}/applications/"*.desktop "${ROOTFS_DIR}/
 cp -a --remove-destination "${REPO_ROOT}/applications/icons/"*.png "${ROOTFS_DIR}/etc/skel/.local/share/icons/hicolor/128x128/apps/" 2>/dev/null || true
 
 # Also copy into the live user's home directly
-mkdir -p "${ROOTFS_DIR}/home/omarchy/.config" "${ROOTFS_DIR}/home/omarchy/.local/bin" "${ROOTFS_DIR}/home/omarchy/.local/share/applications" "${ROOTFS_DIR}/home/omarchy/.local/share/icons/hicolor/128x128/apps"
-cp -a --remove-destination "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/home/omarchy/.config/"
-cp -a --remove-destination "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/home/omarchy/.local/bin/"
-cp -a --remove-destination "${REPO_ROOT}/applications/"*.desktop "${ROOTFS_DIR}/home/omarchy/.local/share/applications/" 2>/dev/null || true
-cp -a --remove-destination "${REPO_ROOT}/applications/icons/"*.png "${ROOTFS_DIR}/home/omarchy/.local/share/icons/hicolor/128x128/apps/" 2>/dev/null || true
+mkdir -p "${ROOTFS_DIR}/home/iram/.config" "${ROOTFS_DIR}/home/iram/.local/bin" "${ROOTFS_DIR}/home/iram/.local/share/applications" "${ROOTFS_DIR}/home/iram/.local/share/icons/hicolor/128x128/apps"
+cp -a --remove-destination "${REPO_ROOT}/config/"* "${ROOTFS_DIR}/home/iram/.config/"
+cp -a --remove-destination "${REPO_ROOT}/bin/"* "${ROOTFS_DIR}/home/iram/.local/bin/"
+cp -a --remove-destination "${REPO_ROOT}/applications/"*.desktop "${ROOTFS_DIR}/home/iram/.local/share/applications/" 2>/dev/null || true
+cp -a --remove-destination "${REPO_ROOT}/applications/icons/"*.png "${ROOTFS_DIR}/home/iram/.local/share/icons/hicolor/128x128/apps/" 2>/dev/null || true
 
 # Copy systemd units
-mkdir -p "${ROOTFS_DIR}/etc/skel/.config/systemd/user" "${ROOTFS_DIR}/home/omarchy/.config/systemd/user"
+mkdir -p "${ROOTFS_DIR}/etc/skel/.config/systemd/user" "${ROOTFS_DIR}/home/iram/.config/systemd/user"
 cp -a --remove-destination "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/etc/skel/.config/systemd/user/" 2>/dev/null || true
-cp -a --remove-destination "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/home/omarchy/.config/systemd/user/" 2>/dev/null || true
+cp -a --remove-destination "${REPO_ROOT}/config/systemd/user/"* "${ROOTFS_DIR}/home/iram/.config/systemd/user/" 2>/dev/null || true
 
 # Fix permissions
-chroot "${ROOTFS_DIR}" chown -R omarchy:omarchy /home/omarchy 2>/dev/null || true
+chroot "${ROOTFS_DIR}" chown -R iram:iram /home/iram 2>/dev/null || true
 
 # Copy Wayland session desktop entry
-if [ -f "${REPO_ROOT}/system/omarchy.desktop" ]; then
-    cp -a --remove-destination "${REPO_ROOT}/system/omarchy.desktop" "${ROOTFS_DIR}/usr/share/wayland-sessions/omarchy.desktop"
+if [ -f "${REPO_ROOT}/system/iram.desktop" ]; then
+    cp -a --remove-destination "${REPO_ROOT}/system/iram.desktop" "${ROOTFS_DIR}/usr/share/wayland-sessions/iram.desktop"
 fi
 
 # Set custom OS Release Branding
 cat << EOF > "${ROOTFS_DIR}/etc/os-release"
-NAME="Omarchy for Ubuntu"
+NAME="Iram for Ubuntu"
 VERSION="${DISTRO_VERSION} LTS (${CODENAME})"
-ID=omarchy-ubuntu
+ID=iram-ubuntu
 ID_LIKE="ubuntu debian"
-PRETTY_NAME="Omarchy for Ubuntu ${DISTRO_VERSION} LTS (${CODENAME})"
+PRETTY_NAME="Iram for Ubuntu ${DISTRO_VERSION} LTS (${CODENAME})"
 VERSION_ID="${DISTRO_VERSION}"
-HOME_URL="https://github.com/apravint/omarchy-ubuntu"
-SUPPORT_URL="https://github.com/apravint/omarchy-ubuntu/issues"
-BUG_REPORT_URL="https://github.com/apravint/omarchy-ubuntu/issues"
-PRIVACY_POLICY_URL="https://github.com/apravint/omarchy-ubuntu"
+HOME_URL="https://github.com/apravint/iram-ubuntu"
+SUPPORT_URL="https://github.com/apravint/iram-ubuntu/issues"
+BUG_REPORT_URL="https://github.com/apravint/iram-ubuntu/issues"
+PRIVACY_POLICY_URL="https://github.com/apravint/iram-ubuntu"
 UBUNTU_CODENAME=${CODENAME}
 EOF
 
@@ -384,13 +384,13 @@ insmod font
 set menu_color_normal=white/black
 set menu_color_highlight=black/light-cyan
 
-menuentry "🚀 Start Omarchy for Ubuntu Live (Default)" {
+menuentry "🚀 Start Iram for Ubuntu Live (Default)" {
     set gfxpayload=keep
     linux /casper/vmlinuz boot=casper quiet splash ---
     initrd /casper/initrd
 }
 
-menuentry "🛡️ Start Omarchy for Ubuntu Live (Safe Graphics)" {
+menuentry "🛡️ Start Iram for Ubuntu Live (Safe Graphics)" {
     set gfxpayload=keep
     linux /casper/vmlinuz boot=casper nomodeset quiet splash ---
     initrd /casper/initrd
@@ -415,7 +415,7 @@ EOF
 # ------------------------------------------------------------------------------
 log_step "Generating hybrid UEFI/BIOS bootable ISO image..."
 grub-mkrescue -o "${OUTPUT_DIR}/${ISO_NAME}" "${ISO_DIR}" \
-    -- -volid "OMARCHY"
+    -- -volid "IRAM"
 
 # ------------------------------------------------------------------------------
 # 9. Compute Checksums & Finish

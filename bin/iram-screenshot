@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Omarchy Screenshot Tool for Ubuntu / Hyprland
+# Iram Screenshot Tool for Ubuntu / Hyprland
 set -euo pipefail
 
 MODE="${1:-region}"
@@ -34,5 +34,5 @@ esac
 
 if [[ -f "$FILEPATH" ]]; then
     wl-copy --type image/png < "$FILEPATH"
-    notify-send -a "Omarchy" -i "$FILEPATH" "Screenshot Captured" "Saved to ~/Pictures/Screenshots and copied to clipboard."
+    notify-send -a "Iram" -i "$FILEPATH" "Screenshot Captured" "Saved to ~/Pictures/Screenshots and copied to clipboard."
 fi

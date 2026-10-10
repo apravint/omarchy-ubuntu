@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Omarchy Agentic OS Assistant (Super + A)
+# Iram Agentic OS Assistant (Super + A)
 # Prompt-driven autonomous actions and window management
 # ==============================================================================
 
@@ -10,7 +10,7 @@ PROMPT="${1:-}"
 
 # If no command line prompt passed, open Wofi GUI prompt
 if [ -z "$PROMPT" ]; then
-    PROMPT=$(wofi --dmenu --prompt "🤖 Ask Omarchy Agentic OS..." --width 600 --height 150 2>/dev/null || true)
+    PROMPT=$(wofi --dmenu --prompt "🤖 Ask Iram Agentic OS..." --width 600 --height 150 2>/dev/null || true)
 fi
 
 if [ -z "$PROMPT" ]; then
@@ -19,7 +19,7 @@ fi
 
 # Send desktop notification
 if command -v notify-send >/dev/null 2>&1; then
-    notify-send -a "Omarchy Agent" "🤖 Processing Request..." "$PROMPT" -t 3000
+    notify-send -a "Iram Agent" "🤖 Processing Request..." "$PROMPT" -t 3000
 fi
 
 python3 - "$PROMPT" << 'EOF'
@@ -30,14 +30,14 @@ import subprocess
 import os
 
 prompt = sys.argv[1]
-print(f"🤖 Omarchy Agent executing: {prompt}")
+print(f"🤖 Iram Agent executing: {prompt}")
 
-sys_prompt = """You are the Omarchy Agentic OS assistant running on Ubuntu Hyprland.
+sys_prompt = """You are the Iram Agentic OS assistant running on Ubuntu Hyprland.
 Output concise shell commands or actions to execute the user request.
 Common actions:
 - hyprctl dispatch workspace <N>
 - hyprctl dispatch focuswindow <class>
-- omarchy theme set "<theme>"
+- iram theme set "<theme>"
 - pactl set-sink-volume @DEFAULT_AUDIO_SINK@ <level>%
 - notify-send "title" "message"
 """
@@ -113,9 +113,9 @@ print("► Agent Response:\n", answer)
 # Execute supported system dispatches
 for line in answer.split("\n"):
     clean_line = line.strip().strip("`").strip()
-    if any(clean_line.startswith(prefix) for prefix in ["hyprctl", "omarchy", "notify-send", "pactl"]):
+    if any(clean_line.startswith(prefix) for prefix in ["hyprctl", "iram", "notify-send", "pactl"]):
         print(f"⚡ Dispatching: {clean_line}")
         subprocess.run(clean_line, shell=True)
         
-subprocess.run(["notify-send", "-a", "Omarchy Agent", "✓ Action Completed", answer[:120]])
+subprocess.run(["notify-send", "-a", "Iram Agent", "✓ Action Completed", answer[:120]])
 EOF

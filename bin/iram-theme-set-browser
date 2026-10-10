@@ -1,9 +1,9 @@
 #!/bin/bash
-# Omarchy Browser Theme Setter (Ubuntu Optimized)
+# Iram Browser Theme Setter (Ubuntu Optimized)
 # Applies theme color to Chromium, Chrome, Edge, and Brave policies without prompting for passwords
 
-OMARCHY_PATH="${OMARCHY_PATH:-/usr/share/omarchy}"
-CHROMIUM_THEME="$HOME/.local/state/omarchy/current/theme/chromium.theme"
+IRAM_PATH="${IRAM_PATH:-/usr/share/iram}"
+CHROMIUM_THEME="$HOME/.local/state/iram/current/theme/chromium.theme"
 DEFAULT_COLOR="#1f2335"
 
 THEME_HEX_COLOR="$DEFAULT_COLOR"
@@ -35,6 +35,6 @@ if ! $saw_any; then
 fi
 
 # Run the policy updater non-interactively
-omarchy-theme-set-browser-policy "${THEME_HEX_COLOR#\#}" </dev/null >/dev/null 2>&1 || true
+iram-theme-set-browser-policy "${THEME_HEX_COLOR#\#}" </dev/null >/dev/null 2>&1 || true
 
 exit 0

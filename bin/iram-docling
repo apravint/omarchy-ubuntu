@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Omarchy Docling Document Converter & Parser (omarchy-docling)
+Iram Docling Document Converter & Parser (iram-docling)
 Converts PDFs, Office documents, presentations, and spreadsheets into structured Markdown.
 Optionally indexes converted documents directly into embedded Qdrant vector memory.
-https://github.com/apravint/omarchy-ubuntu
+https://github.com/apravint/iram-ubuntu
 """
 
 import sys
@@ -25,10 +25,10 @@ def convert_document(filepath: str) -> str:
     return conv_res.document.export_to_markdown()
 
 def main():
-    parser = argparse.ArgumentParser(description="Omarchy Docling Document Parser (PDF, Office to Markdown)")
+    parser = argparse.ArgumentParser(description="Iram Docling Document Parser (PDF, Office to Markdown)")
     parser.add_argument("file", help="Path to document (PDF, DOCX, PPTX, XLSX, HTML, etc.)")
     parser.add_argument("-o", "--output", help="Save output Markdown to file")
-    parser.add_argument("-i", "--index", action="store_true", help="Index parsed document into Omarchy Qdrant memory")
+    parser.add_argument("-i", "--index", action="store_true", help="Index parsed document into Iram Qdrant memory")
     args = parser.parse_args()
 
     print(f"📄 Parsing document with Docling: {args.file}...")
@@ -56,11 +56,11 @@ def main():
 
     if args.index:
         try:
-            tmp_md = os.path.expanduser(f"~/.local/state/omarchy/docling_{os.path.basename(args.file)}.md")
+            tmp_md = os.path.expanduser(f"~/.local/state/iram/docling_{os.path.basename(args.file)}.md")
             with open(tmp_md, "w", encoding="utf-8") as f:
                 f.write(markdown)
-            subprocess.run(["omarchy-qdrant", "index", tmp_md], check=True)
-            print(f"✓ Indexed document into Omarchy Qdrant collection!")
+            subprocess.run(["iram-qdrant", "index", tmp_md], check=True)
+            print(f"✓ Indexed document into Iram Qdrant collection!")
         except Exception as e:
             print(f"⚠️ Indexing error: {e}")
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Omarchy Display Audio Switcher (Cycle: Both Displays -> Samsung Only -> Sony TV Only)
+# Iram Display Audio Switcher (Cycle: Both Displays -> Samsung Only -> Sony TV Only)
 
 CURRENT_SINK=$(pactl get-default-sink 2>/dev/null)
 

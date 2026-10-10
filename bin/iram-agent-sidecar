@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Omarchy Agentic OS Sidecar Window (Super + Shift + A)
+# Iram Agentic OS Sidecar Window (Super + Shift + A)
 # Launches a floating interactive agent terminal sidecar
 # ==============================================================================
 set -euo pipefail
 
-INTERACTIVE_BIN="$HOME/.local/bin/omarchy-agent-interactive"
+INTERACTIVE_BIN="$HOME/.local/bin/iram-agent-interactive"
 if [ ! -f "$INTERACTIVE_BIN" ]; then
-    INTERACTIVE_BIN="$(dirname "$0")/omarchy-agent-interactive"
+    INTERACTIVE_BIN="$(dirname "$0")/iram-agent-interactive"
 fi
 
 if command -v alacritty >/dev/null 2>&1; then
-    alacritty --title "Omarchy Agent Sidecar" \
-              --class "OmarchySidecar" \
+    alacritty --title "Iram Agent Sidecar" \
+              --class "IramSidecar" \
               --option "window.dimensions.columns=95" \
               --option "window.dimensions.lines=32" \
               -e "$INTERACTIVE_BIN"
